@@ -13,3 +13,6 @@ src/styles/index.scss
 .repos
 
 lerna-debug.log
+packages/namada-extension/cjs/*
+packages/namada-extension/esm
+packages/namada-extension/esm/extension
