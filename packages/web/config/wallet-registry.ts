@@ -74,6 +74,17 @@ export const WalletRegistry: RegistryWallet[] = [
     features: ["notifications"],
   },
   {
+    ...CosmosKitWalletList["namada-extension"],
+    logo: "/wallets/namada.png",
+    mobileDisabled: true,
+    lazyInstall: () =>
+      import("../../namada-extension").then((m) => m.NamadaExtensionWallet),
+    windowPropertyName: "namada",
+    stakeUrl: "https://namada.me",
+    governanceUrl: "https://namada.me",
+    features: ["notifications"],
+  },
+  {
     ...CosmosKitWalletList["leap-cosmos-mobile"],
     logo: "/wallets/leap.svg",
     lazyInstall: () =>
