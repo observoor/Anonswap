@@ -1,9 +1,10 @@
-import { SignOptions, WalletClient } from '@cosmos-kit/core';
+import { Logger, SignOptions, WalletClient } from '@cosmos-kit/core';
 
 import { Namada } from './types';
 
 export class NamadaClient implements WalletClient {
   readonly client: Namada;
+  logger?: Logger;
   private _defaultSignOptions: SignOptions = {
     preferNoSetFee: false,
     preferNoSetMemo: true,
@@ -28,18 +29,29 @@ export class NamadaClient implements WalletClient {
 
 
   async getSimpleAccount() {
-    const signer = await this.client.getSigner();
-    const address = (await signer.defaultAccount())?.address;
+
+    const chain = await this.client.getChain();
+    if (!chain) {
+      await this.client.connect();
+    }
+
+    //const accountType = 'shielded-keys';
+    const accountType = 'mnemonic';
+    const address = (await this.client.accounts())?.find((account) => account.type === accountType)?.address;
+
+    const returnData = {
+      namespace: 'namada',
+      chainId: chain?.chainId || '',
+      address: address || '',
+      username: 'Namada Wallet',
+    };
+    this.logger?.info('Namada wallet returnData', returnData);
+
     return {
       namespace: 'namada',
-      chainId: 'shielded-expedition.88f17d1d14',
+      chainId: chain?.chainId || '',
       address: address || '',
       username: 'Namada Wallet',
     };
   }
-
-
-
-
-
 }

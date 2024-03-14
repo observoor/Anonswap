@@ -28,13 +28,25 @@ export class NamadaClient {
         });
     }
     getSimpleAccount() {
-        var _a;
+        var _a, _b, _c;
         return __awaiter(this, void 0, void 0, function* () {
-            const signer = yield this.client.getSigner();
-            const address = (_a = (yield signer.defaultAccount())) === null || _a === void 0 ? void 0 : _a.address;
+            const chain = yield this.client.getChain();
+            if (!chain) {
+                yield this.client.connect();
+            }
+            //const accountType = 'shielded-keys';
+            const accountType = 'mnemonic';
+            const address = (_b = (_a = (yield this.client.accounts())) === null || _a === void 0 ? void 0 : _a.find((account) => account.type === accountType)) === null || _b === void 0 ? void 0 : _b.address;
+            const returnData = {
+                namespace: 'namada',
+                chainId: (chain === null || chain === void 0 ? void 0 : chain.chainId) || '',
+                address: address || '',
+                username: 'Namada Wallet',
+            };
+            (_c = this.logger) === null || _c === void 0 ? void 0 : _c.info('Namada wallet returnData', returnData);
             return {
                 namespace: 'namada',
-                chainId: 'shielded-expedition.88f17d1d14',
+                chainId: (chain === null || chain === void 0 ? void 0 : chain.chainId) || '',
                 address: address || '',
                 username: 'Namada Wallet',
             };

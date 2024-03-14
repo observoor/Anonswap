@@ -12,13 +12,13 @@ export const getNamadaFromExtension = () => __awaiter(void 0, void 0, void 0, fu
     if (typeof window === 'undefined') {
         return void 0;
     }
-    const namadaInst = window.namada;
-    if (namadaInst) {
-        return namadaInst;
+    const namada = window.namada;
+    if (namada) {
+        return namada;
     }
     if (document.readyState === 'complete') {
-        if (namadaInst) {
-            return namadaInst;
+        if (namada) {
+            return namada;
         }
         else {
             throw ClientNotExistError;
@@ -28,8 +28,9 @@ export const getNamadaFromExtension = () => __awaiter(void 0, void 0, void 0, fu
         const documentStateChange = (event) => {
             if (event.target &&
                 event.target.readyState === 'complete') {
-                if (namadaInst) {
-                    resolve(namadaInst);
+                const namada = window.namada;
+                if (namada) {
+                    resolve(namada);
                 }
                 else {
                     reject(ClientNotExistError.message);

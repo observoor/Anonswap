@@ -72,6 +72,16 @@ export const WalletRegistry: RegistryWallet[] = [
     stakeUrl: "https://namada.me",
     governanceUrl: "https://namada.me",
     features: ["notifications"],
+    supportsChain: async (chainId) => {
+      if (typeof window === "undefined") return true;
+
+      const namadaWallet = (window as any)?.namada as {
+        getChain: () => Promise<{ chainId: string }[]>;
+      };
+      const chainInfos = await namadaWallet.getChain();
+      if (!namadaWallet) return chainId === 'shielded-expedition.88f17d1d14';
+      return chainInfos.some((info) => info.chainId === chainId);
+    },
   },
   {
     ...CosmosKitWalletList["leap-cosmos-mobile"],

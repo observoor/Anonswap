@@ -59,7 +59,6 @@
     ]
   },
   "dependencies": {
-    "@chain-registry/keplr": "1.28.0",
     "@cosmos-kit/core": "2.7.2"
   },
   "peerDependencies": {

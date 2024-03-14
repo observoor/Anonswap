@@ -66,6 +66,70 @@ export const MockChains: Chain[] = [
     ],
   },
   {
+    chain_name: "namada-shielded",
+    status: "live",
+    network_type: "testnet",
+    pretty_name: "Namada shielded expedition",
+    chain_id: "shielded-expedition.88f17d1d14",
+    bech32_prefix: "namada",
+    bech32_config: {
+      bech32PrefixAccAddr: "namada",
+      bech32PrefixAccPub: "namadapub",
+      bech32PrefixValAddr: "namadavaloper",
+      bech32PrefixValPub: "namadavaloperpub",
+      bech32PrefixConsAddr: "namadavalcons",
+      bech32PrefixConsPub: "namadavalconspub",
+    },
+    slip44: 118,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "Naan",
+          fixed_min_gas_price: 0.0025,
+          low_gas_price: 0.0025,
+          average_gas_price: 0.025,
+          high_gas_price: 0.04,
+        },
+      ],
+    },
+    staking: {
+      staking_tokens: [
+        {
+          denom: "Naan",
+        },
+      ],
+      lock_duration: {
+        time: "1209600s",
+      },
+    },
+    description:
+      "Swap, earn, and build on the leading decentralized Cosmos exchange.",
+    apis: {
+      rpc: [
+        {
+          address: "https://proxy.heliax.click/shielded-expedition.88f17d1d14",
+        },
+      ],
+      rest: [
+        {
+          address: "https://lcd-osmosis.keplr.app",
+        },
+      ],
+    },
+    explorers: [
+      {
+        tx_page: "https://testnet.osmosis.explorers.guru/transaction/${txHash}",
+      },
+    ],
+    features: [
+      "ibc-go",
+      "ibc-transfer",
+      "cosmwasm",
+      "wasmd_0.24+",
+      "osmosis-txfees",
+    ],
+  },
+  {
     chain_name: "cosmoshub",
     status: "live",
     network_type: "mainnet",

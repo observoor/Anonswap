@@ -22,6 +22,7 @@ import path from "path";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as prettier from "prettier";
 
+import { AssetLists } from "~/config/asset-list/mock-asset-lists";
 import {
   ASSET_LIST_COMMIT_HASH,
   GITHUB_API_TOKEN,
@@ -83,15 +84,19 @@ async function generateChainListFile({
    */
   overwriteFile: boolean;
 }) {
+
+  const namedaChain = chainList.chains.find((chain) => chain.chain_name === "namada-shielded");
+
   const allAvailableChains: Pick<Chain, "chain_id" | "chain_name">[] = [
     ...chainList.chains,
+    ...namedaChain ? [namedaChain] : [],
     ...(OSMOSIS_CHAIN_ID_OVERWRITE && OSMOSIS_CHAIN_NAME_OVERWRITE
       ? [
-          {
-            chain_id: OSMOSIS_CHAIN_ID_OVERWRITE,
-            chain_name: OSMOSIS_CHAIN_NAME_OVERWRITE,
-          },
-        ]
+        {
+          chain_id: OSMOSIS_CHAIN_ID_OVERWRITE,
+          chain_name: OSMOSIS_CHAIN_NAME_OVERWRITE,
+        },
+      ]
       : []),
   ];
 
@@ -115,13 +120,12 @@ async function generateChainListFile({
     export type ${chainIdTypeName} = ${Array.from(
     new Set(allAvailableChains.map((c) => c.chain_id))
   )
-    .map(
-      (chainId) =>
-        `"${chainId}" /** ${
-          allAvailableChains.find((c) => c.chain_id === chainId)!.chain_name
-        } */`
-    )
-    .join(" | ")};
+      .map(
+        (chainId) =>
+          `"${chainId}" /** ${allAvailableChains.find((c) => c.chain_id === chainId)!.chain_name
+          } */`
+      )
+      .join(" | ")};
   `;
 
   const prettierConfig = await prettier.resolveConfig("./");
@@ -257,30 +261,43 @@ async function generateAssetListFile({
     return createOrAddToAssetList(acc, chain, asset, environment);
   }, [] as AssetList[]);
 
+  // add namada to asset list
+  const namadaChain = chains.find((chain) => chain.chain_name === "namada-shielded");
+  if (namadaChain) {
+    const namadaAsset = AssetLists.find((assetList) => assetList.chain_name === "namada-shielded");
+    if (namadaAsset) {
+      assetLists.push({
+        chain_name: namadaChain.chain_name,
+        chain_id: namadaChain.chain_id,
+        assets: namadaAsset.assets
+      });
+    }
+  }
+
+
+
   let content: string = "";
 
   if (!onlyTypes) {
     content += `
       import type { AssetList } from "@osmosis-labs/types";
       export const AssetLists: AssetList[] = ${JSON.stringify(
-        assetLists,
-        null,
-        2
-      )};    
+      assetLists,
+      null,
+      2
+    )};    
     `;
   }
 
   content += `    
-    export type ${
-      environment === "testnet" ? "TestnetAssetSymbols" : "MainnetAssetSymbols"
+    export type ${environment === "testnet" ? "TestnetAssetSymbols" : "MainnetAssetSymbols"
     } = ${Array.from(new Set(assetList.assets.map((asset) => asset.symbol)))
-    .map(
-      (symbol) =>
-        `"${symbol}" /** source denom: ${
-          assetList.assets.find((asset) => asset.symbol === symbol)!.sourceDenom
-        } */`
-    )
-    .join(" | ")};
+      .map(
+        (symbol) =>
+          `"${symbol}" /** source denom: ${assetList.assets.find((asset) => asset.symbol === symbol)!.sourceDenom
+          } */`
+      )
+      .join(" | ")};
   `;
 
   const prettierConfig = await prettier.resolveConfig("./");

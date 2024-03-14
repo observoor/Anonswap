@@ -20,7 +20,6 @@ export class NamadaExtensionWallet extends MainWalletBase {
             this.initingClient();
             try {
                 const namada = yield getNamadaFromExtension();
-                console.log('Init client', namada);
                 this.initClientDone(namada ? new NamadaClient(namada) : undefined);
             }
             catch (error) {
