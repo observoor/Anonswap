@@ -63,17 +63,6 @@ export const WalletRegistry: RegistryWallet[] = [
     features: [],
   },
   {
-    ...CosmosKitWalletList["leap-extension"],
-    logo: "/wallets/leap.svg",
-    mobileDisabled: false,
-    lazyInstall: () =>
-      import("@cosmos-kit/leap-extension").then((m) => m.LeapExtensionWallet),
-    windowPropertyName: "leap",
-    stakeUrl: "https://cosmos.leapwallet.io/transact/stake/plain?chain=osmosis",
-    governanceUrl: "https://cosmos.leapwallet.io/portfolio/gov?chain=osmosis",
-    features: ["notifications"],
-  },
-  {
     ...CosmosKitWalletList["namada-extension"],
     logo: "/wallets/namada.png",
     mobileDisabled: true,
