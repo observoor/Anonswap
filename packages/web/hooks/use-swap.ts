@@ -64,7 +64,7 @@ type SwapOptions = {
  *  * Assets search query
  *  * Debounced quote fetching from user input */
 export function useSwap({
-  initialFromDenom = "ATOM",
+  initialFromDenom = "NAAN",
   initialToDenom = "OSMO",
   useQueryParams = true,
   useOtherCurrencies = true,
@@ -132,25 +132,25 @@ export function useSwap({
     | NotEnoughLiquidityError
     | Error
     | undefined = useMemo(() => {
-    let error = quoteError;
+      let error = quoteError;
 
-    // only show spot price error if there's no quote
-    if (quote && !quote.amount.toDec().isPositive() && !error)
-      error = spotPriceQuoteError;
+      // only show spot price error if there's no quote
+      if (quote && !quote.amount.toDec().isPositive() && !error)
+        error = spotPriceQuoteError;
 
-    const errorFromTrpc = makeRouterErrorFromTrpcError(error)?.error;
-    if (errorFromTrpc) return errorFromTrpc;
+      const errorFromTrpc = makeRouterErrorFromTrpcError(error)?.error;
+      if (errorFromTrpc) return errorFromTrpc;
 
-    // prioritize router errors over user input errors
-    if (!inAmountInput.isEmpty && inAmountInput.error)
-      return inAmountInput.error;
-  }, [
-    quoteError,
-    quote,
-    spotPriceQuoteError,
-    inAmountInput.error,
-    inAmountInput.isEmpty,
-  ]);
+      // prioritize router errors over user input errors
+      if (!inAmountInput.isEmpty && inAmountInput.error)
+        return inAmountInput.error;
+    }, [
+      quoteError,
+      quote,
+      spotPriceQuoteError,
+      inAmountInput.error,
+      inAmountInput.isEmpty,
+    ]);
 
   const getSwapTxParameters = useCallback(
     ({
@@ -263,17 +263,17 @@ export function useSwap({
     return [
       routes.length === 1
         ? makeSwapExactAmountInMsg({
-            pools,
-            tokenIn,
-            tokenOutMinAmount,
-            userOsmoAddress: account.address,
-          })
+          pools,
+          tokenIn,
+          tokenOutMinAmount,
+          userOsmoAddress: account.address,
+        })
         : makeSplitRoutesSwapExactAmountInMsg({
-            routes,
-            tokenIn,
-            tokenOutMinAmount,
-            userOsmoAddress: account.address,
-          }),
+          routes,
+          tokenIn,
+          tokenOutMinAmount,
+          userOsmoAddress: account.address,
+        }),
     ];
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -312,17 +312,17 @@ export function useSwap({
 
         const fee: (SignOptions & { fee: TxFee }) | undefined =
           featureFlags.swapToolSimulateFee &&
-          networkFee &&
-          // Do not manually set the simulated fee if the user does not have enough OSMO
-          // TODO: Support other fee tokens
-          userOsmoCoin?.amount?.toDec().gte(networkFee.gasAmount.toDec())
+            networkFee &&
+            // Do not manually set the simulated fee if the user does not have enough OSMO
+            // TODO: Support other fee tokens
+            userOsmoCoin?.amount?.toDec().gte(networkFee.gasAmount.toDec())
             ? {
-                preferNoSetFee: true,
-                fee: {
-                  gas: networkFee.gasLimit,
-                  amount: networkFee.amount,
-                },
-              }
+              preferNoSetFee: true,
+              fee: {
+                gas: networkFee.gasLimit,
+                amount: networkFee.amount,
+              },
+            }
             : undefined;
 
         /**
@@ -402,8 +402,8 @@ export function useSwap({
       isQuoteLoading || inAmountInput.isTyping
         ? positivePrevQuote
         : !Boolean(quoteError)
-        ? quote
-        : undefined,
+          ? quote
+          : undefined,
     totalFee: sum([
       quote?.tokenInFeeAmountFiatValue?.toDec() ?? new Dec(0),
       networkFee?.gasUsdValueToPay?.toDec() ?? new Dec(0),
@@ -430,7 +430,7 @@ export function useSwap({
  *  * Paginated swappable assets, with user balances if wallet connected
  *  * Assets search query */
 export function useSwapAssets({
-  initialFromDenom = "ATOM",
+  initialFromDenom = "NAAN",
   initialToDenom = "OSMO",
   useQueryParams = true,
   useOtherCurrencies = true,
@@ -477,7 +477,7 @@ export function useSwapAssets({
   } = api.edge.assets.getUserAssets.useInfiniteQuery(
     {
       search: queryInput,
-      userOsmoAddress: account?.address,
+      userOsmoAddress: account?.address || '',
       includePreview: showPreviewAssets,
       limit: 50, // items per page
     },
@@ -652,13 +652,13 @@ function useQueryRouterBestQuote(
       !featureFlags._isInitialized
         ? []
         : routerKeys.filter((key) => {
-            if (!featureFlags.sidecarRouter && key === "sidecar") return false;
-            if (!featureFlags.legacyRouter && key === "legacy") return false;
-            // TFM doesn't support force swap through pool
-            if ((!featureFlags.tfmRouter || input.forcePoolId) && key === "tfm")
-              return false;
-            return true;
-          }),
+          if (!featureFlags.sidecarRouter && key === "sidecar") return false;
+          if (!featureFlags.legacyRouter && key === "legacy") return false;
+          // TFM doesn't support force swap through pool
+          if ((!featureFlags.tfmRouter || input.forcePoolId) && key === "tfm")
+            return false;
+          return true;
+        }),
     [
       featureFlags._isInitialized,
       featureFlags.sidecarRouter,
@@ -733,7 +733,7 @@ function useQueryRouterBestQuote(
     () =>
       !isOneSuccessful && isOneErrored
         ? routerResults.find((routerResults) => Boolean(routerResults.error))
-            ?.error
+          ?.error
         : undefined,
     [isOneSuccessful, isOneErrored, routerResults]
   );
@@ -758,13 +758,13 @@ function makeRouterErrorFromTrpcError(
     | undefined
 ):
   | {
-      error:
-        | NoRouteError
-        | NotEnoughLiquidityError
-        | NotEnoughQuotedError
-        | Error;
-      isUnexpected: boolean;
-    }
+    error:
+    | NoRouteError
+    | NotEnoughLiquidityError
+    | NotEnoughQuotedError
+    | Error;
+    isUnexpected: boolean;
+  }
   | undefined {
   if (isNil(error)) return;
   const tprcShapeMsg = error?.shape?.message;

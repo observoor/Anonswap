@@ -84,7 +84,7 @@ export const MockChains: Chain[] = [
     fees: {
       fee_tokens: [
         {
-          denom: "Naan",
+          denom: "Nam",
           fixed_min_gas_price: 0.0025,
           low_gas_price: 0.0025,
           average_gas_price: 0.025,
@@ -95,7 +95,7 @@ export const MockChains: Chain[] = [
     staking: {
       staking_tokens: [
         {
-          denom: "Naan",
+          denom: "Nam",
         },
       ],
       lock_duration: {

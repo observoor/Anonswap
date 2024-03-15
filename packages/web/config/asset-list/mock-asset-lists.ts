@@ -1312,9 +1312,9 @@ export const AssetLists: AssetList[] = [
     assets: [
       {
         chainName: "namada-shielded",
-        sourceDenom: "Naan",
-        coinMinimalDenom: "Naan",
-        symbol: "Naan",
+        sourceDenom: "Nam",
+        coinMinimalDenom: "Nam",
+        symbol: "Nam",
         decimals: 6,
         logoURIs: {
           png: "https://namada.me/7fcb6905803e1322542660abe5eaffae.png",

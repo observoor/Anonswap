@@ -1,47 +1,47 @@
-import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
-import { getAssetFromAssetList } from "@osmosis-labs/utils";
-import { observer } from "mobx-react-lite";
-import Image from "next/image";
-import Link from "next/link";
-import { FunctionComponent, useCallback, useMemo, useState } from "react";
+import { CoinPretty, Dec, PricePretty } from '@keplr-wallet/unit';
+import { getAssetFromAssetList } from '@osmosis-labs/utils';
+import { observer } from 'mobx-react-lite';
+import Image from 'next/image';
+import Link from 'next/link';
+import { FunctionComponent, useCallback, useMemo, useState } from 'react';
 
-import { Icon } from "~/components/assets";
-import { SortMenu } from "~/components/control";
-import { SearchBox } from "~/components/input";
-import { Table } from "~/components/table";
+import { Icon } from '~/components/assets';
+import { SortMenu } from '~/components/control';
+import { SearchBox } from '~/components/input';
+import { Table } from '~/components/table';
 import {
   AssetCell as TableCell,
   AssetNameCell,
   BalanceCell,
   SortableAssetCell as SortableTableCell,
   TransferButtonCell,
-} from "~/components/table/cells";
-import { TransferHistoryTable } from "~/components/table/transfer-history";
-import { ColumnDef, RowDef } from "~/components/table/types";
-import { SortDirection } from "~/components/types";
-import { ShowMoreButton } from "~/components/ui/button";
-import { Button } from "~/components/ui/button";
-import { Switch } from "~/components/ui/switch";
-import { initialAssetsSort } from "~/config";
-import { AssetLists } from "~/config/generated/asset-lists";
-import { ChainList } from "~/config/generated/chain-list";
-import { EventName } from "~/config/user-analytics-v2";
-import { useFeatureFlags, useTranslation } from "~/hooks";
+} from '~/components/table/cells';
+import { TransferHistoryTable } from '~/components/table/transfer-history';
+import { ColumnDef, RowDef } from '~/components/table/types';
+import { SortDirection } from '~/components/types';
+import { ShowMoreButton } from '~/components/ui/button';
+import { Button } from '~/components/ui/button';
+import { Switch } from '~/components/ui/switch';
+import { initialAssetsSort } from '~/config';
+import { AssetLists } from '~/config/generated/asset-lists';
+import { ChainList } from '~/config/generated/chain-list';
+import { EventName } from '~/config/user-analytics-v2';
+import { useFeatureFlags, useTranslation } from '~/hooks';
 import {
   useAmplitudeAnalytics,
   useLocalStorageState,
   useWindowSize,
-} from "~/hooks";
-import { useFilteredData, useSortedData } from "~/hooks/data";
-import { ActivateUnverifiedTokenConfirmation } from "~/modals";
-import { useStore } from "~/stores";
+} from '~/hooks';
+import { useFilteredData, useSortedData } from '~/hooks/data';
+import { ActivateUnverifiedTokenConfirmation } from '~/modals';
+import { useStore } from '~/stores';
 import {
   CoinBalance,
   IBCBalance,
   IBCCW20ContractBalance,
-} from "~/stores/assets";
-import { HideBalancesState } from "~/stores/user-settings";
-import { UnverifiedAssetsState } from "~/stores/user-settings";
+} from '~/stores/assets';
+import { HideBalancesState } from '~/stores/user-settings';
+import { UnverifiedAssetsState } from '~/stores/user-settings';
 
 interface Props {
   nativeBalances: (CoinBalance & { isVerified: boolean })[];
@@ -92,7 +92,7 @@ function nativeBalancesToTableCell(
     return {
       ...commonFields,
       chainId: osmosisChainId,
-      chainName: "",
+      chainName: '',
       isVerified,
     };
   });
@@ -114,8 +114,8 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
     const featureFlags = useFeatureFlags();
 
     const [favoritesList, onSetFavoritesList] = useLocalStorageState(
-      "favoritesList",
-      ["OSMO", "ATOM", "TIA"]
+      'favoritesList',
+      ['NAAN', 'OSMO']
     );
 
     const [isSearching, setIsSearching] = useState(false);
@@ -124,7 +124,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
 
     const showUnverifiedAssetsSetting =
       userSettings.getUserSettingById<UnverifiedAssetsState>(
-        "unverified-assets"
+        'unverified-assets'
       );
     const shouldDisplayUnverifiedAssets =
       showUnverifiedAssetsSetting?.state.showUnverifiedAssets;
@@ -165,7 +165,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
           ...nativeBalancesToTableCell(
             nativeBalances.filter(
               ({ balance, fiatValue }) =>
-                balance.denom === "OSMO" ||
+                balance.denom === 'OSMO' ||
                 fiatValue?.maxDecimals(2).toDec().gt(zeroDec)
             ),
             chainStore.osmosis.chainId
@@ -182,7 +182,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                   withdrawUrlOverride,
                   sourceChainNameOverride,
                 } = ibcBalance;
-                const isCW20 = "ics20ContractAddress" in ibcBalance;
+                const isCW20 = 'ics20ContractAddress' in ibcBalance;
                 const pegMechanism =
                   balance.currency.originCurrency?.pegMechanism;
                 const isVerified = ibcBalance.isVerified;
@@ -199,11 +199,11 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                    */
                   amount:
                     !isVerified && !shouldDisplayUnverifiedAssets
-                      ? ""
+                      ? ''
                       : commonFields.amount,
                   queryTags: [
-                    ...(isCW20 ? ["CW20"] : []),
-                    ...(pegMechanism ? ["stable", pegMechanism] : []),
+                    ...(isCW20 ? ['CW20'] : []),
+                    ...(pegMechanism ? ['stable', pegMechanism] : []),
                   ],
                   isUnstable: ibcBalance.isUnstable === true,
                   isVerified,
@@ -219,7 +219,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
             (isSearching ? unverifiedNativeBalances : nativeBalances).filter(
               ({ balance, fiatValue }) =>
                 !(
-                  balance.denom === "OSMO" ||
+                  balance.denom === 'OSMO' ||
                   fiatValue?.maxDecimals(2).toDec().gt(zeroDec)
                 )
             ),
@@ -275,7 +275,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
             sortedBy: term,
             sortDirection,
 
-            sortedOn: "dropdown",
+            sortedOn: 'dropdown',
           },
         ]);
         _setSortKey(term);
@@ -291,7 +291,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
          */
         sortKeys: string[],
         /** Default sort direction when this column is first selected. */
-        onClickSortDirection: SortDirection = "descending"
+        onClickSortDirection: SortDirection = 'descending'
       ) => {
         const isSorting = sortKeys.some((key) => key === sortKey);
         const firstKey = sortKeys.find((_, i) => i === 0);
@@ -310,10 +310,10 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                   {
                     sortedBy: firstKey,
                     sortDirection:
-                      sortDirection === "descending"
-                        ? "ascending"
-                        : "descending",
-                    sortedOn: "table-head",
+                      sortDirection === 'descending'
+                        ? 'ascending'
+                        : 'descending',
+                    sortedOn: 'table-head',
                   },
                 ]);
                 toggleSortDirection();
@@ -325,7 +325,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                     {
                       sortedBy: firstKey,
                       sortDirection: onClickSortDirection,
-                      sortedOn: "table-head",
+                      sortedOn: 'table-head',
                     },
                   ]);
                   setSortKey(firstKey);
@@ -347,13 +347,13 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
     // User toggles for showing 10+ pools and assets with > 0 fiat value
     const [showAllAssets, setShowAllAssets] = useState(false);
     const [hideZeroBalances, setHideZeroBalances] = useLocalStorageState(
-      "assets_hide_zero_balances",
+      'assets_hide_zero_balances',
       false
     );
-    const canHideZeroBalances = cells.some((cell) => cell.amount !== "0");
+    const canHideZeroBalances = cells.some((cell) => cell.amount !== '0');
 
     const hideBalancesSetting =
-      userSettings.getUserSettingById<HideBalancesState>("hide-balances");
+      userSettings.getUserSettingById<HideBalancesState>('hide-balances');
 
     let setHideBalancesPrivacy = (hideBalances: boolean) => {
       hideBalancesSetting?.setState({ hideBalances: hideBalances });
@@ -362,14 +362,14 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
     // Filter data based on user's input in the search box.
     const [query, _setQuery, filteredSortedCells] = useFilteredData(
       hideZeroBalances
-        ? sortedCells.filter((cell) => cell.amount !== "0")
+        ? sortedCells.filter((cell) => cell.amount !== '0')
         : sortedCells,
-      ["chainName", "chainId", "coinDenom", "amount", "fiatValue", "queryTags"]
+      ['chainName', 'chainId', 'coinDenom', 'amount', 'fiatValue', 'queryTags']
     );
 
     const setQuery = (term: string) => {
       _setQuery(term);
-      setIsSearching(term !== "");
+      setIsSearching(term !== '');
     };
 
     const tableData = useMemo(() => {
@@ -403,7 +403,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
         featureFlags.tokenInfo
           ? tableData.map((cell) => ({
               link: `/assets/${cell.coinDenom}`,
-              makeHoverClass: () => "hover:bg-osmoverse-850",
+              makeHoverClass: () => 'hover:bg-osmoverse-850',
               onClick: () => {
                 logEvent([
                   EventName.Assets.assetClicked,
@@ -437,7 +437,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
         />
         {isMobile ? (
           <div className="flex flex-col gap-5">
-            <h6 className="px-3">{t("assets.table.title")}</h6>
+            <h6 className="px-3">{t('assets.table.title')}</h6>
             <SearchBox
               className="!w-full"
               currentValue={query}
@@ -445,7 +445,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                 setHideZeroBalances(false);
                 setQuery(query);
               }}
-              placeholder={t("assets.table.search")}
+              placeholder={t('assets.table.search')}
               size="small"
             />
             <div className="flex flex-wrap place-content-between items-center gap-3">
@@ -454,7 +454,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                   htmlFor="hide-zero-balances"
                   className="subtitle1 flex shrink-0 items-center text-osmoverse-200"
                 >
-                  {t("assets.table.hideZero")}
+                  {t('assets.table.hideZero')}
                 </label>
                 <Switch
                   id="hide-zero-balances"
@@ -464,7 +464,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                     logEvent([
                       EventName.Assets.assetsListFiltered,
                       {
-                        filteredBy: "Hide zero balances",
+                        filteredBy: 'Hide zero balances',
                         isFilterOn: !hideZeroBalances,
                       },
                     ]);
@@ -480,17 +480,17 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                 onToggleSortDirection={toggleSortDirection}
                 options={[
                   {
-                    id: "coinDenom",
-                    display: t("assets.table.sort.symbol"),
+                    id: 'coinDenom',
+                    display: t('assets.table.sort.symbol'),
                   },
                   {
                     /** These ids correspond to keys in `Cell` type and are later used for sorting. */
-                    id: "chainName",
-                    display: t("assets.table.sort.network"),
+                    id: 'chainName',
+                    display: t('assets.table.sort.network'),
                   },
                   {
-                    id: "fiatValueRaw",
-                    display: t("assets.table.sort.balance"),
+                    id: 'fiatValueRaw',
+                    display: t('assets.table.sort.balance'),
                   },
                 ]}
               />
@@ -499,13 +499,13 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
         ) : (
           <div className="flex flex-col gap-5">
             <div className="flex flex-wrap place-content-between items-center">
-              <h5 className="mr-5 shrink-0">{t("assets.table.title")}</h5>
+              <h5 className="mr-5 shrink-0">{t('assets.table.title')}</h5>
               <div className="flex items-center gap-3 lg:gap-2">
                 <label
                   htmlFor="masked-balances"
                   className="subtitle1 flex shrink-0 items-center gap-2 text-osmoverse-200"
                 >
-                  {t("assets.table.hideBalances")}
+                  {t('assets.table.hideBalances')}
                 </label>
                 <Switch
                   id="masked-balances"
@@ -520,7 +520,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                   htmlFor="hide-zero-balances"
                   className="subtitle1 flex shrink-0 items-center gap-2 text-osmoverse-200"
                 >
-                  {t("assets.table.hideZero")}
+                  {t('assets.table.hideZero')}
                 </label>
                 <Switch
                   id="hide-zero-balancse"
@@ -536,7 +536,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                     setHideZeroBalances(false);
                     setQuery(query);
                   }}
-                  placeholder={t("assets.table.search")}
+                  placeholder={t('assets.table.search')}
                   size="small"
                 />
                 <SortMenu
@@ -548,27 +548,27 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                       {
                         sortedBy: sortKey,
                         sortDirection:
-                          sortDirection === "descending"
-                            ? "ascending"
-                            : "descending",
-                        sortedOn: "dropdown",
+                          sortDirection === 'descending'
+                            ? 'ascending'
+                            : 'descending',
+                        sortedOn: 'dropdown',
                       },
                     ]);
                     toggleSortDirection();
                   }}
                   options={[
                     {
-                      id: "coinDenom",
-                      display: t("assets.table.sort.symbol"),
+                      id: 'coinDenom',
+                      display: t('assets.table.sort.symbol'),
                     },
                     {
                       /** These ids correspond to keys in `Cell` type and are later used for sorting. */
-                      id: "chainName",
-                      display: t("assets.table.sort.network"),
+                      id: 'chainName',
+                      display: t('assets.table.sort.network'),
                     },
                     {
-                      id: "fiatValueRaw",
-                      display: t("assets.table.sort.balance"),
+                      id: 'fiatValueRaw',
+                      display: t('assets.table.sort.balance'),
                     },
                   ]}
                 />
@@ -666,32 +666,32 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
             className="my-5 w-full"
             columnDefs={[
               {
-                display: t("assets.table.columns.assetChain"),
+                display: t('assets.table.columns.assetChain'),
                 displayCell: AssetNameCell,
-                sort: sortColumnWithKeys(["coinDenom", "chainName"]),
+                sort: sortColumnWithKeys(['coinDenom', 'chainName']),
               },
               {
-                display: t("assets.table.columns.balance"),
+                display: t('assets.table.columns.balance'),
                 displayCell: BalanceCell,
-                sort: sortColumnWithKeys(["fiatValueRaw"], "descending"),
-                className: "text-right pr-24 lg:pr-8 1.5md:pr-1",
+                sort: sortColumnWithKeys(['fiatValueRaw'], 'descending'),
+                className: 'text-right pr-24 lg:pr-8 1.5md:pr-1',
               },
               ...(mergeWithdrawCol
                 ? ([
                     {
-                      display: t("assets.table.columns.transfer"),
+                      display: t('assets.table.columns.transfer'),
                       displayCell: (cell) => (
                         <div>
                           <TransferButtonCell type="deposit" {...cell} />
                           <TransferButtonCell type="withdraw" {...cell} />
                         </div>
                       ),
-                      className: "text-left max-w-[5rem]",
+                      className: 'text-left max-w-[5rem]',
                     },
                   ] as ColumnDef<TableCell>[])
                 : ([
                     {
-                      display: t("assets.table.columns.deposit"),
+                      display: t('assets.table.columns.deposit'),
                       displayCell: (cell) =>
                         !shouldDisplayUnverifiedAssets && !cell.isVerified ? (
                           <Button
@@ -704,21 +704,21 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                               setConfirmUnverifiedTokenDenom(cell.coinDenom);
                             }}
                           >
-                            {t("assets.table.activate")}
+                            {t('assets.table.activate')}
                           </Button>
                         ) : (
                           <TransferButtonCell type="deposit" {...cell} />
                         ),
-                      className: "text-left max-w-[5rem]",
+                      className: 'text-left max-w-[5rem]',
                     },
                     {
-                      display: t("assets.table.columns.withdraw"),
+                      display: t('assets.table.columns.withdraw'),
                       displayCell: (cell) =>
                         !shouldDisplayUnverifiedAssets &&
                         !cell.isVerified ? null : (
                           <TransferButtonCell type="withdraw" {...cell} />
                         ),
-                      className: "text-left max-w-[5rem]",
+                      className: 'text-left max-w-[5rem]',
                     },
                   ] as ColumnDef<TableCell>[])),
             ]}

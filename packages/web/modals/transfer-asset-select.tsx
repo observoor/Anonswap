@@ -1,22 +1,22 @@
-import { CoinPretty } from "@keplr-wallet/unit";
-import classNames from "classnames";
-import { observer } from "mobx-react-lite";
-import Image from "next/image";
-import { FunctionComponent, useEffect, useMemo, useState } from "react";
+import { CoinPretty } from '@keplr-wallet/unit';
+import classNames from 'classnames';
+import { observer } from 'mobx-react-lite';
+import Image from 'next/image';
+import { FunctionComponent, useEffect, useMemo, useState } from 'react';
 
-import { Icon } from "~/components/assets";
-import { TokenSelect } from "~/components/control";
-import { CustomClasses } from "~/components/types";
-import { useTranslation } from "~/hooks";
-import { useConnectWalletModalRedirect } from "~/hooks";
-import type { SourceChain } from "~/integrations";
+import { Icon } from '~/components/assets';
+import { TokenSelect } from '~/components/control';
+import { CustomClasses } from '~/components/types';
+import { useTranslation } from '~/hooks';
+import { useConnectWalletModalRedirect } from '~/hooks';
+import type { SourceChain } from '~/integrations';
 import type {
   OriginBridgeInfo,
   SourceChainKey,
-} from "~/integrations/bridge-info";
-import { ModalBase, ModalBaseProps } from "~/modals/base";
+} from '~/integrations/bridge-info';
+import { ModalBase, ModalBaseProps } from '~/modals/base';
 
-const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
+const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === 'true';
 
 /** Intermediate step to allow a user to select & config an asset before deposit/withdraw. */
 export const TransferAssetSelectModal: FunctionComponent<
@@ -45,14 +45,14 @@ export const TransferAssetSelectModal: FunctionComponent<
               token: {
                 currency: { coinDenom },
               },
-            }) => coinDenom === "ATOM"
+            }) => coinDenom === 'NAAN'
           )?.token.denom
         : tokens.find(
             ({
               token: {
                 currency: { coinDenom },
               },
-            }) => coinDenom === (IS_TESTNET ? "aUSDC" : "USDC")
+            }) => coinDenom === (IS_TESTNET ? 'aUSDC' : 'USDC')
           )?.token.denom) || tokens[0].token.denom
   );
   const [selectedSourceChainKey, setSelectedSourceChainKey] =
@@ -91,13 +91,13 @@ export const TransferAssetSelectModal: FunctionComponent<
     walletConnected: keplrConnected,
   } = useConnectWalletModalRedirect(
     {
-      className: "mt-3",
+      className: 'mt-3',
       onClick: () => onSelectAsset(selectedTokenDenom, selectedNetwork?.id),
       disabled: selectedToken?.originBridgeInfo && !selectedNetwork, // error in bridge integration config
-      children: t("assets.transferAssetSelect.buttonNext"),
+      children: t('assets.transferAssetSelect.buttonNext'),
     },
     props.onRequestClose,
-    t("connectWallet")
+    t('connectWallet')
   );
 
   return (
@@ -106,8 +106,8 @@ export const TransferAssetSelectModal: FunctionComponent<
       isOpen={props.isOpen && showModalBase}
       title={
         isWithdraw
-          ? t("assets.transferAssetSelect.withdraw")
-          : t("assets.transferAssetSelect.deposit")
+          ? t('assets.transferAssetSelect.withdraw')
+          : t('assets.transferAssetSelect.deposit')
       }
     >
       <div className="my-5 flex flex-col gap-5">
@@ -125,19 +125,19 @@ export const TransferAssetSelectModal: FunctionComponent<
           keplrConnected && (
             <div
               className={classNames(
-                "relative flex w-full place-content-between items-center border border-osmoverse-700 p-4 transition-borderRadius",
+                'relative flex w-full place-content-between items-center border border-osmoverse-700 p-4 transition-borderRadius',
                 {
-                  "rounded-2xl": !isSourceChainDropdownOpen,
-                  "rounded-l-2xl rounded-tr-2xl": isSourceChainDropdownOpen,
+                  'rounded-2xl': !isSourceChainDropdownOpen,
+                  'rounded-l-2xl rounded-tr-2xl': isSourceChainDropdownOpen,
                 }
               )}
             >
               <span className="subtitle2 text-white-mid">
-                {t("assets.transferAssetSelect.network")}
+                {t('assets.transferAssetSelect.network')}
               </span>
               <div
-                className={classNames("flex items-center gap-2", {
-                  "cursor-pointer":
+                className={classNames('flex items-center gap-2', {
+                  'cursor-pointer':
                     selectedToken?.originBridgeInfo &&
                     selectedToken.originBridgeInfo.sourceChainTokens.length > 1,
                 })}
@@ -154,8 +154,8 @@ export const TransferAssetSelectModal: FunctionComponent<
                   selectedToken.originBridgeInfo.sourceChainTokens.length >
                     1 && (
                     <div
-                      className={classNames("flex items-center transition", {
-                        "rotate-180": isSourceChainDropdownOpen,
+                      className={classNames('flex items-center transition', {
+                        'rotate-180': isSourceChainDropdownOpen,
                       })}
                     >
                       <Icon
@@ -169,7 +169,7 @@ export const TransferAssetSelectModal: FunctionComponent<
               </div>
               {isSourceChainDropdownOpen && (
                 <div
-                  style={{ borderTopStyle: "dashed" }}
+                  style={{ borderTopStyle: 'dashed' }}
                   className="absolute top-[100%] -right-[1px] z-50 select-none rounded-b-2xl border border-osmoverse-700 bg-osmoverse-800"
                 >
                   {selectedToken.originBridgeInfo.sourceChainTokens
@@ -178,9 +178,9 @@ export const TransferAssetSelectModal: FunctionComponent<
                       <div
                         key={index}
                         className={classNames(
-                          "cursor-pointer px-6 py-1.5 transition-colors hover:bg-osmoverse-700",
+                          'cursor-pointer px-6 py-1.5 transition-colors hover:bg-osmoverse-700',
                           {
-                            "rounded-b-2xl": scArr.length - 1 === index,
+                            'rounded-b-2xl': scArr.length - 1 === index,
                           }
                         )}
                         onClick={() => {
@@ -204,7 +204,7 @@ export const TransferAssetSelectModal: FunctionComponent<
 const Network: FunctionComponent<
   { id: string; logoUrl: string } & CustomClasses
 > = ({ id: displayName, logoUrl, className }) => (
-  <div className={classNames("flex select-none items-center gap-2", className)}>
+  <div className={classNames('flex select-none items-center gap-2', className)}>
     <Image alt="network logo" src={logoUrl} height={28} width={28} />
     <span className="subtitle2">{displayName}</span>
   </div>

@@ -1,14 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
-import dayjs from "dayjs";
-import { observer } from "mobx-react-lite";
+import { observer } from 'mobx-react-lite';
 
-import { AdBanner } from "~/components/ad-banner";
-import ErrorBoundary from "~/components/error/error-boundary";
-import { ProgressiveSvgImage } from "~/components/progressive-svg-image";
-import { SwapTool } from "~/components/swap-tool";
-import { EventName } from "~/config";
-import { useAmplitudeAnalytics, useFeatureFlags } from "~/hooks";
-import { queryOsmosisCMS } from "~/server/queries/osmosis/cms";
+import { ProgressiveSvgImage } from '~/components/progressive-svg-image';
+import { SwapTool } from '~/components/swap-tool';
+import { EventName } from '~/config';
+import { useAmplitudeAnalytics, useFeatureFlags } from '~/hooks';
 
 const Home = () => {
   const featureFlags = useFeatureFlags();
@@ -37,19 +32,18 @@ const Home = () => {
               height="725.6817"
             />
             <ProgressiveSvgImage
-              lowResXlinkHref={"/images/osmosis-home-fg-low.png"}
-              xlinkHref={"/images/osmosis-home-fg.png"}
-              x={"61"}
-              y={"682"}
-              width={"448.8865"}
-              height={"285.1699"}
+              lowResXlinkHref={'/images/osmosis-home-fg-low.png'}
+              xlinkHref={'/images/osmosis-home-fg.png'}
+              x={'61'}
+              y={'682'}
+              width={'448.8865'}
+              height={'285.1699'}
             />
           </g>
         </svg>
       </div>
       <div className="my-auto flex h-auto w-full items-center">
         <div className="ml-auto mr-[15%] flex w-[27rem] flex-col gap-4 lg:mx-auto md:mt-mobile-header">
-          {featureFlags.swapsAdBanner && <SwapAdsBanner />}
           <SwapTool />
         </div>
       </div>
@@ -74,38 +68,5 @@ export interface SwapAdBannerResponse {
   }[];
   localization: Record<string, Record<string, any>>;
 }
-
-const SwapAdsBanner = () => {
-  /**
-   * Fetches the latest update from the osmosis-labs/fe-content repo
-   * @see https://github.com/osmosis-labs/fe-content/blob/main/cms/swap-rotating-banner.json
-   */
-  const { data, isLoading } = useQuery({
-    queryKey: ["swap-ads-banner"],
-    queryFn: () =>
-      queryOsmosisCMS<SwapAdBannerResponse>({
-        filePath: "cms/swap-rotating-banner.json",
-      }),
-    staleTime: 1000 * 60 * 30, // 30 minutes
-    cacheTime: 1000 * 60 * 30, // 30 minutes
-    select: (data) => ({
-      ...data,
-      banners: data.banners.filter((banner) =>
-        banner.startDate || banner.endDate
-          ? dayjs().isBetween(banner.startDate, banner.endDate)
-          : true
-      ),
-    }),
-  });
-
-  if (!data?.banners || isLoading) return null;
-
-  return (
-    // If there is an error, we don't want to show the banner
-    <ErrorBoundary fallback={null}>
-      <AdBanner ads={data.banners} localization={data.localization} />
-    </ErrorBoundary>
-  );
-};
 
 export default observer(Home);

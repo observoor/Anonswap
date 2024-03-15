@@ -90,7 +90,7 @@ export const ProfileModal: FunctionComponent<
 
   const { data: userOsmoAsset } = api.edge.assets.getUserAsset.useQuery(
     {
-      findMinDenomOrSymbol: 'Naan',
+      findMinDenomOrSymbol: 'OSMO',
       userOsmoAddress: wallet?.address ?? '',
     },
     {

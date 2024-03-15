@@ -286,7 +286,7 @@ export const Transfer = observer(
                 >
                   {displayFromAddress}
                   {from.address.length > 0 &&
-                    !from.address.startsWith('Naan') &&
+                    !from.address.startsWith('Nam') &&
                     selectedWalletDisplay && (
                       <SwitchWalletButton
                         selectedWalletIconUrl={selectedWalletDisplay.iconUrl}

@@ -223,7 +223,7 @@ async function generateAssetListFile({
 
   const assetLists = assetList.assets.reduce<AssetList[]>((acc, asset) => {
 
-    if (asset.symbol === "Naan") {
+    if (asset.symbol === "Nam") {
       const chain = chains.find((chain) => chain.chain_id === 'shielded-expedition.88f17d1d14');
       if (!chain) {
         throw new Error("Failed to find chain namada-shielded");

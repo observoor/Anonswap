@@ -1,60 +1,60 @@
-import { Dec } from "@keplr-wallet/unit";
-import { ObservableAssetInfoConfig } from "@osmosis-labs/stores";
-import { getAssetFromAssetList } from "@osmosis-labs/utils";
-import { observer } from "mobx-react-lite";
-import { GetStaticPathsResult, GetStaticProps } from "next";
-import Image from "next/image";
-import { useRouter } from "next/router";
-import { NextSeo } from "next-seo";
-import { FunctionComponent, useCallback } from "react";
-import { useMemo } from "react";
-import { useEffect } from "react";
-import { useUnmount } from "react-use";
+import { Dec } from '@keplr-wallet/unit';
+import { ObservableAssetInfoConfig } from '@osmosis-labs/stores';
+import { getAssetFromAssetList } from '@osmosis-labs/utils';
+import { observer } from 'mobx-react-lite';
+import { GetStaticPathsResult, GetStaticProps } from 'next';
+import Image from 'next/image';
+import { useRouter } from 'next/router';
+import { NextSeo } from 'next-seo';
+import { FunctionComponent, useCallback } from 'react';
+import { useMemo } from 'react';
+import { useEffect } from 'react';
+import { useUnmount } from 'react-use';
 
-import { Icon } from "~/components/assets";
-import { Button } from "~/components/buttons";
-import LinkButton from "~/components/buttons/link-button";
-import LinkIconButton from "~/components/buttons/link-icon-button";
+import { Icon } from '~/components/assets';
+import { Button } from '~/components/buttons';
+import LinkButton from '~/components/buttons/link-button';
+import LinkIconButton from '~/components/buttons/link-icon-button';
 import TokenPairHistoricalChart, {
   ChartUnavailable,
   PriceChartHeader,
-} from "~/components/chart/token-pair-historical";
-import SkeletonLoader from "~/components/loaders/skeleton-loader";
-import Spinner from "~/components/loaders/spinner";
-import { SwapTool } from "~/components/swap-tool";
-import TokenDetails from "~/components/token-details/token-details";
-import TwitterSection from "~/components/twitter-section/twitter-section";
-import YourBalance from "~/components/your-balance/your-balance";
-import { COINGECKO_PUBLIC_URL, EventName, TWITTER_PUBLIC_URL } from "~/config";
-import { AssetLists } from "~/config/generated/asset-lists";
-import { ChainList } from "~/config/generated/chain-list";
+} from '~/components/chart/token-pair-historical';
+import SkeletonLoader from '~/components/loaders/skeleton-loader';
+import Spinner from '~/components/loaders/spinner';
+import { SwapTool } from '~/components/swap-tool';
+import TokenDetails from '~/components/token-details/token-details';
+import TwitterSection from '~/components/twitter-section/twitter-section';
+import YourBalance from '~/components/your-balance/your-balance';
+import { COINGECKO_PUBLIC_URL, EventName, TWITTER_PUBLIC_URL } from '~/config';
+import { AssetLists } from '~/config/generated/asset-lists';
+import { ChainList } from '~/config/generated/chain-list';
 import {
   useAmplitudeAnalytics,
   useCurrentLanguage,
   useTranslation,
   useWindowSize,
-} from "~/hooks";
+} from '~/hooks';
 import {
   useAssetInfoConfig,
   useFeatureFlags,
   useLocalStorageState,
   useNavBar,
-} from "~/hooks";
+} from '~/hooks';
 import {
   CoingeckoCoin,
   queryCoingeckoCoin,
-} from "~/server/queries/coingecko/coin";
+} from '~/server/queries/coingecko/coin';
 import {
   getTokenInfo,
   RichTweet,
   TokenCMSData,
   Twitter,
-} from "~/server/queries/external";
-import { ImperatorToken, queryAllTokens } from "~/server/queries/imperator";
-import { useStore } from "~/stores";
-import { SUPPORTED_LANGUAGES } from "~/stores/user-settings";
-import { getDecimalCount } from "~/utils/number";
-import { createContext } from "~/utils/react-context";
+} from '~/server/queries/external';
+import { ImperatorToken, queryAllTokens } from '~/server/queries/imperator';
+import { useStore } from '~/stores';
+import { SUPPORTED_LANGUAGES } from '~/stores/user-settings';
+import { getDecimalCount } from '~/utils/number';
+import { createContext } from '~/utils/react-context';
 
 interface AssetInfoPageProps {
   tweets: RichTweet[];
@@ -73,11 +73,11 @@ const AssetInfoPage: FunctionComponent<AssetInfoPageProps> = observer(
 
     useEffect(() => {
       if (
-        (typeof featureFlags.tokenInfo !== "undefined" &&
+        (typeof featureFlags.tokenInfo !== 'undefined' &&
           !featureFlags.tokenInfo) ||
         !tokenDenom
       ) {
-        router.push("/assets");
+        router.push('/assets');
       }
     }, [featureFlags.tokenInfo, router, tokenDenom]);
 
@@ -92,7 +92,7 @@ const AssetInfoPage: FunctionComponent<AssetInfoPageProps> = observer(
 const [AssetInfoViewProvider, useAssetInfoView] = createContext<{
   assetInfoConfig: ObservableAssetInfoConfig;
 }>({
-  name: "AssetInfoViewContext",
+  name: 'AssetInfoViewContext',
   strict: true,
 });
 
@@ -137,8 +137,8 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
               className="text-osmoverse-200"
             />
           }
-          label={t("menu.assets")}
-          ariaLabel={t("menu.assets")}
+          label={t('menu.assets')}
+          ariaLabel={t('menu.assets')}
           href="/assets"
         />
       ),
@@ -146,7 +146,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
     });
 
     useUnmount(() => {
-      if (process.env.NODE_ENV === "production") {
+      if (process.env.NODE_ENV === 'production') {
         assetInfoConfig.dispose();
       }
     });
@@ -238,8 +238,8 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
                 className="text-osmoverse-200"
               />
             }
-            label={t("menu.assets")}
-            ariaLabel={t("menu.assets")}
+            label={t('menu.assets')}
+            ariaLabel={t('menu.assets')}
             href="/assets"
           />
           <Navigation
@@ -269,7 +269,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
               <div className="xl:hidden">
                 <SwapTool
                   isInModal
-                  sendTokenDenom={denom === "USDC" ? "OSMO" : "USDC"}
+                  sendTokenDenom={denom === 'USDC' ? 'OSMO' : 'USDC'}
                   outTokenDenom={denom}
                   page="Token Info Page"
                 />
@@ -298,8 +298,8 @@ const Navigation = observer((props: NavigationProps) => {
   const { t } = useTranslation();
   const language = useCurrentLanguage();
   const [favoritesList, setFavoritesList] = useLocalStorageState(
-    "favoritesList",
-    ["OSMO", "ATOM"]
+    'favoritesList',
+    ['OSMO', 'NAAN']
   );
 
   const details = useMemo(() => {
@@ -413,10 +413,10 @@ const Navigation = observer((props: NavigationProps) => {
           <Icon
             id="star"
             className={`text-wosmongton-300 ${
-              isFavorite ? "" : "opacity-30 group-hover:opacity-100"
+              isFavorite ? '' : 'opacity-30 group-hover:opacity-100'
             } `}
           />
-          {t("tokenInfos.watchlist")}
+          {t('tokenInfos.watchlist')}
         </Button>
         {twitterUrl && (
           <LinkIconButton
@@ -425,7 +425,7 @@ const Navigation = observer((props: NavigationProps) => {
             size="md-icon-social"
             target="_blank"
             rel="external"
-            aria-label={t("tokenInfos.ariaViewOn", { name: "X" })}
+            aria-label={t('tokenInfos.ariaViewOn', { name: 'X' })}
             icon={<Icon className="h-4 w-4 text-osmoverse-400" id="X" />}
           />
         )}
@@ -436,7 +436,7 @@ const Navigation = observer((props: NavigationProps) => {
             size="md-icon-social"
             target="_blank"
             rel="external"
-            aria-label={t("tokenInfos.ariaView", { name: "website" })}
+            aria-label={t('tokenInfos.ariaView', { name: 'website' })}
             icon={<Icon className="w-h-6 h-6 text-osmoverse-400" id="web" />}
           />
         )}
@@ -447,7 +447,7 @@ const Navigation = observer((props: NavigationProps) => {
             size="md-icon-social"
             target="_blank"
             rel="external"
-            aria-label={t("tokenInfos.ariaViewOn", { name: "CoinGecko" })}
+            aria-label={t('tokenInfos.ariaViewOn', { name: 'CoinGecko' })}
             icon={
               <Icon
                 className="h-10.5 w-10.5 text-osmoverse-300"
@@ -494,7 +494,7 @@ const TokenChartHeader = observer(() => {
           setHistoricalRange={assetInfoConfig.setHistoricalRange}
           fiatSymbol={assetInfoConfig.hoverPrice?.fiatCurrency?.symbol}
           classes={{
-            priceHeaderClass: "!text-h2 !font-h2 sm:!text-h4",
+            priceHeaderClass: '!text-h2 !font-h2 sm:!text-h4',
           }}
         />
       </SkeletonLoader>
@@ -518,17 +518,17 @@ const useNumTicks = () => {
     }
 
     switch (assetInfoConfig.historicalRange) {
-      case "7d":
+      case '7d':
         ticks = isMobile ? 1 : 8;
         break;
-      case "1mo":
+      case '1mo':
         ticks = isMobile ? 2 : 6;
         break;
-      case "1d":
+      case '1d':
         ticks = isMobile ? 3 : 10;
         break;
-      case "1y":
-      case "all":
+      case '1y':
+      case 'all':
         ticks = isMobile ? 4 : 6;
         break;
     }
@@ -628,7 +628,7 @@ export const getStaticPaths = async (): Promise<GetStaticPathsResult> => {
     },
   }));
 
-  return { paths, fallback: "blocking" };
+  return { paths, fallback: 'blocking' };
 };
 
 export const getStaticProps: GetStaticProps<AssetInfoPageProps> = async ({
@@ -644,7 +644,7 @@ export const getStaticProps: GetStaticProps<AssetInfoPageProps> = async ({
     try {
       cachedTokens = await queryAllTokens();
     } catch (e) {
-      console.error("Failed to retrieved tokens from imperator api: ", e);
+      console.error('Failed to retrieved tokens from imperator api: ', e);
     }
   }
 
@@ -702,7 +702,7 @@ export const getStaticProps: GetStaticProps<AssetInfoPageProps> = async ({
       );
 
       const tokenDetails = tokenDetailsByLanguage
-        ? tokenDetailsByLanguage["en"]
+        ? tokenDetailsByLanguage['en']
         : undefined;
 
       if (tokenDetails) {
@@ -711,7 +711,7 @@ export const getStaticProps: GetStaticProps<AssetInfoPageProps> = async ({
         }
 
         if (tokenDetails.twitterURL) {
-          const userId = tokenDetails.twitterURL.split("/").pop();
+          const userId = tokenDetails.twitterURL.split('/').pop();
 
           if (userId) {
             const twitter = new Twitter();

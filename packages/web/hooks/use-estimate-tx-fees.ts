@@ -38,7 +38,7 @@ async function estimateTxFeesQueryFn({
       },
     }),
     apiUtils.edge.assets.getMarketAsset.fetch({
-      findMinDenomOrSymbol: "Naan",
+      findMinDenomOrSymbol: "Nam",
     }),
   ]);
 
