@@ -66,7 +66,7 @@
     "turbo": "^1.12.4",
     "typescript": "4.7.4",
     "whatwg-fetch": "^3.6.19",
-    "@cosmos-kit/core":"2.7.2"
+    "@cosmos-kit/core": "2.7.2"
   },
   "dependencies": {},
   "resolutions": {

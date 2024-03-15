@@ -2,7 +2,6 @@ import type {
   FiatRampKey,
   OriginBridgeInfo,
 } from "../integrations/bridge-info";
-import { AxelarSourceChainTokenConfigs } from "../integrations/bridges/axelar/axelar-source-chain-token-config";
 import { IS_TESTNET } from "./env";
 import type {
   MainnetAssetSymbols,
@@ -28,6 +27,15 @@ type AdditionalData = Partial<
   Record<MainnetAssetSymbols | TestnetAssetSymbols, AdditionalDataValue>
 >;
 
+const TestnetIBCAdditionalData: Partial<
+  Record<TestnetAssetSymbols, AdditionalDataValue>
+> = {};
+
+const MainnetIBCAdditionalData: Partial<
+  Record<MainnetAssetSymbols, AdditionalDataValue>
+> = {};
+
+/*
 const TestnetIBCAdditionalData: Partial<
   Record<TestnetAssetSymbols, AdditionalDataValue>
 > = {
@@ -576,7 +584,7 @@ const MainnetIBCAdditionalData: Partial<
     depositUrlOverride:
       "https://pro.osmosis.zone/ibc?chainFrom=aioz_168-1&chainTo=osmosis-1&token0=attoaioz&token1=ibc%2FBB0AFE2AFBD6E883690DAE4B9168EAC2B306BCC9C9292DACBB4152BBB08DB25F",
   },
-};
+}; */
 
 export const IBCAdditionalData: AdditionalData = IS_TESTNET
   ? TestnetIBCAdditionalData

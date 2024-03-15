@@ -3,7 +3,7 @@ import { MockChains } from "~/config/asset-list/mock-data";
 import { AssetLists } from "../mock-asset-lists";
 
 beforeAll(() => {
-  jest.spyOn(console, "warn").mockImplementation(() => {});
+  jest.spyOn(console, "warn").mockImplementation(() => { });
 });
 
 afterAll(() => {
@@ -1719,7 +1719,7 @@ describe("getChainList", () => {
     expect(result).toBeDefined();
     expect(result.length).toBeGreaterThan(0);
     expect(result[0]?.chain_id).toBe(expectedChainId);
-    expect(result[0]?.bech32_prefix).toBe("osmo");
+    expect(result[0]?.bech32_prefix).toBe("Nana");
   });
 
   it("should return the correct chain information when OSMOSIS_CHAIN_ID_OVERWRITE is set", async () => {

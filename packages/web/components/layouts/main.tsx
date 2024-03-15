@@ -1,15 +1,13 @@
-import classNames from "classnames";
-import { observer } from "mobx-react-lite";
-import { useRouter } from "next/router";
-import React, { FunctionComponent } from "react";
+import classNames from 'classnames';
+import { observer } from 'mobx-react-lite';
+import { useRouter } from 'next/router';
+import React, { FunctionComponent } from 'react';
 
-import IconButton from "~/components/buttons/icon-button";
-import { MainMenu } from "~/components/main-menu";
-import { NavBar } from "~/components/navbar";
-import NavbarOsmoPrice from "~/components/navbar-osmo-price";
-import NavbarOsmosisUpdates from "~/components/navbar-osmosis-update";
-import { MainLayoutMenu } from "~/components/types";
-import { useCurrentLanguage, useWindowSize } from "~/hooks";
+import IconButton from '~/components/buttons/icon-button';
+import { MainMenu } from '~/components/main-menu';
+import { NavBar } from '~/components/navbar';
+import { MainLayoutMenu } from '~/components/types';
+import { useCurrentLanguage, useWindowSize } from '~/hooks';
 
 export const MainLayout: FunctionComponent<{
   menus: MainLayoutMenu[];
@@ -33,30 +31,30 @@ export const MainLayout: FunctionComponent<{
     <React.Fragment>
       {showFixedLogo && (
         <div className="fixed z-50 w-sidebar px-5 pt-6">
-          <OsmosisFullLogo onClick={() => router.push("/")} />
+          <OsmosisFullLogo onClick={() => router.push('/')} />
         </div>
       )}
       <article className="fixed inset-y-0 z-40 flex w-sidebar flex-col bg-osmoverse-850 px-2 py-6 md:hidden">
         {showBlockLogo && (
           <div className="z-50 mx-auto ml-3 w-sidebar grow-0">
-            <OsmosisFullLogo onClick={() => router.push("/")} />
+            <OsmosisFullLogo onClick={() => router.push('/')} />
           </div>
         )}
         <MainMenu
-          className={classNames(showBlockLogo && "!mt-8")}
+          className={classNames(showBlockLogo && '!mt-8')}
           menus={menus}
           secondaryMenuItems={secondaryMenuItems}
         />
-        <div className="flex flex-1 flex-col justify-end gap-5">
+        {/* <div className="flex flex-1 flex-col justify-end gap-5">
           <div className="px-2">
             <NavbarOsmosisUpdates />
           </div>
           <NavbarOsmoPrice />
-        </div>
+        </div> */}
       </article>
       <NavBar
         className="ml-sidebar md:ml-0"
-        title={selectedMenuItem?.label ?? ""}
+        title={selectedMenuItem?.label ?? ''}
         menus={menus}
         secondaryMenuItems={secondaryMenuItems}
       />

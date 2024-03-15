@@ -1328,7 +1328,7 @@ export const AssetLists: AssetList[] = [
         categories: ["defi"],
         transferMethods: [],
         counterparty: [],
-        name: "Osmosis",
+        name: "Namada",
         description:
           "The native token of Namada ",
         verified: true,

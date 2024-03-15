@@ -22,7 +22,6 @@ import path from "path";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as prettier from "prettier";
 
-import { AssetLists } from "~/config/asset-list/mock-asset-lists";
 import {
   ASSET_LIST_COMMIT_HASH,
   GITHUB_API_TOKEN,
@@ -47,7 +46,7 @@ interface ResponseAssetList {
   assets: Omit<Asset, "chain_id">[];
 }
 
-const repo = "osmosis-labs/assetlists";
+const repo = "kalmiallc/namada-assets";
 
 function getFilePath({
   chainId,
@@ -85,11 +84,10 @@ async function generateChainListFile({
   overwriteFile: boolean;
 }) {
 
-  const namedaChain = chainList.chains.find((chain) => chain.chain_name === "namada-shielded");
+
 
   const allAvailableChains: Pick<Chain, "chain_id" | "chain_name">[] = [
     ...chainList.chains,
-    ...namedaChain ? [namedaChain] : [],
     ...(OSMOSIS_CHAIN_ID_OVERWRITE && OSMOSIS_CHAIN_NAME_OVERWRITE
       ? [
         {
@@ -224,6 +222,15 @@ async function generateAssetListFile({
   const osmosisChainId = getOsmosisChainId(environment);
 
   const assetLists = assetList.assets.reduce<AssetList[]>((acc, asset) => {
+
+    if (asset.symbol === "Naan") {
+      const chain = chains.find((chain) => chain.chain_id === 'shielded-expedition.88f17d1d14');
+      if (!chain) {
+        throw new Error("Failed to find chain namada-shielded");
+      }
+      return createOrAddToAssetList(acc, chain, asset, environment);
+    }
+
     /** If there are no traces, assume it's an Osmosis asset */
     if (asset.transferMethods.length === 0) {
       const chain = chains.find((chain) => chain.chain_id === osmosisChainId);
@@ -260,20 +267,6 @@ async function generateAssetListFile({
 
     return createOrAddToAssetList(acc, chain, asset, environment);
   }, [] as AssetList[]);
-
-  // add namada to asset list
-  const namadaChain = chains.find((chain) => chain.chain_name === "namada-shielded");
-  if (namadaChain) {
-    const namadaAsset = AssetLists.find((assetList) => assetList.chain_name === "namada-shielded");
-    if (namadaAsset) {
-      assetLists.push({
-        chain_name: namadaChain.chain_name,
-        chain_id: namadaChain.chain_id,
-        assets: namadaAsset.assets
-      });
-    }
-  }
-
 
 
   let content: string = "";
@@ -434,6 +427,21 @@ async function main() {
   /**
    * If testnet, generate testnet asset list first to avoid overwriting the mainnet types.
    */
+  // add namada to asset list
+
+  /* const namadaAsset = AssetLists.find((assetList) => assetList.chain_name === "namada-shielded");
+  if (namadaAsset) {
+    testnetResponseAssetList.assets.unshift(namadaAsset.assets[0]);
+    mainnetResponseAssetList.assets.unshift(namadaAsset.assets[0]);
+  }
+  const namedaChain = MockChains.find((chain) => chain.chain_name === "namada-shielded");
+  if (namedaChain) {
+    testnetChainList.chains.unshift(namedaChain);
+    mainnetChainList.chains.unshift(namedaChain);
+  } */
+
+
+
   if (IS_TESTNET) {
     testnetAssetLists = await generateAssetListFile({
       chains: testnetChainList.chains,
@@ -472,6 +480,9 @@ async function main() {
   /**
    * If testnet, generate testnet chain list first to avoid overwriting the mainnet types.
    */
+
+
+
   if (IS_TESTNET) {
     await generateChainListFile({
       assetLists: testnetAssetLists,

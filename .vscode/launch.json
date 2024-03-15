@@ -1,13 +1,34 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "Next.js Node Debug",
-            "runtimeExecutable": "${workspaceFolder}/node_modules/next/dist/bin/next",
-            "cwd": "${workspaceFolder}/packages/web",
-            "console": "integratedTerminal"
-        }
-    ]
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Run generate assets",
+      "runtimeExecutable": "yarn",
+      "runtimeVersion": "18",
+      "runtimeArgs": [
+        "dotenv",
+        "-c",
+        "--",
+        "tsx",
+        "config/asset-list/generate-asset-lists.ts"
+      ],
+      "env": {
+        "NEXT_PUBLIC_IS_TESTNET": "true"
+      },
+      "sourceMaps": true,
+      "cwd": "${workspaceFolder}/packages/web",
+      "protocol": "inspector",
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Next.js Node Debug",
+      "runtimeExecutable": "${workspaceFolder}/node_modules/next/dist/bin/next",
+      "cwd": "${workspaceFolder}/packages/web",
+      "console": "integratedTerminal"
+    }
+  ]
 }

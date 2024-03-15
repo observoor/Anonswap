@@ -5,5 +5,5 @@ import { z } from "zod";
 
 export type UserOsmoAddress = z.infer<typeof UserOsmoAddressSchema>;
 export const UserOsmoAddressSchema = z.object({
-  userOsmoAddress: z.string().startsWith("osmo").optional(),
+  userOsmoAddress: z.string(),
 });

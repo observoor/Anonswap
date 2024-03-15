@@ -42,7 +42,7 @@ export interface AxelarBridgeConfig {
 export const AxelarChainIds_SourceChainMap: {
   [axelarChainIds: string]: SourceChain;
 } = IS_TESTNET
-  ? {
+    ? {
       aurora: "Aurora Testnet",
       Avalanche: "Avalanche Fuji Testnet",
       binance: "BSC Testnet",
@@ -52,7 +52,7 @@ export const AxelarChainIds_SourceChainMap: {
       Polygon: "Mumbai",
       filecoin: "Filecoin Hyperspace",
     }
-  : {
+    : {
       Avalanche: "Avalanche",
       binance: "Binance Smart Chain",
       Ethereum: "Ethereum",
@@ -66,13 +66,13 @@ export const AxelarChainIds_SourceChainMap: {
 const TestnetCosmosChainIds_AxelarChainIds: Partial<
   Record<TestnetChainIds, string>
 > = {
-  "osmo-test-5": "osmosis-7",
+  "shielded-expedition.88f17d1d14": "namada-shielded",
 };
 
 const MainnetCosmosChainIds_AxelarChainIds: Partial<
   Record<MainnetChainIds, string>
 > = {
-  "osmosis-1": "osmosis",
+  "shielded-expedition.88f17d1d14": "namada-shielded",
 };
 
 /**
@@ -81,8 +81,8 @@ const MainnetCosmosChainIds_AxelarChainIds: Partial<
 export const CosmosChainIds_AxelarChainIds: Partial<
   Record<MainnetChainIds | TestnetChainIds, string>
 > = IS_TESTNET
-  ? TestnetCosmosChainIds_AxelarChainIds
-  : MainnetCosmosChainIds_AxelarChainIds;
+    ? TestnetCosmosChainIds_AxelarChainIds
+    : MainnetCosmosChainIds_AxelarChainIds;
 
 export type SourceChainTokenConfig = {
   /** Source Chain identifier. */

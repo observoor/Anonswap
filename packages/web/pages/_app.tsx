@@ -1,59 +1,59 @@
-import "../styles/globals.css"; // eslint-disable-line no-restricted-imports
-import "react-toastify/dist/ReactToastify.css"; // some styles overridden in globals.css
-import "~/utils/superjson";
+import '../styles/globals.css'; // eslint-disable-line no-restricted-imports
+import 'react-toastify/dist/ReactToastify.css'; // some styles overridden in globals.css
+import '~/utils/superjson';
 
-import { apiClient } from "@osmosis-labs/utils";
-import { useQuery } from "@tanstack/react-query";
-import dayjs from "dayjs";
-import advancedFormat from "dayjs/plugin/advancedFormat";
-import duration from "dayjs/plugin/duration";
-import isBetween from "dayjs/plugin/isBetween";
-import relativeTime from "dayjs/plugin/relativeTime";
-import updateLocale from "dayjs/plugin/updateLocale";
-import utc from "dayjs/plugin/utc";
-import { ProviderConfig, withLDProvider } from "launchdarkly-react-client-sdk";
-import { enableStaticRendering, observer } from "mobx-react-lite";
-import type { AppProps } from "next/app";
-import Image from "next/image";
-import { useRouter } from "next/router";
-import { ComponentType, useMemo } from "react";
-import { FunctionComponent } from "react";
-import { ReactNode } from "react";
-import { useEffect } from "react";
-import { Bounce, ToastContainer } from "react-toastify";
+import { apiClient } from '@osmosis-labs/utils';
+import { useQuery } from '@tanstack/react-query';
+import dayjs from 'dayjs';
+import advancedFormat from 'dayjs/plugin/advancedFormat';
+import duration from 'dayjs/plugin/duration';
+import isBetween from 'dayjs/plugin/isBetween';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import updateLocale from 'dayjs/plugin/updateLocale';
+import utc from 'dayjs/plugin/utc';
+import { ProviderConfig, withLDProvider } from 'launchdarkly-react-client-sdk';
+import { enableStaticRendering, observer } from 'mobx-react-lite';
+import type { AppProps } from 'next/app';
+import Image from 'next/image';
+import { useRouter } from 'next/router';
+import { ComponentType, useMemo } from 'react';
+import { FunctionComponent } from 'react';
+import { ReactNode } from 'react';
+import { useEffect } from 'react';
+import { Bounce, ToastContainer } from 'react-toastify';
 
-import { Icon } from "~/components/assets";
-import ErrorBoundary from "~/components/error/error-boundary";
-import ErrorFallback from "~/components/error/error-fallback";
-import { Pill } from "~/components/indicators/pill";
-import { MainLayout } from "~/components/layouts";
-import { MainLayoutMenu } from "~/components/types";
-import { AmplitudeEvent, EventName } from "~/config";
+import { Icon } from '~/components/assets';
+import ErrorBoundary from '~/components/error/error-boundary';
+import ErrorFallback from '~/components/error/error-fallback';
+import { Pill } from '~/components/indicators/pill';
+import { MainLayout } from '~/components/layouts';
+import { MainLayoutMenu } from '~/components/types';
+import { AmplitudeEvent, EventName } from '~/config';
 import {
   MultiLanguageProvider,
   useDisclosure,
   useLocalStorageState,
   useTranslation,
-} from "~/hooks";
-import { BridgeProvider } from "~/hooks/bridge";
-import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
-import { useFeatureFlags } from "~/hooks/use-feature-flags";
-import { useNewApps } from "~/hooks/use-new-apps";
-import { WalletSelectProvider } from "~/hooks/wallet-select";
-import { ExternalLinkModal, handleExternalLink } from "~/modals";
-import DefaultSeo from "~/next-seo.config";
-import MarginIcon from "~/public/icons/margin-icon.svg";
-import PerpsIcon from "~/public/icons/perps-icon.svg";
-import { api } from "~/utils/trpc";
+} from '~/hooks';
+import { BridgeProvider } from '~/hooks/bridge';
+import { useAmplitudeAnalytics } from '~/hooks/use-amplitude-analytics';
+import { useFeatureFlags } from '~/hooks/use-feature-flags';
+import { useNewApps } from '~/hooks/use-new-apps';
+import { WalletSelectProvider } from '~/hooks/wallet-select';
+import { ExternalLinkModal, handleExternalLink } from '~/modals';
+import DefaultSeo from '~/next-seo.config';
+import MarginIcon from '~/public/icons/margin-icon.svg';
+import PerpsIcon from '~/public/icons/perps-icon.svg';
+import { api } from '~/utils/trpc';
 
 // Note: for some reason, the above two icons were displaying black backgrounds when using sprite SVG.
-import dayjsLocaleEs from "../localizations/dayjs-locale-es.js";
-import dayjsLocaleKo from "../localizations/dayjs-locale-ko.js";
-import en from "../localizations/en.json";
-import LevanaLogo from "../public/logos/levana-logo.png";
-import MarsLogo from "../public/logos/mars-logo.png";
-import { StoreProvider, useStore } from "../stores";
-import { IbcNotifier } from "../stores/ibc-notifier";
+import dayjsLocaleEs from '../localizations/dayjs-locale-es.js';
+import dayjsLocaleKo from '../localizations/dayjs-locale-ko.js';
+import en from '../localizations/en.json';
+import LevanaLogo from '../public/logos/levana-logo.png';
+import MarsLogo from '../public/logos/mars-logo.png';
+import { StoreProvider, useStore } from '../stores';
+import { IbcNotifier } from '../stores/ibc-notifier';
 
 dayjs.extend(relativeTime);
 dayjs.extend(advancedFormat);
@@ -61,11 +61,11 @@ dayjs.extend(duration);
 dayjs.extend(utc);
 dayjs.extend(updateLocale);
 dayjs.extend(isBetween);
-dayjs.updateLocale("es", dayjsLocaleEs);
-dayjs.updateLocale("ko", dayjsLocaleKo);
-enableStaticRendering(typeof window === "undefined");
+dayjs.updateLocale('es', dayjsLocaleEs);
+dayjs.updateLocale('ko', dayjsLocaleKo);
+enableStaticRendering(typeof window === 'undefined');
 
-const DEFAULT_LANGUAGE = "en";
+const DEFAULT_LANGUAGE = 'en';
 
 function MyApp({ Component, pageProps }: AppProps) {
   useAmplitudeAnalytics({ init: true });
@@ -82,7 +82,7 @@ function MyApp({ Component, pageProps }: AppProps) {
             <IbcNotifier />
             <ToastContainer
               toastStyle={{
-                backgroundColor: "#2d2755",
+                backgroundColor: '#2d2755',
               }}
               transition={Bounce}
             />
@@ -109,9 +109,9 @@ const MainLayoutWrapper: FunctionComponent<{
   const { t } = useTranslation();
   const flags = useFeatureFlags();
   const { data: levanaGeoblock, error } = useQuery(
-    ["levana-geoblocked"],
+    ['levana-geoblocked'],
     () =>
-      apiClient<LevanaGeoBlockedResponse>("https://geoblocked.levana.finance/"),
+      apiClient<LevanaGeoBlockedResponse>('https://geoblocked.levana.finance/'),
     {
       staleTime: Infinity,
       cacheTime: Infinity,
@@ -143,11 +143,11 @@ const MainLayoutWrapper: FunctionComponent<{
     if (levanaGeoblock?.allowed) {
       conditionalMenuItems.push(
         {
-          label: t("menu.margin"),
+          label: t('menu.margin'),
           link: (e) => {
             e.preventDefault();
             handleExternalLink({
-              url: "https://osmosis.marsprotocol.io/",
+              url: 'https://osmosis.marsprotocol.io/',
               openModal: onOpenLeavingOsmosisToMars,
             });
           },
@@ -158,14 +158,14 @@ const MainLayoutWrapper: FunctionComponent<{
           secondaryLogo: (
             <Image src={MarsLogo} width={20} height={20} alt="mars logo" />
           ),
-          subtext: t("menu.marsSubtext"),
+          subtext: t('menu.marsSubtext'),
         },
         {
-          label: t("menu.perpetuals"),
+          label: t('menu.perpetuals'),
           link: (e) => {
             e.preventDefault();
             handleExternalLink({
-              url: "https://trade.levana.finance/osmosis/trade/ATOM_USD?utm_source=Osmosis&utm_medium=SideBar&utm_campaign=Perpetuals",
+              url: 'https://trade.levana.finance/osmosis/trade/ATOM_USD?utm_source=Osmosis&utm_medium=SideBar&utm_campaign=Perpetuals',
               openModal: onOpenLeavingOsmosisToLevana,
             });
           },
@@ -176,34 +176,34 @@ const MainLayoutWrapper: FunctionComponent<{
           secondaryLogo: (
             <Image src={LevanaLogo} width={20} height={20} alt="mars logo" />
           ),
-          subtext: t("menu.levanaSubtext"),
+          subtext: t('menu.levanaSubtext'),
         }
       );
     }
 
     let menuItems: (MainLayoutMenu | null)[] = [
       {
-        label: t("menu.swap"),
-        link: "/",
+        label: t('menu.swap'),
+        link: '/',
         icon: <Icon id="trade" className="h-5 w-5" />,
         selectionTest: /\/$/,
       },
       flags.earnPage
         ? {
-            label: t("earnPage.title"),
-            link: "/earn",
+            label: t('earnPage.title'),
+            link: '/earn',
             isNew: true,
             icon: <Icon id="trade" className="h-5 w-5" />,
             selectionTest: /\/earn/,
           }
         : null,
       {
-        label: t("menu.assets"),
-        link: "/assets",
+        label: t('menu.assets'),
+        link: '/assets',
         icon: <Icon id="assets-pie-chart" className="h-5 w-5" />,
         selectionTest: /\/assets/,
       },
-      flags.staking
+      /* flags.staking
         ? {
             label: t("menu.stake"),
             link: "/stake",
@@ -238,7 +238,7 @@ const MainLayoutWrapper: FunctionComponent<{
         icon: <Icon id="dots-three-vertical" className="h-5 w-5" />,
         link: "/",
         showMore: true,
-      },
+      },*/
     ];
 
     return menuItems.filter(Boolean) as MainLayoutMenu[];
@@ -255,28 +255,28 @@ const MainLayoutWrapper: FunctionComponent<{
 
   const secondaryMenuItems: MainLayoutMenu[] = [
     {
-      label: t("menu.help"),
-      link: "https://support.osmosis.zone/",
+      label: t('menu.help'),
+      link: 'https://support.osmosis.zone/',
       icon: <Icon id="help-circle" className="h-5 w-5" />,
       amplitudeEvent: [EventName.Sidebar.supportClicked] as AmplitudeEvent,
     },
     {
-      label: t("menu.vote"),
+      label: t('menu.vote'),
       link:
         osmosisWallet?.walletInfo?.governanceUrl ??
-        "https://wallet.keplr.app/chains/osmosis?tab=governance",
+        'https://wallet.keplr.app/chains/osmosis?tab=governance',
       icon: <Icon id="vote" className="h-5 w-5" />,
       amplitudeEvent: [EventName.Sidebar.voteClicked] as AmplitudeEvent,
     },
     {
-      label: t("menu.info"),
-      link: "https://www.datalenses.zone/chain/osmosis/overview",
+      label: t('menu.info'),
+      link: 'https://www.datalenses.zone/chain/osmosis/overview',
       icon: <Icon id="chart" className="h-5 w-5" />,
       amplitudeEvent: [EventName.Sidebar.infoClicked] as AmplitudeEvent,
     },
     {
-      label: t("menu.featureRequests"),
-      link: "https://forum.osmosis.zone/c/site-feedback/2",
+      label: t('menu.featureRequests'),
+      link: 'https://forum.osmosis.zone/c/site-feedback/2',
       icon: <Icon id="gift" className="h-5 w-5" />,
     },
   ];
@@ -308,7 +308,7 @@ export const AppsBadge: FunctionComponent<{ appsLink: string }> = observer(
     const router = useRouter();
     const [viewedAppTitles, setViewedAppTitles] = useLocalStorageState<
       string[]
-    >("viewed-apps", []);
+    >('viewed-apps', []);
 
     /**
      * Update the viewed app titles when the user navigates to the apps page.
@@ -345,7 +345,7 @@ export const AppsBadge: FunctionComponent<{ appsLink: string }> = observer(
 );
 
 const ldAnonymousContext = {
-  key: "SHARED-CONTEXT-KEY",
+  key: 'SHARED-CONTEXT-KEY',
   anonymous: true,
 };
 
@@ -354,12 +354,12 @@ const myID = process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID;
 const isClientIdValid = Boolean(myID);
 
 const ldConfig: ProviderConfig = {
-  clientSideID: process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID || "",
+  clientSideID: process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID || '',
   user: {
     anonymous: true,
   },
   options: {
-    bootstrap: "localStorage",
+    bootstrap: 'localStorage',
   },
   context: ldAnonymousContext,
 };

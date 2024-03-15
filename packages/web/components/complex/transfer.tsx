@@ -1,33 +1,33 @@
-import { Bech32Address } from "@keplr-wallet/cosmos";
-import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
-import classNames from "classnames";
-import { observer } from "mobx-react-lite";
-import Image from "next/image";
-import { FunctionComponent } from "react";
-import { ReactNode } from "react";
-import { useRef, useState } from "react";
-import { useClickAway } from "react-use";
+import { Bech32Address } from '@keplr-wallet/cosmos';
+import { CoinPretty, PricePretty, RatePretty } from '@keplr-wallet/unit';
+import classNames from 'classnames';
+import { observer } from 'mobx-react-lite';
+import Image from 'next/image';
+import { FunctionComponent } from 'react';
+import { ReactNode } from 'react';
+import { useRef, useState } from 'react';
+import { useClickAway } from 'react-use';
 
-import { Icon } from "~/components/assets";
-import { GradientView } from "~/components/assets/gradient-view";
-import { Button } from "~/components/buttons";
-import IconButton from "~/components/buttons/icon-button";
-import { SwitchWalletButton } from "~/components/buttons/switch-wallet";
-import { BridgeFromToNetwork } from "~/components/complex/bridge-from-to-network";
-import { MenuDropdown, MenuToggle } from "~/components/control";
-import { InputBox } from "~/components/input";
-import SkeletonLoader from "~/components/loaders/skeleton-loader";
-import { Tooltip } from "~/components/tooltip";
-import { Disableable, InputProps } from "~/components/types";
-import { Checkbox } from "~/components/ui/checkbox";
-import { useTranslation } from "~/hooks";
-import { useWindowSize } from "~/hooks";
-import { truncateEthAddress } from "~/integrations/ethereum/metamask-utils";
-import { WalletDisplay } from "~/integrations/wallets";
-import { useStore } from "~/stores";
-import { formatICNSName } from "~/utils/string";
+import { Icon } from '~/components/assets';
+import { GradientView } from '~/components/assets/gradient-view';
+import { Button } from '~/components/buttons';
+import IconButton from '~/components/buttons/icon-button';
+import { SwitchWalletButton } from '~/components/buttons/switch-wallet';
+import { BridgeFromToNetwork } from '~/components/complex/bridge-from-to-network';
+import { MenuDropdown, MenuToggle } from '~/components/control';
+import { InputBox } from '~/components/input';
+import SkeletonLoader from '~/components/loaders/skeleton-loader';
+import { Tooltip } from '~/components/tooltip';
+import { Disableable, InputProps } from '~/components/types';
+import { Checkbox } from '~/components/ui/checkbox';
+import { useTranslation } from '~/hooks';
+import { useWindowSize } from '~/hooks';
+import { truncateEthAddress } from '~/integrations/ethereum/metamask-utils';
+import { WalletDisplay } from '~/integrations/wallets';
+import { useStore } from '~/stores';
+import { formatICNSName } from '~/utils/string';
 
-type PathSource = "counterpartyAccount" | "account";
+type PathSource = 'counterpartyAccount' | 'account';
 
 export type BaseBridgeProviderOption = {
   id: string;
@@ -43,7 +43,7 @@ interface ChangeAddressConfig {
   setDidAckWithdrawRisk: (did: boolean) => void;
   inputPlaceholder?: string;
 }
-type ClassKeys = "expectedOutputValue" | "priceImpactValue";
+type ClassKeys = 'expectedOutputValue' | 'priceImpactValue';
 
 export type TransferProps<
   BridgeProviderOption extends BaseBridgeProviderOption
@@ -141,7 +141,7 @@ export const Transfer = observer(
     const maxFromChars =
       isEditingWithdrawAddr || isAddingWithdrawAddr
         ? 13 // can't be on mobile
-        : !from.address.startsWith("osmo") && selectedWalletDisplay
+        : !from.address.startsWith('osmo') && selectedWalletDisplay
         ? isMobile
           ? 13
           : 18 // more space for switch wallet button
@@ -149,7 +149,7 @@ export const Transfer = observer(
         ? 14
         : 24;
     const maxToChars =
-      (!to.address.startsWith("osmo") && selectedWalletDisplay) || // make room for btns
+      (!to.address.startsWith('osmo') && selectedWalletDisplay) || // make room for btns
       editWithdrawAddrConfig ||
       addWithdrawAddrConfig
         ? isMobile
@@ -160,11 +160,11 @@ export const Transfer = observer(
         : 24;
 
     let toAddressToDisplay: string;
-    if (editWithdrawAddrConfig && editWithdrawAddrConfig.customAddress !== "") {
+    if (editWithdrawAddrConfig && editWithdrawAddrConfig.customAddress !== '') {
       toAddressToDisplay = editWithdrawAddrConfig.customAddress;
     } else if (
       addWithdrawAddrConfig &&
-      addWithdrawAddrConfig.customAddress !== ""
+      addWithdrawAddrConfig.customAddress !== ''
     ) {
       toAddressToDisplay = addWithdrawAddrConfig.customAddress;
     } else {
@@ -182,7 +182,7 @@ export const Transfer = observer(
 
     const isSwitchWalletVisibleForTo =
       to.address.length > 0 &&
-      !to.address.startsWith("osmo") &&
+      !to.address.startsWith('osmo') &&
       !isEditingWithdrawAddr &&
       selectedWalletDisplay;
 
@@ -196,13 +196,13 @@ export const Transfer = observer(
       isWithdraw && addWithdrawAddrConfig && !disabled && !isAddingWithdrawAddr;
 
     let displayFromAddress: ReactNode | undefined;
-    if (!from.address.startsWith("0x") || from.address.length === 0) {
+    if (!from.address.startsWith('0x') || from.address.length === 0) {
       if (isOsmosisAccountLoaded) {
         displayFromAddress =
           fromAddressIcnsName ??
           Bech32Address.shortenAddress(from.address, maxFromChars);
       } else {
-        displayFromAddress = <i>{t("connectWallet")}</i>;
+        displayFromAddress = <i>{t('connectWallet')}</i>;
       }
     } else {
       displayFromAddress = truncateEthAddress(from.address);
@@ -210,7 +210,7 @@ export const Transfer = observer(
 
     let displayToAddress: ReactNode | undefined;
     if (!isEditingWithdrawAddr && !disabled && !isAddingWithdrawAddr) {
-      if (!to.address.startsWith("0x") || to.address.length === 0) {
+      if (!to.address.startsWith('0x') || to.address.length === 0) {
         if (isOsmosisAccountLoaded) {
           displayToAddress = (
             <span title={toAddressToDisplay}>
@@ -219,7 +219,7 @@ export const Transfer = observer(
             </span>
           );
         } else {
-          displayToAddress = <i>{t("connectWallet")}</i>;
+          displayToAddress = <i>{t('connectWallet')}</i>;
         }
       } else {
         displayToAddress = truncateEthAddress(to.address);
@@ -228,9 +228,9 @@ export const Transfer = observer(
 
     return (
       <div
-        className={classNames("flex flex-col gap-11 overflow-x-auto md:gap-4", {
-          "pt-2": toggleUseWrappedConfig,
-          "pt-8": !toggleUseWrappedConfig,
+        className={classNames('flex flex-col gap-11 overflow-x-auto md:gap-4', {
+          'pt-2': toggleUseWrappedConfig,
+          'pt-8': !toggleUseWrappedConfig,
         })}
       >
         {toggleUseWrappedConfig && (
@@ -272,9 +272,9 @@ export const Transfer = observer(
             {/* From Address */}
             <div
               className={classNames(
-                "md flex w-full rounded-2xl border border-white-faint py-2.5 text-center transition-width",
+                'md flex w-full rounded-2xl border border-white-faint py-2.5 text-center transition-width',
                 {
-                  "w-1/4 text-osmoverse-400/30": isEditingWithdrawAddr,
+                  'w-1/4 text-osmoverse-400/30': isEditingWithdrawAddr,
                   hidden: isAddingWithdrawAddr,
                 }
               )}
@@ -286,7 +286,7 @@ export const Transfer = observer(
                 >
                   {displayFromAddress}
                   {from.address.length > 0 &&
-                    !from.address.startsWith("osmo") &&
+                    !from.address.startsWith('Naan') &&
                     selectedWalletDisplay && (
                       <SwitchWalletButton
                         selectedWalletIconUrl={selectedWalletDisplay.iconUrl}
@@ -301,26 +301,26 @@ export const Transfer = observer(
             {/* To Address */}
             <div
               className={classNames(
-                "flex w-full rounded-2xl border border-white-faint py-2.5 text-center transition-width",
+                'flex w-full rounded-2xl border border-white-faint py-2.5 text-center transition-width',
                 {
-                  "w-3/4": isEditingWithdrawAddr,
+                  'w-3/4': isEditingWithdrawAddr,
                 }
               )}
             >
               <div
                 className={classNames(
-                  "md:caption mx-auto flex flex-nowrap items-center justify-center gap-2 sm:flex-wrap",
+                  'md:caption mx-auto flex flex-nowrap items-center justify-center gap-2 sm:flex-wrap',
                   {
-                    "w-full px-3": isAddingWithdrawAddr,
+                    'w-full px-3': isAddingWithdrawAddr,
                   }
                 )}
               >
                 {displayToAddress}
                 <div
                   className={classNames(
-                    "flex items-center gap-2",
+                    'flex items-center gap-2',
                     (isEditingWithdrawAddr || isAddingWithdrawAddr) &&
-                      "w-full flex-col"
+                      'w-full flex-col'
                   )}
                 >
                   {/* To avoid overflowing, display menu dropdown when edit and switch wallet are visible. */}
@@ -345,7 +345,7 @@ export const Transfer = observer(
                         isOpen={isOptionsDropdownOpen}
                         options={[
                           {
-                            id: "switch-wallet",
+                            id: 'switch-wallet',
                             display: (
                               <div className="flex gap-2 whitespace-nowrap">
                                 <div className="mt-[2px] h-[16px] w-[16px]">
@@ -361,18 +361,18 @@ export const Transfer = observer(
                             ),
                           },
                           {
-                            id: "edit-address",
-                            display: "Edit address",
+                            id: 'edit-address',
+                            display: 'Edit address',
                           },
                         ]}
                         onSelect={(id) => {
                           setIsOptionsDropdownOpen(false);
 
-                          if (id === "switch-wallet") {
+                          if (id === 'switch-wallet') {
                             onRequestSwitchWallet?.(to.source);
                           }
 
-                          if (id === "edit-address") {
+                          if (id === 'edit-address') {
                             setIsEditingWithdrawAddr(true);
                             editWithdrawAddrConfig.setCustomAddress(to.address);
                           }
@@ -390,9 +390,9 @@ export const Transfer = observer(
                             addWithdrawAddrConfig.setCustomAddress(to.address);
                           }}
                         >
-                          {addWithdrawAddrConfig.customAddress !== ""
-                            ? t("assets.ibcTransfer.buttonEdit")
-                            : t("assets.ibcTransfer.buttonAdd")}
+                          {addWithdrawAddrConfig.customAddress !== ''
+                            ? t('assets.ibcTransfer.buttonEdit')
+                            : t('assets.ibcTransfer.buttonAdd')}
                         </Button>
                       )}
                       {isSwitchWalletVisibleForTo ? (
@@ -410,7 +410,7 @@ export const Transfer = observer(
                             editWithdrawAddrConfig.setCustomAddress(to.address);
                           }}
                         >
-                          {t("assets.ibcTransfer.buttonEdit")}
+                          {t('assets.ibcTransfer.buttonEdit')}
                         </Button>
                       )}
                     </>
@@ -436,30 +436,30 @@ export const Transfer = observer(
 
         <div
           className={classNames(
-            "flex flex-col gap-4 transition-opacity duration-300",
-            { "opacity-30": disabled }
+            'flex flex-col gap-4 transition-opacity duration-300',
+            { 'opacity-30': disabled }
           )}
         >
           <div className="flex flex-col gap-3">
             <div className="flex place-content-between items-baseline">
               {isMobile ? (
                 <span className="subtitle1">
-                  {t("assets.ibcTransfer.selectAmount")}
+                  {t('assets.ibcTransfer.selectAmount')}
                 </span>
               ) : (
-                <h6>{t("assets.ibcTransfer.selectAmount")}</h6>
+                <h6>{t('assets.ibcTransfer.selectAmount')}</h6>
               )}
               <div
                 className={classNames(
-                  "caption text-xs text-white-high transition-opacity",
-                  availableBalance ? "opacity-100" : "opacity-0"
+                  'caption text-xs text-white-high transition-opacity',
+                  availableBalance ? 'opacity-100' : 'opacity-0'
                 )}
               >
                 {isMobile
-                  ? t("assets.transfer.availableMobile")
-                  : t("assets.transfer.availableOn", {
+                  ? t('assets.transfer.availableMobile')
+                  : t('assets.transfer.availableOn', {
                       network: from.networkName,
-                    })}{" "}
+                    })}{' '}
                 <button
                   className="cursor-pointer text-wosmongton-100 disabled:cursor-default"
                   disabled={availableBalance?.toDec().isZero()}
@@ -483,13 +483,13 @@ export const Transfer = observer(
             {expectedOutput && (
               <div
                 className={
-                  "flex place-content-between items-center text-subtitle1 font-subtitle1 text-osmoverse-100"
+                  'flex place-content-between items-center text-subtitle1 font-subtitle1 text-osmoverse-100'
                 }
               >
                 <span className="inline">
-                  {t("assets.transfer.expectedOutput")}
+                  {t('assets.transfer.expectedOutput')}
                   <Tooltip
-                    content={t("assets.transfer.expectedOutputInfo")}
+                    content={t('assets.transfer.expectedOutputInfo')}
                     className="!inline"
                   >
                     <Icon
@@ -502,16 +502,16 @@ export const Transfer = observer(
                 </span>
                 <SkeletonLoader
                   className={classNames(
-                    "min-w-[8rem] text-right",
+                    'min-w-[8rem] text-right',
                     classes?.expectedOutputValue
                   )}
                   isLoaded={!isLoadingDetails}
                 >
                   <span>
-                    {typeof expectedOutput === "string"
+                    {typeof expectedOutput === 'string'
                       ? expectedOutput
-                      : expectedOutput!.trim(true).toString()}{" "}
-                  </span>{" "}
+                      : expectedOutput!.trim(true).toString()}{' '}
+                  </span>{' '}
                   <span>
                     {expectedOutputFiat
                       ? `(${expectedOutputFiat.toString()})`
@@ -522,7 +522,7 @@ export const Transfer = observer(
             )}
 
             <div className="flex place-content-between items-center">
-              <span>{t("assets.ibcTransfer.estimatedTime")}</span>
+              <span>{t('assets.ibcTransfer.estimatedTime')}</span>
               <SkeletonLoader
                 className="min-w-[4rem] text-right"
                 isLoaded={!isLoadingDetails}
@@ -533,27 +533,27 @@ export const Transfer = observer(
 
             {transferFee && (
               <div className="flex place-content-between items-center">
-                <span>{t("assets.transfer.transferFee")}</span>
+                <span>{t('assets.transfer.transferFee')}</span>
                 <SkeletonLoader
                   className="min-w-[8rem] text-right"
                   isLoaded={!isLoadingDetails}
                 >
                   <span>
-                    {typeof transferFee === "string"
+                    {typeof transferFee === 'string'
                       ? transferFee
-                      : transferFee!.trim(true).toString()}{" "}
+                      : transferFee!.trim(true).toString()}{' '}
                     {transferFeeFiat &&
                       !gasCostFiat &&
                       `(${transferFeeFiat.toString()})`}
-                  </span>{" "}
+                  </span>{' '}
                   <span>
                     {gasCost && (
                       <>
-                        +{" "}
+                        +{' '}
                         <span>
-                          {typeof gasCost === "string"
+                          {typeof gasCost === 'string'
                             ? gasCost
-                            : gasCost!.trim(true).toString()}{" "}
+                            : gasCost!.trim(true).toString()}{' '}
                         </span>
                       </>
                     )}
@@ -569,19 +569,19 @@ export const Transfer = observer(
 
             {priceImpact && (
               <div className="flex place-content-between items-center">
-                <span>{t("assets.transfer.priceImpact")}</span>
+                <span>{t('assets.transfer.priceImpact')}</span>
                 <SkeletonLoader
                   className={classNames(
-                    "min-w-[8rem] text-right",
+                    'min-w-[8rem] text-right',
                     classes?.priceImpactValue
                   )}
                   isLoaded={!isLoadingDetails}
                 >
                   <span>
-                    {typeof priceImpact === "string"
+                    {typeof priceImpact === 'string'
                       ? priceImpact
-                      : priceImpact!.maxDecimals(4).toString()}{" "}
-                  </span>{" "}
+                      : priceImpact!.maxDecimals(4).toString()}{' '}
+                  </span>{' '}
                 </SkeletonLoader>
               </div>
             )}
@@ -611,11 +611,11 @@ const AckWithdrawCustomAddressRisk: FunctionComponent<{
 }> = ({ addressConfig }) => {
   const { t } = useTranslation();
 
-  if (!addressConfig || addressConfig.customAddress === "") return null;
+  if (!addressConfig || addressConfig.customAddress === '') return null;
 
   return (
     <GradientView className="body2 md:caption flex flex-col gap-2 bg-osmoverse-800 text-center">
-      <span>{t("assets.ibcTransfer.warningLossFunds")}</span>
+      <span>{t('assets.ibcTransfer.warningLossFunds')}</span>
       <div className="mx-auto flex">
         <Checkbox
           id="verify"
@@ -628,7 +628,7 @@ const AckWithdrawCustomAddressRisk: FunctionComponent<{
           }
         />
         <label className="ml-2 items-center" htmlFor="verify">
-          {t("assets.ibcTransfer.checkboxVerify")}
+          {t('assets.ibcTransfer.checkboxVerify')}
         </label>
       </div>
     </GradientView>
@@ -659,9 +659,9 @@ const CustomAddressInputBox: FunctionComponent<{
       autoFocus
       labelButtons={[
         {
-          label: t("assets.ibcTransfer.buttonEnter"),
+          label: t('assets.ibcTransfer.buttonEnter'),
           className:
-            "bg-wosmongton-100 hover:bg-wosmongton-100 border-0 rounded-md",
+            'bg-wosmongton-100 hover:bg-wosmongton-100 border-0 rounded-md',
           onClick: onClickEnter,
           disabled: !addressConfig.isValid,
         },

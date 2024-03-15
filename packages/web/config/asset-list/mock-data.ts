@@ -112,7 +112,7 @@ export const MockChains: Chain[] = [
       ],
       rest: [
         {
-          address: "https://lcd-osmosis.keplr.app",
+          address: "https://proxy.heliax.click/shielded-expedition.88f17d1d14",
         },
       ],
     },

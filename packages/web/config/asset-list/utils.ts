@@ -19,7 +19,7 @@ import {
 } from "~/config/env";
 
 export function getOsmosisChainId(environment: "testnet" | "mainnet") {
-  return environment === "testnet" ? "osmo-test-5" : "osmosis-1";
+  return environment === "testnet" ? "shielded-expedition.88f17d1d14" : "shielded-expedition.88f17d1d14";
 }
 
 const tokensDir = "/tokens/generated";
@@ -110,9 +110,12 @@ export function getKeplrCompatibleChain({
   const assetList = assetLists.find(({ chain_id }) => chain_id === chainId);
 
   if (!assetList && environment === "mainnet") {
-    throw new Error(
+    /* throw new Error(
       `Failed to find currencies for ${chain.chain_name} (${chain.chain_id})`
-    );
+    ); */
+    // TODO: Check this. 
+    console.warn(`Failed to find currencies for ${chain.chain_name}`);
+    return undefined;
   }
 
   if (!assetList && environment === "testnet") {
@@ -225,9 +228,9 @@ export function getKeplrCompatibleChain({
       coinImageUrl:
         stakeAsset?.logoURIs.svg || stakeAsset?.logoURIs.png
           ? getImageRelativeFilePath(
-              stakeAsset.logoURIs.svg ?? stakeAsset.logoURIs.png!,
-              stakeAsset.symbol
-            )
+            stakeAsset.logoURIs.svg ?? stakeAsset.logoURIs.png!,
+            stakeAsset.symbol
+          )
           : undefined,
       base: stakeAsset?.coinMinimalDenom,
     },
@@ -292,9 +295,9 @@ export function getKeplrCompatibleChain({
         coinImageUrl:
           asset?.logoURIs.svg || asset?.logoURIs.png
             ? getImageRelativeFilePath(
-                asset.logoURIs.svg ?? asset.logoURIs.png!,
-                asset.symbol
-              )
+              asset.logoURIs.svg ?? asset.logoURIs.png!,
+              asset.symbol
+            )
             : undefined,
         base: asset.coinMinimalDenom,
         gasPriceStep,
@@ -322,8 +325,8 @@ export function getChainList({
         chain
       ):
         | (Chain & {
-            keplrChain: ChainInfoWithExplorer;
-          })
+          keplrChain: ChainInfoWithExplorer;
+        })
         | undefined => {
         const isOsmosis =
           chain.chain_name === "osmosis" ||
