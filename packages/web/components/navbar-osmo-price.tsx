@@ -1,24 +1,24 @@
-import { WalletStatus } from "@cosmos-kit/core";
-import { makeMinimalAsset } from "@osmosis-labs/utils";
-import classNames from "classnames";
-import { observer } from "mobx-react-lite";
-import Image from "next/image";
-import { FunctionComponent } from "react";
+import { WalletStatus } from '@cosmos-kit/core';
+import { makeMinimalAsset } from '@osmosis-labs/utils';
+import classNames from 'classnames';
+import { observer } from 'mobx-react-lite';
+import Image from 'next/image';
+import { FunctionComponent } from 'react';
 
-import { CoinsIcon } from "~/components/assets/coins-icon";
-import { CreditCardIcon } from "~/components/assets/credit-card-icon";
-import { Sparkline } from "~/components/chart/sparkline";
-import SkeletonLoader from "~/components/loaders/skeleton-loader";
-import { Button } from "~/components/ui/button";
-import { AssetLists } from "~/config/generated/asset-lists";
-import { useFeatureFlags, useTranslation } from "~/hooks";
-import { useBridge } from "~/hooks/bridge";
-import { useStore } from "~/stores";
-import { theme } from "~/tailwind.config";
-import { api } from "~/utils/trpc";
+import { CoinsIcon } from '~/components/assets/coins-icon';
+import { CreditCardIcon } from '~/components/assets/credit-card-icon';
+import { Sparkline } from '~/components/chart/sparkline';
+import SkeletonLoader from '~/components/loaders/skeleton-loader';
+import { Button } from '~/components/ui/button';
+import { AssetLists } from '~/config/generated/asset-lists';
+import { useFeatureFlags, useTranslation } from '~/hooks';
+import { useBridge } from '~/hooks/bridge';
+import { useStore } from '~/stores';
+import { theme } from '~/tailwind.config';
+import { api } from '~/utils/trpc';
 
 const osmoAsset = AssetLists.flatMap(({ assets }) => assets).find(
-  (asset) => asset.symbol === "OSMO"
+  (asset) => asset.symbol === 'OSMO'
 );
 const osmoCurrency = makeMinimalAsset(osmoAsset!);
 
@@ -32,7 +32,7 @@ const NavbarOsmoPrice = observer(() => {
   const wallet = accountStore.getWallet(chainId);
 
   const { data: osmoPrice } = api.edge.assets.getAssetPrice.useQuery(
-    { coinMinimalDenom: osmoCurrency?.coinMinimalDenom ?? "" },
+    { coinMinimalDenom: osmoCurrency?.coinMinimalDenom ?? '' },
     { enabled: Boolean(osmoCurrency) }
   );
 
@@ -72,16 +72,16 @@ const NavbarOsmoPrice = observer(() => {
             <CreditCardIcon
               isAnimated
               classes={{
-                container: "z-10",
-                backCard: "group-hover:stroke-[2]",
-                frontCard: "group-hover:fill-[#71B5EB] group-hover:stroke-[2]",
+                container: 'z-10',
+                backCard: 'group-hover:stroke-[2]',
+                frontCard: 'group-hover:fill-[#71B5EB] group-hover:stroke-[2]',
               }}
-            />{" "}
-            <span className="z-10 mt-0.5 flex-shrink-0">{t("buyTokens")}</span>{" "}
+            />{' '}
+            <span className="z-10 mt-0.5 flex-shrink-0">{t('buyTokens')}</span>{' '}
             <CoinsIcon
               className={classNames(
-                "invisible absolute top-0 -translate-y-full transform transition-transform ease-linear",
-                "group-hover:visible group-hover:translate-y-[30%] group-hover:duration-[3s]"
+                'invisible absolute top-0 -translate-y-full transform transition-transform ease-linear',
+                'group-hover:visible group-hover:translate-y-[30%] group-hover:duration-[3s]'
               )}
             />
           </Button>
@@ -94,13 +94,14 @@ const NavbarOsmoPrice = observer(() => {
 const OsmoPriceAndChart: FunctionComponent = () => {
   const { data: assetMarketInfo, isLoading: isLoadingAssetInfo } =
     api.edge.assets.getMarketAsset.useQuery({
-      findMinDenomOrSymbol: "OSMO",
+      userOsmoAddress: undefined,
+      findMinDenomOrSymbol: 'OSMO',
     });
 
   const { data: recentPrices = [], isLoading: isLoadingHistoricalPrices } =
     api.edge.assets.getAssetHistoricalPrice.useQuery({
-      coinDenom: "OSMO",
-      timeFrame: "1D",
+      coinDenom: 'OSMO',
+      timeFrame: '1D',
     });
 
   const isNumberGoUp = assetMarketInfo?.priceChange24h?.toDec().isPositive();
@@ -120,11 +121,11 @@ const OsmoPriceAndChart: FunctionComponent = () => {
         }
       />
 
-      <p className={isNumberGoUp ? "text-bullish-400" : "text-osmoverse-500"}>
+      <p className={isNumberGoUp ? 'text-bullish-400' : 'text-osmoverse-500'}>
         {assetMarketInfo?.priceChange24h
           ?.maxDecimals(2)
           .inequalitySymbol(false)
-          .toString() ?? ""}
+          .toString() ?? ''}
       </p>
     </SkeletonLoader>
   );

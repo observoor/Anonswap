@@ -2,10 +2,10 @@
   "name": "@cosmos-kit/namada-extension",
   "version": "2.7.10",
   "description": "cosmos-kit wallet connector",
-  "author": "mayank.yadav@leapwallet.io",
+  "author": "borut.terpinc@kalmia.si",
   "contributors": [
     {
-      "name": "Mayank Yadav"
+      "name": "Borut Terpinc"
     }
   ],
   "homepage": "https://github.com/cosmology-tech/cosmos-kit#readme",
@@ -59,7 +59,8 @@
     ]
   },
   "dependencies": {
-    "@cosmos-kit/core": "2.7.2"
+    "@cosmos-kit/core": "2.7.2",
+    "@dao-xyz/borsh": "^5.1.5"
   },
   "peerDependencies": {
     "@cosmjs/amino": ">=0.29.0",
