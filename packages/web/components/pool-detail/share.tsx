@@ -4,43 +4,43 @@ import {
   IntPretty,
   PricePretty,
   RatePretty,
-} from "@keplr-wallet/unit";
-import { BondStatus } from "@osmosis-labs/types";
-import classNames from "classnames";
-import { Duration } from "dayjs/plugin/duration";
-import { observer } from "mobx-react-lite";
-import Image from "next/image";
-import { FunctionComponent, useCallback, useMemo, useState } from "react";
-import { useMeasure } from "react-use";
+} from '@keplr-wallet/unit';
+import { BondStatus } from '@osmosis-labs/types';
+import classNames from 'classnames';
+import { Duration } from 'dayjs/plugin/duration';
+import { observer } from 'mobx-react-lite';
+import Image from 'next/image';
+import { FunctionComponent, useCallback, useMemo, useState } from 'react';
+import { useMeasure } from 'react-use';
 
-import { Icon, PoolAssetsIcon } from "~/components/assets";
-import { ArrowButton } from "~/components/buttons";
-import { BondCard } from "~/components/cards";
-import { AssetBreakdownChart, PriceBreakdownChart } from "~/components/chart";
-import PoolComposition from "~/components/chart/pool-composition";
-import { Disableable } from "~/components/types";
-import { Button } from "~/components/ui/button";
-import { EventName } from "~/config";
-import { useTranslation, useWalletSelect } from "~/hooks";
+import { Icon, PoolAssetsIcon } from '~/components/assets';
+import { ArrowButton } from '~/components/buttons';
+import { BondCard } from '~/components/cards';
+import { AssetBreakdownChart, PriceBreakdownChart } from '~/components/chart';
+import PoolComposition from '~/components/chart/pool-composition';
+import { Disableable } from '~/components/types';
+import { Button } from '~/components/ui/button';
+import { EventName } from '~/config';
+import { useTranslation, useWalletSelect } from '~/hooks';
 import {
   useAmplitudeAnalytics,
   useLockTokenConfig,
   useSuperfluidPool,
   useWindowSize,
-} from "~/hooks";
+} from '~/hooks';
 import {
   AddLiquidityModal,
   LockTokensModal,
   RemoveLiquidityModal,
   SuperfluidValidatorModal,
-} from "~/modals";
-import type { Pool } from "~/server/queries/complex/pools";
-import { useStore } from "~/stores";
-import { formatPretty } from "~/utils/formatter";
-import { api } from "~/utils/trpc";
+} from '~/modals';
+import type { Pool } from '~/server/queries/complex/pools';
+import { useStore } from '~/stores';
+import { formatPretty } from '~/utils/formatter';
+import { api } from '~/utils/trpc';
 
-import { Spinner } from "../loaders";
-import SkeletonLoader from "../loaders/skeleton-loader";
+import { Spinner } from '../loaders';
+import SkeletonLoader from '../loaders/skeleton-loader';
 
 const E = EventName.PoolDetail;
 
@@ -68,7 +68,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
 
     const queryCosmos = queriesStore.get(chainId).cosmos;
     const account = accountStore.getWallet(chainStore.osmosis.chainId);
-    const address = account?.address ?? "";
+    const address = account?.address ?? '';
     const queryAccountPoolRewards = queryAccountsPoolRewards.get(address);
 
     // queries
@@ -107,7 +107,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
       api.edge.pools.getSharePoolBondDurations.useQuery(
         {
           poolId: pool.id,
-          userOsmoAddress: Boolean(address) ? address : undefined,
+          userOsmoAddress: 'temp',
         },
         {
           enabled: !isWalletLoading,
@@ -150,7 +150,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
       () => ({
         poolName: pool.reserveCoins
           .map((poolAsset) => poolAsset.denom)
-          .join(" / "),
+          .join(' / '),
       }),
       [pool]
     );
@@ -201,7 +201,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
         poolId: pool.id,
         poolName,
         isSuperfluidPool: isSuperfluid,
-        isStableswapPool: pool.type === "stable",
+        isStableswapPool: pool.type === 'stable',
       }),
       [pool, poolName, isSuperfluid]
     );
@@ -270,7 +270,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
         );
         const locks = unlockBondDuration?.userLocks;
         if (!locks) {
-          console.warn("No locks found");
+          console.warn('No locks found');
           return;
         }
 
@@ -371,7 +371,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
           <LockTokensModal
             poolId={pool.id}
             isOpen={showLockLPTokenModal}
-            title={t("lockToken.title")}
+            title={t('lockToken.title')}
             onRequestClose={() => setShowLockLPTokenModal(false)}
             amountConfig={lockLPTokensConfig}
             onLockToken={onLockToken}
@@ -384,15 +384,15 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
             <SuperfluidValidatorModal
               title={
                 isMobile
-                  ? t("superfluidValidator.titleMobile")
-                  : t("superfluidValidator.title")
+                  ? t('superfluidValidator.titleMobile')
+                  : t('superfluidValidator.title')
               }
               availableBondAmount={
                 superfluidPoolDetail?.userUpgradeableSharePoolLockIds
                   ? superfluidPoolDetail.userUpgradeableSharePoolLockIds.amount // is delegating amount from existing lockup
                   : new CoinPretty(
                       sharePool.currency, // is delegating amount from new/pending lockup
-                      lockLPTokensConfig.amount !== ""
+                      lockLPTokensConfig.amount !== ''
                         ? lockLPTokensConfig.getAmountPrimitive().amount
                         : new Dec(0)
                     )
@@ -407,7 +407,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
             <div
               ref={poolDetailsContainerRef}
               className={classNames(
-                "flex flex-col gap-3 overflow-hidden px-8 pt-8 transition-height duration-300 ease-inOutBack md:px-5 md:pt-7"
+                'flex flex-col gap-3 overflow-hidden px-8 pt-8 transition-height duration-300 ease-inOutBack md:px-5 md:pt-7'
               )}
               style={{
                 height: showPoolDetails
@@ -443,10 +443,10 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                           height={18}
                           width={18}
                         />
-                        {t("pool.superfluidEnabled")}
+                        {t('pool.superfluidEnabled')}
                       </span>
                     )}
-                    {pool.type === "stable" && (
+                    {pool.type === 'stable' && (
                       <div className="body2 text-gradient-positive flex items-center gap-1.5">
                         <Image
                           alt=""
@@ -454,7 +454,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                           height={18}
                           width={18}
                         />
-                        <span>{t("pool.stableswapEnabled")}</span>
+                        <span>{t('pool.stableswapEnabled')}</span>
                       </div>
                     )}
                   </div>
@@ -462,11 +462,11 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                 <div className="flex items-center gap-10 xl:w-full xl:place-content-between lg:w-fit lg:flex-col lg:items-start lg:gap-3">
                   <div className="space-y-2">
                     <span className="body2 gap-2 text-osmoverse-400">
-                      {t("pool.24hrTradingVolume")}
+                      {t('pool.24hrTradingVolume')}
                     </span>
                     <SkeletonLoader
                       className={classNames(
-                        isPoolMarketMetricsLoading ? "h-full w-32" : null
+                        isPoolMarketMetricsLoading ? 'h-full w-32' : null
                       )}
                       isLoaded={!isPoolMarketMetricsLoading}
                     >
@@ -479,7 +479,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                   </div>
                   <div className="space-y-2">
                     <span className="body2 gap-2 text-osmoverse-400">
-                      {t("pool.liquidity")}
+                      {t('pool.liquidity')}
                     </span>
                     <h4 className="text-osmoverse-100">
                       {pool.totalFiatValueLocked.toString()}
@@ -487,7 +487,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                   </div>
                   <div className="space-y-2">
                     <span className="body2 gap-2 text-osmoverse-400">
-                      {t("pool.swapFee")}
+                      {t('pool.swapFee')}
                     </span>
                     <h4 className="text-osmoverse-100">
                       {pool.spreadFactor.toString()}
@@ -537,14 +537,14 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
             >
               <span>
                 {showPoolDetails
-                  ? t("pool.collapseDetails")
-                  : t("pool.showDetails")}
+                  ? t('pool.collapseDetails')
+                  : t('pool.showDetails')}
               </span>
               <div
                 className={classNames(
-                  "flex items-center transition-transform",
+                  'flex items-center transition-transform',
                   {
-                    "rotate-180": showPoolDetails,
+                    'rotate-180': showPoolDetails,
                   }
                 )}
               >
@@ -556,7 +556,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
             <div className="flex w-full gap-4 1.5lg:flex-col">
               <div className="flex flex-col gap-3 rounded-4xl bg-osmoverse-1000 px-8 py-7">
                 <span className="body2 text-osmoverse-300">
-                  {t("pool.yourStats")}
+                  {t('pool.yourStats')}
                 </span>
                 <div className="flex place-content-between  gap-6 sm:flex-col sm:items-start">
                   <div className="flex shrink-0 flex-col gap-1">
@@ -564,7 +564,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                       {userSharePool.totalValue.toString()}
                     </h4>
                     <h6 className="subtitle1 text-osmoverse-300">
-                      {t("pool.sharesAmount", {
+                      {t('pool.sharesAmount', {
                         shares: userSharePool
                           .totalShares!.maxDecimals(6)
                           .hideDenom(true)
@@ -582,11 +582,11 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                   <PriceBreakdownChart
                     prices={[
                       {
-                        label: t("pool.bonded"),
+                        label: t('pool.bonded'),
                         price: userSharePool.lockedValue,
                       },
                       {
-                        label: t("pool.available"),
+                        label: t('pool.available'),
                         price: userSharePool.availableValue,
                       },
                     ]}
@@ -596,14 +596,14 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                 <div className="flex flex-col place-content-between gap-3 rounded-4xl bg-osmoverse-1000 px-8 py-7">
                   <div className="flex flex-col gap-2">
                     <span className="body2 text-osmoverse-300">
-                      {t("pool.currentDailyEarn")}
+                      {t('pool.currentDailyEarn')}
                     </span>
                     <h4 className="text-osmoverse-100">
-                      {t("pool.dailyEarnAmount", {
+                      {t('pool.dailyEarnAmount', {
                         amount:
                           queryAccountPoolRewards
                             .getUsdRewardsForPool(pool.id)
-                            ?.day.toString() ?? "$0",
+                            ?.day.toString() ?? '$0',
                       })}
                     </h4>
                   </div>
@@ -617,14 +617,14 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                           setShowLockLPTokenModal(true);
                         }}
                       >
-                        {t("pool.earnMore", {
+                        {t('pool.earnMore', {
                           amount: additionalRewardsByBonding
                             ?.toDec()
                             .gte(new Dec(0.001))
                             ? `$${additionalRewardsByBonding?.toString()}/${t(
-                                "pool.day"
+                                'pool.day'
                               )}`
-                            : "",
+                            : '',
                         })}
                       </ArrowButton>
                     )}
@@ -635,9 +635,9 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
         </section>
         <section className="flex flex-col gap-4 md:gap-4">
           <div className="flex flex-col flex-wrap px-8 md:gap-3">
-            <h6 className="text-h6 font-h6">{t("pool.putAssetsToWork")}</h6>
+            <h6 className="text-h6 font-h6">{t('pool.putAssetsToWork')}</h6>
             <span className="body2 text-osmoverse-300">
-              {t("pool.putAssetsToWorkCaption")}{" "}
+              {t('pool.putAssetsToWorkCaption')}{' '}
               <a
                 rel="noreferrer"
                 className="text-wosmongton-300 underline"
@@ -647,15 +647,15 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                 }}
                 href="https://docs.osmosis.zone/overview/educate/getting-started#bonding-lp-tokens"
               >
-                {t("pool.learnMore")}
+                {t('pool.learnMore')}
               </a>
             </span>
           </div>
           <div className="flex flex-col gap-10 md:gap-4">
             <div
               className={classNames(
-                "rounded-4xl p-1",
-                levelCta === 1 ? "bg-gradient-positive" : "bg-osmoverse-800"
+                'rounded-4xl p-1',
+                levelCta === 1 ? 'bg-gradient-positive' : 'bg-osmoverse-800'
               )}
             >
               <div className="flex flex-col gap-10 rounded-4x4pxlinset bg-osmoverse-800 p-8 md:p-5">
@@ -665,7 +665,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                       <LevelBadge level={1} />
                       <div className="flex shrink flex-wrap items-center gap-3">
                         <h6 className="md:text-h6 md:font-h6">
-                          {t("pool.earnSwapFees")}
+                          {t('pool.earnSwapFees')}
                         </h6>
                         {isPoolIncentivesLoading ? (
                           <Spinner />
@@ -673,13 +673,13 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                           poolIncentives?.aprBreakdown?.swapFee && (
                             <h6 className="text-bullish-400 md:text-h6 md:font-h6">{`${poolIncentives.aprBreakdown.swapFee
                               .maxDecimals(2)
-                              .toString()} ${t("pool.APR")}`}</h6>
+                              .toString()} ${t('pool.APR')}`}</h6>
                           )
                         )}
                       </div>
                     </div>
                     <span className="body2 text-osmoverse-200">
-                      {t("pool.earnSwapFeesCaption")}
+                      {t('pool.earnSwapFeesCaption')}
                     </span>
                   </div>
                   <div className="flex flex-col gap-4 lg:w-full">
@@ -690,7 +690,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                         </h4>
                         {userSharePool.availableShares && (
                           <h6 className="subtitle1 text-osmoverse-300">
-                            {t("pool.sharesAmount", {
+                            {t('pool.sharesAmount', {
                               shares: formatPretty(
                                 userSharePool.availableShares.hideDenom(true),
                                 { maxDecimals: 4 }
@@ -716,13 +716,13 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                           setShowRemoveLiquidityModal(true);
                         }}
                       >
-                        {t("removeLiquidity.title")}
+                        {t('removeLiquidity.title')}
                       </Button>
                       <Button
                         className={classNames(
-                          "w-fit shrink-0 xs:w-full",
+                          'w-fit shrink-0 xs:w-full',
                           levelCta === 1 &&
-                            "bg-gradient-positive text-osmoverse-1000"
+                            'bg-gradient-positive text-osmoverse-1000'
                         )}
                         onClick={() => {
                           logEvent([
@@ -732,7 +732,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                           setShowAddLiquidityModal(true);
                         }}
                       >
-                        {t("addLiquidity.title")}
+                        {t('addLiquidity.title')}
                       </Button>
                     </div>
                   </div>
@@ -746,7 +746,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                         {userSharePool.availableValue.toString()}
                       </h4>
                       <h6 className="subtitle1 text-osmoverse-300">
-                        {t("pool.sharesAmount", {
+                        {t('pool.sharesAmount', {
                           shares: formatPretty(
                             userSharePool.availableShares?.hideDenom(true) ??
                               new Dec(0),
@@ -764,7 +764,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                         ).toString()}
                       </h4>
                       <h6 className="subtitle1 text-osmoverse-300">
-                        {t("pool.sharesAmount", {
+                        {t('pool.sharesAmount', {
                           shares: formatPretty(new Dec(0), { maxDecimals: 8 }),
                         })}
                       </h6>
@@ -775,15 +775,15 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
             </div>
             <div
               className={classNames(
-                "rounded-4xl p-1",
-                levelCta === 2 ? "bg-gradient-positive" : "bg-osmoverse-800"
+                'rounded-4xl p-1',
+                levelCta === 2 ? 'bg-gradient-positive' : 'bg-osmoverse-800'
               )}
             >
               <div
                 className={classNames(
-                  "flex flex-col rounded-4x4pxlinset bg-osmoverse-800 p-8 md:p-5",
+                  'flex flex-col rounded-4x4pxlinset bg-osmoverse-800 p-8 md:p-5',
                   {
-                    "gap-10": !level2Disabled || bondDurations.length > 0,
+                    'gap-10': !level2Disabled || bondDurations.length > 0,
                   }
                 )}
               >
@@ -793,26 +793,26 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                       <LevelBadge level={2} disabled={level2Disabled} />
                       <h6>
                         {level2Disabled && !isLoadingBondDurations
-                          ? t("pool.bondLiquidityUnavailable")
-                          : t("pool.bondLiquidity")}
+                          ? t('pool.bondLiquidityUnavailable')
+                          : t('pool.bondLiquidity')}
                       </h6>
                     </div>
                     <span className="body2 text-osmoverse-200">
-                      {t("pool.bondLiquidityCaption")}
+                      {t('pool.bondLiquidityCaption')}
                       {isSuperfluid &&
-                        ` ${t("pool.bondSuperfluidLiquidityCaption")}`}
+                        ` ${t('pool.bondSuperfluidLiquidityCaption')}`}
                     </span>
                   </div>
                   {isLoadingBondDurations ? (
                     <Spinner />
                   ) : level2Disabled ? (
                     <h6 className="text-osmoverse-100">
-                      {t("pool.checkBackForBondingRewards")}
+                      {t('pool.checkBackForBondingRewards')}
                     </h6>
                   ) : (
                     <Button
-                      className={classNames("w-64 border-none md:w-full", {
-                        "!border-0 bg-gradient-positive text-osmoverse-900":
+                      className={classNames('w-64 border-none md:w-full', {
+                        '!border-0 bg-gradient-positive text-osmoverse-900':
                           levelCta === 2,
                       })}
                       disabled={levelCta !== 2}
@@ -821,7 +821,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                         setShowLockLPTokenModal(true);
                       }}
                     >
-                      {t("pool.bondShares")}
+                      {t('pool.bondShares')}
                     </Button>
                   )}
                 </div>
@@ -866,15 +866,15 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                           ? sharePool.lockableDurations.length > 0 &&
                             sharePool.lockableDurations[0].asDays() ===
                               bondDuration.duration.asDays()
-                            ? "/images/small-vial.svg"
+                            ? '/images/small-vial.svg'
                             : sharePool.lockableDurations.length > 1 &&
                               sharePool.lockableDurations[1].asDays() ===
                                 bondDuration.duration.asDays()
-                            ? "/images/medium-vial.svg"
+                            ? '/images/medium-vial.svg'
                             : sharePool.lockableDurations.length > 2 &&
                               sharePool.lockableDurations[2].asDays() ===
                                 bondDuration.duration.asDays()
-                            ? "/images/large-vial.svg"
+                            ? '/images/large-vial.svg'
                             : undefined
                           : undefined
                       }
@@ -897,12 +897,12 @@ const LevelBadge: FunctionComponent<{ level: number } & Disableable> = ({
   const { t } = useTranslation();
   return (
     <div
-      className={classNames("rounded-xl bg-wosmongton-400 px-5 py-1", {
-        "bg-osmoverse-600 text-osmoverse-100": disabled,
+      className={classNames('rounded-xl bg-wosmongton-400 px-5 py-1', {
+        'bg-osmoverse-600 text-osmoverse-100': disabled,
       })}
     >
       <h5 className="md:text-h6 md:font-h6">
-        {t("pool.level", { level: level.toString() })}
+        {t('pool.level', { level: level.toString() })}
       </h5>
     </div>
   );

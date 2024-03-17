@@ -19,7 +19,7 @@ import {
 } from "~/config/env";
 
 export function getOsmosisChainId(environment: "testnet" | "mainnet") {
-  return environment === "testnet" ? "shielded-expedition.88f17d1d14" : "shielded-expedition.88f17d1d14";
+  return environment === "testnet" ? "osmo-test-5" : "osmosis-1";
 }
 
 const tokensDir = "/tokens/generated";

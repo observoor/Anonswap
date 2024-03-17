@@ -2,13 +2,13 @@ import {
   isAndroid,
   isMobile as isMobileWC,
   saveMobileLinkInfo,
-} from "@walletconnect/browser-utils";
-import dynamic from "next/dynamic";
-import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
+} from '@walletconnect/browser-utils';
+import dynamic from 'next/dynamic';
+import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
 
-import { Button } from "~/components/buttons";
-import { useWindowSize } from "~/hooks";
-import { ModalBase, ModalBaseProps } from "~/modals/base";
+import { Button } from '~/components/buttons';
+import { useWindowSize } from '~/hooks';
+import { ModalBase, ModalBaseProps } from '~/modals/base';
 
 export const WalletConnectQRModal: FunctionComponent<
   ModalBaseProps & {
@@ -33,17 +33,18 @@ export const WalletConnectQRModal: FunctionComponent<
       if (checkAndroid) {
         // Save the mobile link.
         saveMobileLinkInfo({
-          name: "Keplr",
-          href: "intent://wcV1#Intent;package=com.chainapsis.keplr;scheme=keplrwallet;end;",
+          name: 'Keplr',
+          href: 'intent://wcV1#Intent;package=com.chainapsis.keplr;scheme=keplrwallet;end;',
         });
 
         return `intent://wcV1?${uri}#Intent;package=com.chainapsis.keplr;scheme=keplrwallet;end;`;
       } else {
         // Save the mobile link.
         saveMobileLinkInfo({
-          name: "Keplr",
-          href: "keplrwallet://wcV1",
+          name: 'Keplr',
+          href: 'keplrwallet://wcV1',
         });
+ 
 
         return `keplrwallet://wcV1?${uri}`;
       }
@@ -73,7 +74,7 @@ export const WalletConnectQRModal: FunctionComponent<
       {uri ? (
         !checkMobile ? (
           (() => {
-            const QRCode = dynamic(() => import("~/components/qrcode"));
+            const QRCode = dynamic(() => import('~/components/qrcode'));
 
             return (
               <div className="bg-white-high p-3.5 md:mx-auto md:w-80">

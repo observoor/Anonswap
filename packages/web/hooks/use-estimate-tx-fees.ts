@@ -38,7 +38,8 @@ async function estimateTxFeesQueryFn({
       },
     }),
     apiUtils.edge.assets.getMarketAsset.fetch({
-      findMinDenomOrSymbol: "Nam",
+      findMinDenomOrSymbol: "OSMO",
+      userOsmoAddress: wallet.address || '',
     }),
   ]);
 

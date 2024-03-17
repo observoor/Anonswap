@@ -66,13 +66,13 @@ export const AxelarChainIds_SourceChainMap: {
 const TestnetCosmosChainIds_AxelarChainIds: Partial<
   Record<TestnetChainIds, string>
 > = {
-  "shielded-expedition.88f17d1d14": "namada-shielded",
+  "osmo-test-5": "osmosis-7",
 };
 
 const MainnetCosmosChainIds_AxelarChainIds: Partial<
   Record<MainnetChainIds, string>
 > = {
-  "shielded-expedition.88f17d1d14": "namada-shielded",
+  "osmosis-1": "osmosis",
 };
 
 /**

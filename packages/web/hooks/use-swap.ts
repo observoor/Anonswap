@@ -286,7 +286,7 @@ export function useSwap({
       enabled: featureFlags.swapToolSimulateFee,
     });
   const { data: userOsmoCoin } = api.edge.assets.getUserAsset.useQuery(
-    { findMinDenomOrSymbol: "OSMO", userOsmoAddress: account?.address },
+    { findMinDenomOrSymbol: "OSMO", userOsmoAddress: account?.address || '' },
     { enabled: Boolean(account?.address) && featureFlags.swapToolSimulateFee }
   );
 

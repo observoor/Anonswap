@@ -1,6 +1,6 @@
 import { Logger, SignOptions, WalletClient } from '@cosmos-kit/core';
 
-import { Namada } from './types';
+import { BalancesProps, Namada } from './types';
 
 export class NamadaClient implements WalletClient {
   readonly client: Namada;
@@ -25,6 +25,16 @@ export class NamadaClient implements WalletClient {
 
   async enable() {
     await this.client.connect();
+  }
+
+
+
+  async getBalances(props: BalancesProps) {
+    const account = await this.getSimpleAccount();
+    if (!account) {
+      return [];
+    }
+    return await this.client.balances(props);
   }
 
 

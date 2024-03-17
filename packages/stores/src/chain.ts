@@ -26,12 +26,7 @@ export class ChainStore extends BaseChainStore<ChainInfoWithExplorer> {
     if (this.hasChain(this.osmosisChainId)) {
       return this.getChain(this.osmosisChainId).raw;
     }
-
-    console.log("osmosis chain not set, manually setting chain", this.chainInfos[0]?.chainName);
-
-    return this.chainInfos[0]?.raw;
-
-    // throw new Error("osmosis chain not set");
+    throw new Error("osmosis chain not set");
   }
 
   /** Fetch raw ChainInfo from coin denom. Trims channel info. */

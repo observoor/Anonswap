@@ -4,47 +4,47 @@ import {
   flexRender,
   getCoreRowModel,
   useReactTable,
-} from "@tanstack/react-table";
-import { useWindowVirtualizer } from "@tanstack/react-virtual";
-import classNames from "classnames";
-import { observer } from "mobx-react-lite";
-import Image from "next/image";
+} from '@tanstack/react-table';
+import { useWindowVirtualizer } from '@tanstack/react-virtual';
+import classNames from 'classnames';
+import { observer } from 'mobx-react-lite';
+import Image from 'next/image';
 import {
   FunctionComponent,
   useCallback,
   useEffect,
   useMemo,
   useState,
-} from "react";
+} from 'react';
 
 import {
   useTranslation,
   useUserFavoriteAssetDenoms,
   useWalletSelect,
-} from "~/hooks";
-import { useSearchQueryInput } from "~/hooks/input/use-search-query-input";
-import { useConst } from "~/hooks/use-const";
-import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
-import type { CommonPriceChartTimeFrame } from "~/server/queries/complex/assets";
-import { useStore } from "~/stores";
-import { UnverifiedAssetsState } from "~/stores/user-settings";
-import { theme } from "~/tailwind.config";
-import { formatPretty } from "~/utils/formatter";
-import type { Search } from "~/utils/search";
-import type { SortDirection } from "~/utils/sort";
-import { api, RouterOutputs } from "~/utils/trpc";
+} from '~/hooks';
+import { useSearchQueryInput } from '~/hooks/input/use-search-query-input';
+import { useConst } from '~/hooks/use-const';
+import { useShowPreviewAssets } from '~/hooks/use-show-preview-assets';
+import type { CommonPriceChartTimeFrame } from '~/server/queries/complex/assets';
+import { useStore } from '~/stores';
+import { UnverifiedAssetsState } from '~/stores/user-settings';
+import { theme } from '~/tailwind.config';
+import { formatPretty } from '~/utils/formatter';
+import type { Search } from '~/utils/search';
+import type { SortDirection } from '~/utils/sort';
+import { api, RouterOutputs } from '~/utils/trpc';
 
-import { Icon } from "../assets";
-import { Sparkline } from "../chart/sparkline";
-import { MenuToggle } from "../control";
-import { SelectMenu } from "../control/select-menu";
-import { SearchBox } from "../input";
-import Spinner from "../loaders/spinner";
-import { SortHeader } from "./headers/sort";
+import { Icon } from '../assets';
+import { Sparkline } from '../chart/sparkline';
+import { MenuToggle } from '../control';
+import { SelectMenu } from '../control/select-menu';
+import { SearchBox } from '../input';
+import Spinner from '../loaders/spinner';
+import { SortHeader } from './headers/sort';
 
 type AssetInfo =
-  RouterOutputs["edge"]["assets"]["getMarketAssets"]["items"][number];
-type SortKey = "currentPrice" | "marketCap" | "usdValue" | undefined;
+  RouterOutputs['edge']['assets']['getMarketAssets']['items'][number];
+type SortKey = 'currentPrice' | 'marketCap' | 'usdValue' | undefined;
 
 export const AssetsInfoTable: FunctionComponent<{
   /** Height of elements above the table in the window. Nav bar is already included. */
@@ -63,17 +63,17 @@ export const AssetsInfoTable: FunctionComponent<{
   const [searchQuery, setSearchQuery] = useState<Search | undefined>();
 
   const [selectedTimeFrame, setSelectedTimeFrame] =
-    useState<CommonPriceChartTimeFrame>("1D");
+    useState<CommonPriceChartTimeFrame>('1D');
 
   const [sortKey, setSortKey] = useState<SortKey>();
-  const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
-  const [selectedView, setSelectedView] = useState<"myTokens" | "allTokens">(
-    "allTokens"
+  const [selectedView, setSelectedView] = useState<'myTokens' | 'allTokens'>(
+    'allTokens'
   );
 
   const showUnverifiedAssetsSetting =
-    userSettings.getUserSettingById<UnverifiedAssetsState>("unverified-assets");
+    userSettings.getUserSettingById<UnverifiedAssetsState>('unverified-assets');
   const showUnverifiedAssets =
     showUnverifiedAssetsSetting?.state.showUnverifiedAssets;
 
@@ -88,7 +88,7 @@ export const AssetsInfoTable: FunctionComponent<{
     fetchNextPage,
   } = api.edge.assets.getMarketAssets.useInfiniteQuery(
     {
-      userOsmoAddress: account?.address,
+      userOsmoAddress: account?.address || '',
       preferredDenoms: favoritesList,
       limit: 20,
       search: searchQuery,
@@ -100,7 +100,7 @@ export const AssetsInfoTable: FunctionComponent<{
             direction: sortDirection,
           }
         : undefined,
-      onlyPositiveBalances: selectedView === "myTokens",
+      onlyPositiveBalances: selectedView === 'myTokens',
     },
     {
       enabled: !isLoadingWallet,
@@ -125,8 +125,8 @@ export const AssetsInfoTable: FunctionComponent<{
   const columns = useMemo(
     () => [
       columnHelper.accessor((row) => row, {
-        id: "asset",
-        header: "Name",
+        id: 'asset',
+        header: 'Name',
         cell: (cell) => (
           <AssetCell
             {...cell}
@@ -141,7 +141,7 @@ export const AssetsInfoTable: FunctionComponent<{
         ),
       }),
       columnHelper.accessor((row) => row, {
-        id: "price",
+        id: 'price',
         header: () => (
           <SortHeader
             label={`Price (${selectedTimeFrame})`}
@@ -155,14 +155,14 @@ export const AssetsInfoTable: FunctionComponent<{
         cell: PriceCell,
       }),
       columnHelper.accessor((row) => row, {
-        id: "priceChart",
-        header: "",
+        id: 'priceChart',
+        header: '',
         cell: (cell) => (
           <SparklineChartCell {...cell} timeFrame={selectedTimeFrame} />
         ),
       }),
       columnHelper.accessor((row) => row, {
-        id: "marketCap",
+        id: 'marketCap',
         header: () => (
           <SortHeader
             label="Market Cap"
@@ -176,7 +176,7 @@ export const AssetsInfoTable: FunctionComponent<{
         cell: MarketCapCell,
       }),
       columnHelper.accessor((row) => row, {
-        id: "balance",
+        id: 'balance',
         header: () => (
           <SortHeader
             label="Balance"
@@ -190,8 +190,8 @@ export const AssetsInfoTable: FunctionComponent<{
         cell: BalanceCell,
       }),
       columnHelper.accessor((row) => row, {
-        id: "assetActions",
-        header: "",
+        id: 'assetActions',
+        header: '',
         cell: (cell) => (
           <AssetActionsCell
             {...cell}
@@ -228,7 +228,7 @@ export const AssetsInfoTable: FunctionComponent<{
   // and save on performance and memory.
   // As the user scrolls, invisible rows are removed from the DOM.
   const topOffset =
-    Number(theme.extend.height.navbar.replace("px", "")) + tableTopPadding;
+    Number(theme.extend.height.navbar.replace('px', '')) + tableTopPadding;
   const rowHeightEstimate = 80;
   const { rows } = table.getRowModel();
   const rowVirtualizer = useWindowVirtualizer({
@@ -350,16 +350,16 @@ const AssetCell: AssetInfoCellComponent<{
   onRemoveFavorite,
 }) => (
   <div
-    className={classNames("group flex items-center gap-2", {
-      "opacity-40": !isVerified,
+    className={classNames('group flex items-center gap-2', {
+      'opacity-40': !isVerified,
     })}
   >
     <div className="cursor-pointer">
       <Icon
         id="star"
         className={classNames(
-          "text-osmoverse-600 transition-opacity group-hover:opacity-100",
-          isFavorite ? "text-wosmongton-400" : "opacity-0"
+          'text-osmoverse-600 transition-opacity group-hover:opacity-100',
+          isFavorite ? 'text-wosmongton-400' : 'opacity-0'
         )}
         onClick={(event) => {
           event.preventDefault();
@@ -401,14 +401,14 @@ const PriceCell: AssetInfoCellComponent = ({
     )}
     {priceChange24h && (
       <span
-        className={classNames("caption", {
-          "text-bullish-400":
+        className={classNames('caption', {
+          'text-bullish-400':
             priceChange24h && priceChange24h.toDec().isPositive(),
-          "text-ammelia-400":
+          'text-ammelia-400':
             priceChange24h && priceChange24h.toDec().isNegative(),
         })}
       >
-        {priceChange24h && priceChange24h.toDec().isPositive() ? "+" : null}
+        {priceChange24h && priceChange24h.toDec().isPositive() ? '+' : null}
         {priceChange24h.maxDecimals(1).toString()}
       </span>
     )}
@@ -485,7 +485,7 @@ const BalanceCell: AssetInfoCellComponent = ({
 }) => (
   <div className="ml-auto flex w-28 flex-col">
     <span className="subtitle1">
-      {amount ? formatPretty(amount.hideDenom(true), { maxDecimals: 8 }) : "0"}
+      {amount ? formatPretty(amount.hideDenom(true), { maxDecimals: 8 }) : '0'}
     </span>
     {usdValue && (
       <span className="caption text-osmoverse-300">{usdValue.toString()}</span>
@@ -523,8 +523,8 @@ const TableControls: FunctionComponent<{
   selectedTimeFrame: CommonPriceChartTimeFrame;
   setSelectedTimeFrame: (timeFrame: CommonPriceChartTimeFrame) => void;
   setSearchQuery: (searchQuery: Search | undefined) => void;
-  selectedView: "myTokens" | "allTokens";
-  setSelectedView: (view: "myTokens" | "allTokens") => void;
+  selectedView: 'myTokens' | 'allTokens';
+  setSelectedView: (view: 'myTokens' | 'allTokens') => void;
 }> = ({
   selectedTimeFrame,
   setSelectedTimeFrame,
@@ -547,15 +547,15 @@ const TableControls: FunctionComponent<{
           className="!w-full"
           currentValue={searchInput}
           onInput={setSearchInput}
-          placeholder={t("assets.table.search")}
+          placeholder={t('assets.table.search')}
         />
         <SelectMenu
-          classes={useConst({ container: "h-full" })}
+          classes={useConst({ container: 'h-full' })}
           options={useConst([
-            { id: "1H", display: "1H" },
-            { id: "1D", display: "1D" },
-            { id: "1W", display: "1W" },
-            { id: "1M", display: "1M" },
+            { id: '1H', display: '1H' },
+            { id: '1D', display: '1D' },
+            { id: '1W', display: '1W' },
+            { id: '1M', display: '1M' },
           ] as { id: CommonPriceChartTimeFrame; display: string }[])}
           defaultSelectedOptionId={selectedTimeFrame}
           onSelect={useCallback(
@@ -567,12 +567,12 @@ const TableControls: FunctionComponent<{
       </div>
       <MenuToggle
         options={useConst([
-          { id: "myTokens", display: "My Tokens" },
-          { id: "allTokens", display: "All Tokens" },
+          { id: 'myTokens', display: 'My Tokens' },
+          { id: 'allTokens', display: 'All Tokens' },
         ])}
         selectedOptionId={selectedView as string}
         onSelect={(optionId) =>
-          setSelectedView(optionId as "myTokens" | "allTokens")
+          setSelectedView(optionId as 'myTokens' | 'allTokens')
         }
       />
     </div>

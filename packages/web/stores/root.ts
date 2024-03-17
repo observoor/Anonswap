@@ -93,7 +93,7 @@ export class RootStore {
     this.chainStore = new ChainStore(
       ChainList.map((chain) => chain.keplrChain),
       process.env.NEXT_PUBLIC_OSMOSIS_CHAIN_ID_OVERWRITE ??
-      (IS_TESTNET ? "osmo-test-5" : "osmosis")
+      (IS_TESTNET ? "osmo-test-5" : "osmosis-1")
     );
 
     const webApiBaseUrl =

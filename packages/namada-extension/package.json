@@ -60,7 +60,8 @@
   },
   "dependencies": {
     "@cosmos-kit/core": "2.7.2",
-    "@dao-xyz/borsh": "^5.1.5"
+    "@dao-xyz/borsh": "^5.1.5",
+    "slip44": "^3.0.11"
   },
   "peerDependencies": {
     "@cosmjs/amino": ">=0.29.0",

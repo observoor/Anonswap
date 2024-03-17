@@ -42,6 +42,10 @@ export const assetsRouter = createTRPCRouter({
         .merge(UserOsmoAddressSchema)
     )
     .query(async ({ input: { findMinDenomOrSymbol, userOsmoAddress } }) => {
+      if (findMinDenomOrSymbol === '') {
+        return null;
+      }
+
       const asset = await getAsset({ anyDenom: findMinDenomOrSymbol });
 
       return await getUserAssetCoin({
@@ -159,8 +163,8 @@ export const assetsRouter = createTRPCRouter({
               sortFiatValueDirection: isDefaultSort
                 ? "desc"
                 : !search && sortInput && sortInput.keyPath === "usdValue"
-                ? sortInput.direction
-                : undefined,
+                  ? sortInput.direction
+                  : undefined,
             });
 
             if (onlyPositiveBalances) {
@@ -257,9 +261,9 @@ export const assetsRouter = createTRPCRouter({
         ...(typeof timeFrame === "string"
           ? { timeFrame }
           : (timeFrame.custom as {
-              timeFrame: TimeFrame;
-              numRecentFrames?: number;
-            })),
+            timeFrame: TimeFrame;
+            numRecentFrames?: number;
+          })),
       })
     ),
   getAssetPairHistoricalPrice: publicProcedure

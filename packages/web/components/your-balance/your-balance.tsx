@@ -1,21 +1,21 @@
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { CoinPretty, Dec } from '@keplr-wallet/unit';
 import {
   ObservableConcentratedPoolDetail,
   ObservableQueryPool,
   ObservableSharePoolDetail,
-} from "@osmosis-labs/stores";
-import classNames from "classnames";
-import { observer } from "mobx-react-lite";
-import Image from "next/image";
-import Link from "next/link";
-import { useCallback } from "react";
-import { ReactElement, useMemo } from "react";
+} from '@osmosis-labs/stores';
+import classNames from 'classnames';
+import { observer } from 'mobx-react-lite';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useCallback } from 'react';
+import { ReactElement, useMemo } from 'react';
 
-import { CreditCardIcon } from "~/components/assets/credit-card-icon";
-import SkeletonLoader from "~/components/loaders/skeleton-loader";
-import { Button } from "~/components/ui/button";
-import { EventName } from "~/config";
-import { ChainList } from "~/config/generated/chain-list";
+import { CreditCardIcon } from '~/components/assets/credit-card-icon';
+import SkeletonLoader from '~/components/loaders/skeleton-loader';
+import { Button } from '~/components/ui/button';
+import { EventName } from '~/config';
+import { ChainList } from '~/config/generated/chain-list';
 import {
   useAmplitudeAnalytics,
   useCurrentLanguage,
@@ -26,12 +26,12 @@ import {
   useStakedAmountConfig,
   useTranslation,
   useWalletSelect,
-} from "~/hooks";
-import { useBridge } from "~/hooks/bridge";
-import { TokenCMSData } from "~/server/queries/external";
-import { useStore } from "~/stores";
-import { formatPretty } from "~/utils/formatter";
-import { api } from "~/utils/trpc";
+} from '~/hooks';
+import { useBridge } from '~/hooks/bridge';
+import { TokenCMSData } from '~/server/queries/external';
+import { useStore } from '~/stores';
+import { formatPretty } from '~/utils/formatter';
+import { api } from '~/utils/trpc';
 
 interface YourBalanceProps {
   denom: string;
@@ -56,7 +56,7 @@ const YourBalance = observer(
     const language = useCurrentLanguage();
     const osmosisChainId = chainStore.osmosis.chainId;
     const account = accountStore.getWallet(osmosisChainId);
-    const address = account?.address ?? "";
+    const address = account?.address ?? '';
     const osmo = chainStore.osmosis.stakeCurrency;
     const isOsmo = useMemo(
       () =>
@@ -73,7 +73,7 @@ const YourBalance = observer(
 
     const { data } = api.edge.assets.getMarketAsset.useQuery({
       findMinDenomOrSymbol: denom,
-      userOsmoAddress: account?.address,
+      userOsmoAddress: account?.address || '',
     });
 
     const details = useMemo(() => {
@@ -113,7 +113,7 @@ const YourBalance = observer(
     const queryOsmosis = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
 
     const myPoolIds = queryOsmosis.queryGammPoolShare.getOwnPools(
-      account?.address ?? ""
+      account?.address ?? ''
     );
 
     const myPoolDetails = myPoolIds
@@ -133,7 +133,7 @@ const YourBalance = observer(
         return {
           queryPool,
           poolDetail:
-            queryPool.type === "concentrated"
+            queryPool.type === 'concentrated'
               ? derivedDataStore.concentratedPoolDetails.get(myPoolId)
               : derivedDataStore.sharePoolDetails.get(myPoolId),
         };
@@ -169,7 +169,7 @@ const YourBalance = observer(
           if (pool instanceof ObservableSharePoolDetail) {
             return pool.totalValueLocked.mul(
               queryOsmosis.queryGammPoolShare.getAllGammShareRatio(
-                account?.address ?? "",
+                account?.address ?? '',
                 (pool as ObservableSharePoolDetail).querySharePool!.pool.id
               )
             );
@@ -184,7 +184,7 @@ const YourBalance = observer(
         [queryOsmosis, account, priceStore]
       )
     ).filter((pool) =>
-      pool.queryPool.poolAssetDenoms.includes(currency?.base ?? "")
+      pool.queryPool.poolAssetDenoms.includes(currency?.base ?? '')
     );
 
     const assetPoolBalance = useMemo(() => {
@@ -220,28 +220,28 @@ const YourBalance = observer(
         <div className="flex flex-col gap-6 self-stretch">
           <header>
             <h6 className="text-lg font-h6 leading-6 tracking-wide">
-              {t("tokenInfos.earnWith", { denom })}
+              {t('tokenInfos.earnWith', { denom })}
             </h6>
           </header>
           <div className="flex gap-6 self-stretch 1.5md:flex-col md:flex-row sm:flex-col">
             {details?.stakingURL && (
               <Link
-                href={isOsmo ? "/stake" : details?.stakingURL}
-                target={isOsmo ? undefined : "_blank"}
+                href={isOsmo ? '/stake' : details?.stakingURL}
+                target={isOsmo ? undefined : '_blank'}
                 className="flex flex-[0.5]"
                 passHref
                 onClick={() =>
                   logEvent([
                     EventName.TokenInfo.cardClicked,
-                    { tokenName: denom, title: "Stake" },
+                    { tokenName: denom, title: 'Stake' },
                   ])
                 }
               >
                 <ActionButton
                   title={
                     hasStakingBalance
-                      ? t("tokenInfos.staking")
-                      : t("menu.stake")
+                      ? t('tokenInfos.staking')
+                      : t('menu.stake')
                   }
                   largeTitle={
                     hasStakingBalance
@@ -255,15 +255,15 @@ const YourBalance = observer(
                     hasStakingBalance
                       ? formatPretty(balance)
                       : !isOsmo
-                      ? t("tokenInfos.stakeYourDenomToEarnNoAPR", { denom })
-                      : t("tokenInfos.stakeYourDenomToEarn", {
+                      ? t('tokenInfos.stakeYourDenomToEarnNoAPR', { denom })
+                      : t('tokenInfos.stakeYourDenomToEarn', {
                           denom,
                           apr: stakingAPR.truncate().toString(),
                         })
                   }
                   image={
                     <Image
-                      src={"/images/staking-apr-full.svg"}
+                      src={'/images/staking-apr-full.svg'}
                       alt={`Stake image`}
                       className={`-rotate-[75deg] overflow-visible object-cover 2xl:object-contain`}
                       width={224}
@@ -280,18 +280,18 @@ const YourBalance = observer(
               onClick={() =>
                 logEvent([
                   EventName.TokenInfo.cardClicked,
-                  { tokenName: denom, title: "Explore Pools" },
+                  { tokenName: denom, title: 'Explore Pools' },
                 ])
               }
             >
               <ActionButton
                 title={
                   dustFilteredPools.length > 0
-                    ? t("tokenInfos.liquidityInOSMOPools", {
+                    ? t('tokenInfos.liquidityInOSMOPools', {
                         number: dustFilteredPools.length.toString(),
                         denom,
                       })
-                    : t("tokenInfos.explorePools")
+                    : t('tokenInfos.explorePools')
                 }
                 largeTitle={
                   dustFilteredPools.length > 0
@@ -304,11 +304,11 @@ const YourBalance = observer(
                 sub={
                   dustFilteredPools.length > 0 && assetPoolBalance
                     ? formatPretty(assetPoolBalance)
-                    : t("tokenInfos.provideLiquidity")
+                    : t('tokenInfos.provideLiquidity')
                 }
                 image={
                   <Image
-                    src={"/images/explore-pools.svg"}
+                    src={'/images/explore-pools.svg'}
                     alt={`Explore pools image`}
                     className={`overflow-visible object-cover 2xl:object-contain`}
                     width={189}
@@ -350,8 +350,8 @@ const ActionButton = ({
         {largeTitle && <p className="font-subtitle1">{title}</p>}
         {largeTitle ? (
           <h4
-            className={classNames("text-osmoverse-100", {
-              "text-h5 font-h5": shrinkTitle,
+            className={classNames('text-osmoverse-100', {
+              'text-h5 font-h5': shrinkTitle,
             })}
           >
             {largeTitle}
@@ -367,7 +367,7 @@ const ActionButton = ({
       </div>
       <div
         className={`z-0 flex h-full overflow-hidden 2xl:absolute 2xl:bottom-0 2xl:right-0 2xl:translate-x-20 2xl:translate-y-6 ${
-          needsPadding ? "mt-auto pr-5 2xl:pr-0" : ""
+          needsPadding ? 'mt-auto pr-5 2xl:pr-0' : ''
         }`}
       >
         {image}
@@ -390,7 +390,7 @@ const BalanceStats = observer(({ denom }: YourBalanceProps) => {
   const { data, isLoading: isCoinDataLoading } =
     api.edge.assets.getMarketAsset.useQuery({
       findMinDenomOrSymbol: denom,
-      userOsmoAddress: account?.address,
+      userOsmoAddress: account?.address || '',
     });
 
   const isOsmosis = useMemo(
@@ -415,7 +415,7 @@ const BalanceStats = observer(({ denom }: YourBalanceProps) => {
   );
 
   const isChainSupported = Boolean(
-    accountStore.connectedWalletSupportsChain(tokenChain?.chainId ?? "")
+    accountStore.connectedWalletSupportsChain(tokenChain?.chainId ?? '')
       ?.value ?? true
   );
 
@@ -427,12 +427,12 @@ const BalanceStats = observer(({ denom }: YourBalanceProps) => {
   return (
     <div className="flex items-stretch justify-between gap-12 self-stretch 1.5xl:flex-col 1.5xl:gap-6 xl:flex-row 1.5md:flex-col">
       <div
-        className={classNames("flex flex-col items-start", {
-          "gap-3": account?.isWalletConnected,
+        className={classNames('flex flex-col items-start', {
+          'gap-3': account?.isWalletConnected,
         })}
       >
         <h6 className="text-subtitle1 font-subtitle1 leading-6">
-          {t("tokenInfos.yourBalance")}
+          {t('tokenInfos.yourBalance')}
         </h6>
         {account?.isWalletConnected ? (
           <SkeletonLoader isLoaded={!isCoinDataLoading}>
@@ -458,7 +458,7 @@ const BalanceStats = observer(({ denom }: YourBalanceProps) => {
             onClick={() => onOpenWalletSelect(chainName!)}
             className="text-subtitle1 font-subtitle1 leading-6 text-wosmongton-300 transition-colors duration-200 ease-in-out hover:text-wosmongton-200"
           >
-            {t("connectWallet")}
+            {t('connectWallet')}
           </button>
         )}
       </div>
@@ -475,16 +475,16 @@ const BalanceStats = observer(({ denom }: YourBalanceProps) => {
                   className="w-full whitespace-nowrap"
                   disabled={!isDepositSupported}
                 >
-                  {t("assets.historyTable.colums.deposit")} ↗️️
+                  {t('assets.historyTable.colums.deposit')} ↗️️
                 </Button>
               </Link>
             ) : (
               <Button
                 className="w-full whitespace-nowrap"
                 disabled={!tokenChain?.chainId || !isDepositSupported}
-                onClick={() => bridgeAsset(denom, "deposit")}
+                onClick={() => bridgeAsset(denom, 'deposit')}
               >
-                {t("assets.historyTable.colums.deposit")}
+                {t('assets.historyTable.colums.deposit')}
               </Button>
             )}
             {ibcBalance?.withdrawUrlOverride ? (
@@ -502,7 +502,7 @@ const BalanceStats = observer(({ denom }: YourBalanceProps) => {
                     data.amount.toDec().isZero()
                   }
                 >
-                  {t("assets.historyTable.colums.withdraw")} ↗️️
+                  {t('assets.historyTable.colums.withdraw')} ↗️️
                 </Button>
               </Link>
             ) : (
@@ -515,9 +515,9 @@ const BalanceStats = observer(({ denom }: YourBalanceProps) => {
                   data.amount.toDec().isZero()
                 }
                 variant="outline"
-                onClick={() => bridgeAsset(denom, "withdraw")}
+                onClick={() => bridgeAsset(denom, 'withdraw')}
               >
-                {t("assets.historyTable.colums.withdraw")}
+                {t('assets.historyTable.colums.withdraw')}
               </Button>
             )}
           </>
@@ -532,12 +532,12 @@ const BalanceStats = observer(({ denom }: YourBalanceProps) => {
             <CreditCardIcon
               isAnimated
               classes={{
-                backCard: "group-hover:stroke-[2]",
-                frontCard: "group-hover:fill-[#71B5EB] group-hover:stroke-[2]",
+                backCard: 'group-hover:stroke-[2]',
+                frontCard: 'group-hover:fill-[#71B5EB] group-hover:stroke-[2]',
               }}
             />
             <span className="whitespace-nowrap">
-              {t("tokenInfos.buyToken", { coinDenom: denom })}
+              {t('tokenInfos.buyToken', { coinDenom: denom })}
             </span>
           </Button>
         ) : null}

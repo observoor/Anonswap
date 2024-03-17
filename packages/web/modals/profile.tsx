@@ -76,10 +76,11 @@ export const ProfileModal: FunctionComponent<
   } = useDisclosure();
 
   const wallet = accountStore.getWallet(chainId);
-  console.log('Wallet, chain', wallet, chainId);
+  console.log('Wallet pretty name', wallet?.walletInfo?.prettyName);
 
   const [hasCopied, setHasCopied] = useState(false);
   const [isDisconnecting, setIsDisconnecting] = useState(false);
+  const [namdaBalance, setNamdaBalance] = useState(null);
   const [_state, copyToClipboard] = useCopyToClipboard();
   const [_isReady, _cancel, reset] = useTimeoutFn(
     () => setHasCopied(false),
@@ -87,16 +88,22 @@ export const ProfileModal: FunctionComponent<
   );
 
   const address = wallet?.address ?? '';
+  const isNamada = wallet?.walletInfo?.prettyName?.toLowerCase() === 'namada';
 
   const { data: userOsmoAsset } = api.edge.assets.getUserAsset.useQuery(
     {
-      findMinDenomOrSymbol: 'OSMO',
+      findMinDenomOrSymbol: isNamada ? '' : 'OSMO',
       userOsmoAddress: wallet?.address ?? '',
     },
     {
-      enabled: Boolean(wallet?.address) && typeof wallet?.address === 'string',
+      enabled:
+        Boolean(wallet?.address) &&
+        typeof wallet?.address === 'string' &&
+        !isNamada,
     }
   );
+
+  const symbolName = isNamada ? 'Namada' : 'Osmosis';
 
   const onCopyAddress = () => {
     copyToClipboard(address);
@@ -111,6 +118,21 @@ export const ProfileModal: FunctionComponent<
     return () => router.events.off('routeChangeComplete', onCloseModal);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (isNamada && wallet?.address) {
+      const getNamadaData = async () => {
+        const client = await wallet?.mainWallet.client;
+        const balance = await (client as any)?.client?.balances({
+          owner: wallet?.address,
+          tokens: ['tnam1qxvg64psvhwumv3mwrrjfcz0h3t3274hwggyzcee'],
+        });
+        console.log('Namada balance', balance);
+        setNamdaBalance(balance[0]?.amount);
+      };
+      getNamadaData();
+    }
+  });
 
   return (
     <ModalBase
@@ -212,22 +234,27 @@ export const ProfileModal: FunctionComponent<
 
             <div>
               <h6 className="mb-[4px] tracking-wide text-osmoverse-100">
-                {formatPretty(
-                  userOsmoAsset?.usdValue ??
-                    new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0)),
-                  {
-                    minimumFractionDigits: 2,
-                    maximumSignificantDigits: undefined,
-                    notation: 'standard',
-                  }
-                )}
+                {isNamada
+                  ? ''
+                  : formatPretty(
+                      userOsmoAsset?.usdValue ??
+                        new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0)),
+                      {
+                        minimumFractionDigits: 2,
+                        maximumSignificantDigits: undefined,
+                        notation: 'standard',
+                      }
+                    )}
               </h6>
+
               <p className="text-h5 font-h5">
-                {formatPretty(userOsmoAsset?.amount ?? new Dec(0), {
-                  minimumFractionDigits: 2,
-                  maximumSignificantDigits: undefined,
-                  notation: 'standard',
-                })}
+                {isNamada
+                  ? namdaBalance
+                  : formatPretty(userOsmoAsset?.amount ?? new Dec(0), {
+                      minimumFractionDigits: 2,
+                      maximumSignificantDigits: undefined,
+                      notation: 'standard',
+                    })}
               </p>
             </div>
           </div>
@@ -280,7 +307,7 @@ export const ProfileModal: FunctionComponent<
               </div>
 
               <div className="subtitle-1 tracking-wide">
-                <p>Namada</p>
+                <p>{symbolName}</p>
                 <div className="flex items-center gap-2">
                   <p title={address} className="text-osmoverse-100">
                     {getShortAddress(address)}

@@ -12,6 +12,8 @@ const Home = () => {
     onLoadEvent: [EventName.Swap.pageViewed, { isOnHome: true }],
   });
 
+  console.log('featureFlags', featureFlags.tokenInfo);
+
   return (
     <main className="relative flex h-full items-center overflow-auto bg-osmoverse-900 py-2">
       <div className="pointer-events-none fixed h-full w-full bg-home-bg-pattern bg-cover bg-repeat-x">

@@ -1,11 +1,11 @@
-import { WalletStatus } from "@cosmos-kit/core";
-import { ComponentProps, useCallback, useEffect, useState } from "react";
+import { WalletStatus } from '@cosmos-kit/core';
+import { ComponentProps, useCallback, useEffect, useState } from 'react';
 
-import { Icon } from "~/components/assets";
-import { Button } from "~/components/buttons";
-import { t } from "~/hooks";
-import { useWalletSelect } from "~/hooks/wallet-select";
-import { useStore } from "~/stores";
+import { Icon } from '~/components/assets';
+import { Button } from '~/components/buttons';
+import { t } from '~/hooks';
+import { useWalletSelect } from '~/hooks/wallet-select';
+import { useStore } from '~/stores';
 
 /** FOR USE IN MODALS
  *
@@ -23,13 +23,17 @@ import { useStore } from "~/stores";
 export function useConnectWalletModalRedirect(
   actionButtonProps: ComponentProps<typeof Button>,
   _onRequestClose: () => void,
-  connectWalletMessage = t("connectWallet")
+  connectWalletMessage = t('connectWallet')
 ) {
   const { accountStore, chainStore } = useStore();
   const { chainId } = chainStore.osmosis;
   const osmosisAccount = accountStore.getWallet(chainId);
 
   const { onOpenWalletSelect } = useWalletSelect();
+  console.log(
+    'osmosisAccount',
+    osmosisAccount?.walletStatus === WalletStatus.Connected
+  );
 
   const [walletInitiallyConnected, setWalletInitiallyConnected] = useState(
     () => osmosisAccount?.walletStatus === WalletStatus.Connected

@@ -26,8 +26,10 @@
       "type": "node",
       "request": "launch",
       "name": "Next.js Node Debug",
-      "runtimeExecutable": "${workspaceFolder}/node_modules/next/dist/bin/next",
-      "cwd": "${workspaceFolder}/packages/web",
+      "runtimeExecutable": "yarn",
+      "runtimeArgs": ["dev"],
+      "runtimeVersion": "18",
+      "cwd": "${workspaceFolder}",
       "console": "integratedTerminal"
     }
   ]
