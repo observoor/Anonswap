@@ -1,26 +1,26 @@
-import { PricePretty, RatePretty } from "@keplr-wallet/unit";
-import { ObservableQueryPool } from "@osmosis-labs/stores";
-import { observer } from "mobx-react-lite";
-import { FunctionComponent, useCallback, useEffect, useState } from "react";
+import { PricePretty, RatePretty } from '@keplr-wallet/unit';
+import { ObservableQueryPool } from '@osmosis-labs/stores';
+import { observer } from 'mobx-react-lite';
+import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 
-import { PoolCard } from "~/components/cards/";
-import { MetricLoader } from "~/components/loaders";
-import { AssetsTableV1 } from "~/components/table/assets-table-v1";
-import { Metric } from "~/components/types";
-import { ShowMoreButton } from "~/components/ui/button";
-import { DesktopOnlyPrivateText } from "~/components/your-balance/privacy";
-import { EventName } from "~/config";
-import { useTranslation } from "~/hooks";
+import { PoolCard } from '~/components/cards/';
+import { MetricLoader } from '~/components/loaders';
+import { AssetsTableV1 } from '~/components/table/assets-table-v1';
+import { Metric } from '~/components/types';
+import { ShowMoreButton } from '~/components/ui/button';
+import { DesktopOnlyPrivateText } from '~/components/your-balance/privacy';
+import { EventName } from '~/config';
+import { useTranslation } from '~/hooks';
 import {
   useAmplitudeAnalytics,
   useHideDustUserSetting,
   useNavBar,
   useWindowSize,
-} from "~/hooks";
-import { useBridge } from "~/hooks/bridge";
-import { useFeatureFlags } from "~/hooks/use-feature-flags";
-import { useStore } from "~/stores";
-import { formatPretty } from "~/utils/formatter";
+} from '~/hooks';
+import { useBridge } from '~/hooks/bridge';
+import { useFeatureFlags } from '~/hooks/use-feature-flags';
+import { useStore } from '~/stores';
+import { formatPretty } from '~/utils/formatter';
 
 const INIT_POOL_CARD_COUNT = 6;
 
@@ -43,7 +43,7 @@ export const AssetsPageV1: FunctionComponent = observer(() => {
 
   useEffect(() => {
     setUserProperty(
-      "osmoBalance",
+      'osmoBalance',
       Number(
         nativeBalances[0].balance.maxDecimals(6).hideDenom(true).toString()
       )
@@ -54,16 +54,16 @@ export const AssetsPageV1: FunctionComponent = observer(() => {
   useNavBar({
     ctas: [
       {
-        label: t("assets.table.depositButton"),
+        label: t('assets.table.depositButton'),
         onClick: () => {
-          startBridge("deposit");
+          startBridge('deposit');
           logEvent([EventName.Assets.depositClicked]);
         },
       },
       {
-        label: t("assets.table.withdrawButton"),
+        label: t('assets.table.withdrawButton'),
         onClick: () => {
-          startBridge("withdraw");
+          startBridge('withdraw');
           logEvent([EventName.Assets.withdrawClicked]);
         },
       },
@@ -73,7 +73,7 @@ export const AssetsPageV1: FunctionComponent = observer(() => {
   const onTableDeposit = useCallback(
     (_chainId: string, coinDenom: string, externalDepositUrl?: string) => {
       if (!externalDepositUrl) {
-        bridgeAsset(coinDenom, "deposit");
+        bridgeAsset(coinDenom, 'deposit');
       }
     },
     [bridgeAsset]
@@ -81,7 +81,7 @@ export const AssetsPageV1: FunctionComponent = observer(() => {
   const onTableWithdraw = useCallback(
     (_chainId: string, coinDenom: string, externalWithdrawUrl?: string) => {
       if (!externalWithdrawUrl) {
-        bridgeAsset(coinDenom, "withdraw");
+        bridgeAsset(coinDenom, 'withdraw');
       }
     },
     [bridgeAsset]
@@ -111,7 +111,7 @@ const AssetsOverview: FunctionComponent = observer(() => {
   const osmosisQueries = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
 
   const queryAccountsPositions = osmosisQueries.queryAccountsPositions.get(
-    assetsStore.address ?? ""
+    assetsStore.address ?? ''
   );
 
   const totalAssetsValue = priceStore.calculateTotalPrice([
@@ -137,25 +137,25 @@ const AssetsOverview: FunctionComponent = observer(() => {
   useEffect(() => {
     if (totalAssetsValue) {
       setUserProperty(
-        "totalAssetsPrice",
+        'totalAssetsPrice',
         Number(totalAssetsValue.trim(true).toDec().toString(2))
       );
     }
     if (availableAssetsValue) {
       setUserProperty(
-        "unbondedAssetsPrice",
+        'unbondedAssetsPrice',
         Number(availableAssetsValue.trim(true).toDec().toString(2))
       );
     }
     if (bondedAssetsValue) {
       setUserProperty(
-        "bondedAssetsPrice",
+        'bondedAssetsPrice',
         Number(bondedAssetsValue.trim(true).toDec().toString(2))
       );
     }
     if (stakedAssetsValue) {
       setUserProperty(
-        "stakedOsmoPrice",
+        'stakedOsmoPrice',
         Number(stakedAssetsValue.trim(true).toDec().toString(2))
       );
     }
@@ -169,7 +169,7 @@ const AssetsOverview: FunctionComponent = observer(() => {
 
   const format = (price?: PricePretty): string => {
     if (!price) {
-      return "0";
+      return '0';
     }
 
     if (width < 1100) {
@@ -181,19 +181,19 @@ const AssetsOverview: FunctionComponent = observer(() => {
   return (
     <div className="flex w-full place-content-between items-center gap-8 overflow-x-auto rounded-3xl bg-osmoverse-1000 px-8 py-9 2xl:gap-4 xl:gap-3 1.5lg:px-4 md:flex-col md:items-start md:gap-3 md:px-5 md:py-5">
       <Metric
-        label={t("assets.totalAssets")}
+        label={t('assets.totalAssets')}
         value={<DesktopOnlyPrivateText text={format(totalAssetsValue)} />}
       />
       <Metric
-        label={t("assets.bondedAssets")}
+        label={t('assets.bondedAssets')}
         value={<DesktopOnlyPrivateText text={format(bondedAssetsValue)} />}
       />
       <Metric
-        label={t("assets.unbondedAssets")}
+        label={t('assets.unbondedAssets')}
         value={<DesktopOnlyPrivateText text={format(availableAssetsValue)} />}
       />
       <Metric
-        label={t("assets.stakedAssets")}
+        label={t('assets.stakedAssets')}
         value={<DesktopOnlyPrivateText text={format(stakedAssetsValue)} />}
       />
     </div>
@@ -215,7 +215,7 @@ const PoolAssets: FunctionComponent = observer(() => {
   const { t } = useTranslation();
 
   const { chainId } = chainStore.osmosis;
-  const address = accountStore.getWallet(chainId)?.address ?? "";
+  const address = accountStore.getWallet(chainId)?.address ?? '';
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
 
   const ownedPoolIds = queriesStore
@@ -224,7 +224,7 @@ const PoolAssets: FunctionComponent = observer(() => {
   const [showAllPools, setShowAllPools] = useState(false);
 
   useEffect(() => {
-    setUserProperty("myPoolsCount", ownedPoolIds.length);
+    setUserProperty('myPoolsCount', ownedPoolIds.length);
   }, [ownedPoolIds.length, setUserProperty]);
 
   const dustedPoolIds = useHideDustUserSetting(ownedPoolIds, (poolId) =>
@@ -242,7 +242,7 @@ const PoolAssets: FunctionComponent = observer(() => {
 
   return (
     <section>
-      <h5>{t("assets.myPools")}</h5>
+      <h5>{t('assets.myPools')}</h5>
       <PoolCards
         {...{ showAllPools, ownedPoolIds: dustedPoolIds, setShowAllPools }}
       />
@@ -306,7 +306,7 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
 
         if (
           !pool ||
-          (pool.type === "concentrated" && !flags.concentratedLiquidity)
+          (pool.type === 'concentrated' && !flags.concentratedLiquidity)
         ) {
           return undefined;
         }
@@ -317,7 +317,7 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
           [
             queryOsmosis.queryIncentivizedPools.isIncentivized(poolId)
               ? {
-                  label: t("assets.poolCards.APR"),
+                  label: t('assets.poolCards.APR'),
                   value: (
                     <MetricLoader
                       isLoading={
@@ -329,7 +329,7 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
                   ),
                 }
               : {
-                  label: t("assets.poolCards.FeeAPY"),
+                  label: t('assets.poolCards.FeeAPY'),
                   value:
                     poolBonding.highestBondDuration?.swapFeeApr
                       .maxDecimals(0)
@@ -337,7 +337,7 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
                     sharePoolDetail.swapFeeApr.maxDecimals(0).toString(),
                 },
             {
-              label: t("assets.poolCards.liquidity"),
+              label: t('assets.poolCards.liquidity'),
               value: (
                 <h6>
                   <DesktopOnlyPrivateText
@@ -350,11 +350,11 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
             },
             queryOsmosis.queryIncentivizedPools.isIncentivized(poolId)
               ? {
-                  label: t("assets.poolCards.bonded"),
+                  label: t('assets.poolCards.bonded'),
                   value: sharePoolDetail.userBondedValue.toString(),
                 }
               : {
-                  label: t("pools.externalIncentivized.TVL"),
+                  label: t('pools.externalIncentivized.TVL'),
                   value: formatPretty(sharePoolDetail.totalValueLocked),
                 },
           ],
@@ -390,10 +390,10 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
                   poolId: pool.id,
                   poolName: pool.poolAssets
                     .map((poolAsset) => poolAsset.amount.denom)
-                    .join(" / "),
+                    .join(' / '),
                   poolWeight: pool.weightedPoolInfo?.assets
                     .map((poolAsset) => poolAsset.weightFraction?.toString())
-                    .join(" / "),
+                    .join(' / '),
                   isSuperfluidPool:
                     queryOsmosis.querySuperfluidPools.isSuperfluidPool(pool.id),
                 },

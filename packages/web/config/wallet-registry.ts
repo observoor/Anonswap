@@ -28,7 +28,6 @@ export const WalletRegistry: RegistryWallet[] = [
       ),
     supportsChain: async (chainId) => {
       const keplrMobileAvailableChains: MainnetChainIds[] = [
-        "osmo-test-5",
         "osmosis-1",
       ];
 

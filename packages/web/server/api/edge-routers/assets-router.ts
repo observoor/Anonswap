@@ -28,11 +28,35 @@ import { createSortSchema, sort } from "~/utils/sort";
 import { maybeCachePaginatedItems } from "../pagination";
 import { InfiniteQuerySchema } from "../zod-types";
 
+
+const namadaBalance = {
+  shielded: null as string | null,
+  memonic: null as string | null,
+};
+
+
 const GetInfiniteAssetsInputSchema = InfiniteQuerySchema.merge(
   AssetFilterSchema
 ).merge(UserOsmoAddressSchema);
 
 export const assetsRouter = createTRPCRouter({
+  addNamadaAsset: publicProcedure.input(
+    z
+      .object({
+        shieldedBalance: z.string(),
+        memonicBalance: z.string(),
+        // Add more fields as needed
+      })
+  )
+    .mutation(async ({ input: { shieldedBalance, memonicBalance } }) => {
+      console.log('shieldedBalance', shieldedBalance);
+      console.log('memonicBalance', memonicBalance);
+      namadaBalance.shielded = shieldedBalance || null;
+      namadaBalance.memonic = memonicBalance || null;
+      return true;
+    }),
+
+
   getUserAsset: publicProcedure
     .input(
       z
@@ -42,6 +66,8 @@ export const assetsRouter = createTRPCRouter({
         .merge(UserOsmoAddressSchema)
     )
     .query(async ({ input: { findMinDenomOrSymbol, userOsmoAddress } }) => {
+      console.log('namadaBalance', namadaBalance);
+
       if (findMinDenomOrSymbol === '') {
         return null;
       }
@@ -65,8 +91,8 @@ export const assetsRouter = createTRPCRouter({
           onlyVerified,
           includePreview,
         },
-      }) =>
-        maybeCachePaginatedItems({
+      }) => {
+        return maybeCachePaginatedItems({
           getFreshItems: () =>
             mapGetUserAssetCoins({
               search,
@@ -79,6 +105,7 @@ export const assetsRouter = createTRPCRouter({
           cursor,
           limit,
         })
+      }
     ),
   getAssetPrice: publicProcedure
     .input(

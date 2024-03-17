@@ -1,3 +1,5 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { Namada, NamadaClient } from '@cosmos-kit/namada-extension';
 import { Dec, PricePretty } from '@keplr-wallet/unit';
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
@@ -80,7 +82,10 @@ export const ProfileModal: FunctionComponent<
 
   const [hasCopied, setHasCopied] = useState(false);
   const [isDisconnecting, setIsDisconnecting] = useState(false);
-  const [namdaBalance, setNamdaBalance] = useState(null);
+  const [namdaBalance, setNamdaBalance] = useState({
+    nemonic: '' as string | null,
+    shielded: '' as string | null,
+  });
   const [_state, copyToClipboard] = useCopyToClipboard();
   const [_isReady, _cancel, reset] = useTimeoutFn(
     () => setHasCopied(false),
@@ -119,21 +124,55 @@ export const ProfileModal: FunctionComponent<
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const addNamadaAsset = async (
+    memonicBalance: string,
+    shieldedBalance: string
+  ) => {
+    try {
+      const mutation = api.edge.assets.addNamadaAsset.useMutation();
+      await mutation.mutateAsync({
+        memonicBalance,
+        shieldedBalance,
+      });
+      console.log('Namada balance added');
+    } catch (error) {
+      console.error('adding namada balance error', error);
+    }
+  };
+
   useEffect(() => {
     if (isNamada && wallet?.address) {
       const getNamadaData = async () => {
-        const client = await wallet?.mainWallet.client;
-        const balance = await (client as any)?.client?.balances({
-          owner: wallet?.address,
+        const namadaClient = (await wallet?.mainWallet.client) as NamadaClient;
+        const client: Namada = namadaClient.client;
+
+        const accountType = 'shielded-keys';
+        const shieldedAddress = (await client.accounts())?.find(
+          (account: any) => account.type === accountType
+        )?.address;
+
+        const balance = await client?.balances({
+          owner: wallet?.address ?? '',
           tokens: ['tnam1qxvg64psvhwumv3mwrrjfcz0h3t3274hwggyzcee'],
         });
-        console.log('Namada balance', balance);
-        setNamdaBalance(balance[0]?.amount);
+
+        const balanceShielded = await client?.balances({
+          owner: shieldedAddress ?? '',
+          tokens: ['tnam1qxvg64psvhwumv3mwrrjfcz0h3t3274hwggyzcee'],
+        });
+        console.log('Namada balance', balance, balanceShielded);
+        await addNamadaAsset(
+          balance ? balance[0]?.amount : '',
+          balanceShielded ? balanceShielded[0]?.amount : ''
+        );
+        setNamdaBalance({
+          nemonic: balance ? balance[0]?.amount : '',
+          shielded: balanceShielded ? balanceShielded[0]?.amount : '',
+        });
       };
       getNamadaData();
     }
   });
-
   return (
     <ModalBase
       title={t('profile.modalTitle')}
@@ -249,13 +288,16 @@ export const ProfileModal: FunctionComponent<
 
               <p className="text-h5 font-h5">
                 {isNamada
-                  ? namdaBalance
+                  ? namdaBalance?.nemonic
                   : formatPretty(userOsmoAsset?.amount ?? new Dec(0), {
                       minimumFractionDigits: 2,
                       maximumSignificantDigits: undefined,
                       notation: 'standard',
                     })}
               </p>
+              {isNamada && (
+                <p className="text-h5 font-h5">{namdaBalance?.shielded}</p>
+              )}
             </div>
           </div>
 

@@ -182,12 +182,12 @@ const MainLayoutWrapper: FunctionComponent<{
     }
 
     let menuItems: (MainLayoutMenu | null)[] = [
-      {
+      /* {
         label: t('menu.swap'),
         link: '/',
         icon: <Icon id="trade" className="h-5 w-5" />,
         selectionTest: /\/$/,
-      },
+      }, */
       flags.earnPage
         ? {
             label: t('earnPage.title'),

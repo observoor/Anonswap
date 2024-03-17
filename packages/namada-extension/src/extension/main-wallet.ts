@@ -4,7 +4,7 @@ import { MainWalletBase } from '@cosmos-kit/core';
 import { ChainNamadaExtension } from './chain-wallet';
 import { NamadaClient } from './client';
 import { getNamadaFromExtension } from './utils';
-import { BalancesProps, Namada } from 'src/extension/types';
+import { BalancesProps, Namada } from '../extension/types';
 
 export class NamadaExtensionWallet extends MainWalletBase {
   constructor(walletInfo: Wallet) {
