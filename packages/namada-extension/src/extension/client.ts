@@ -80,7 +80,7 @@ export class NamadaClient implements WalletClient {
 
     const signProps: SignArbitraryProps = {
       signer,
-      data: toBase64(signDoc?.bodyBytes || new Uint8Array())
+      data: toBase64(signDoc?.bodyBytes || new Uint8Array(0))
     };
 
     const sigature = await this.client?.sign(signProps);
@@ -91,15 +91,14 @@ export class NamadaClient implements WalletClient {
       signed: signDoc as SignDoc,
       signature: {
         signature: sigature?.signature || '',
-        pubkey: fromBase64(pubKey) || new Uint8Array(),
+        pubkey: fromBase64(pubKey) || new Uint8Array(0),
       } as any
 
     }
     return response;
   }
 
-  async sendTx(chainId: string, tx: Uint8Array, mode: BroadcastMode) {
-
+  async sendTx(_chainId: string, tx: Uint8Array, _mode: BroadcastMode) {
     enum TxType {
       Bond = 1,
       Unbond = 2,
