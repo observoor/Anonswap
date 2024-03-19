@@ -47,10 +47,12 @@ export class NamadaClient implements WalletClient {
 
   async getSimpleAccount() {
 
+    await this.client.connect();
     const chain = await this.client.getChain();
     if (!chain) {
       await this.client.connect();
     }
+
 
     //const accountType = 'shielded-keys';
     const accountType = 'mnemonic';

@@ -145,6 +145,8 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
 
   const submitTransfer = async () => {
     try {
+      const isNamada =
+        wallet?.walletInfo?.prettyName?.toLowerCase() === 'namada';
       if (!isNamada) {
         setNotificationMessage('Wallet is not Namada');
         setShowNotification(true);
@@ -199,6 +201,8 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
 
   const submitIBC = async () => {
     try {
+      const isNamada =
+        wallet?.walletInfo?.prettyName?.toLowerCase() === 'namada';
       if (!isNamada) {
         setNotificationMessage('Wallet is not Namada');
         setShowNotification(true);
@@ -294,7 +298,7 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
         Namada nemonic address: {namdaData.nemonicAddress}
       </p>
       <p className="text-md">
-        Namada memonic balance: {namdaData?.nemonicBalance}
+        Namada nemonic balance: {namdaData?.nemonicBalance}
       </p>
       <p className="text-md">
         Namada shielded address: {namdaData?.shieldedAddress || ''}
