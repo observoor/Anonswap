@@ -6,16 +6,7 @@ import { toBase64, fromBase64 } from '@cosmjs/encoding';
 import { DirectSignResponse } from '@cosmjs/proto-signing';
 import { SignDoc } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 
-enum TxType {
-  Bond = 1,
-  Unbond = 2,
-  Withdraw = 3,
-  Transfer = 4,
-  IBCTransfer = 5,
-  EthBridgeTransfer = 6,
-  RevealPK = 7,
-  VoteProposal = 8,
-}
+
 
 export class NamadaClient implements WalletClient {
   readonly client: Namada;
@@ -108,7 +99,19 @@ export class NamadaClient implements WalletClient {
   }
 
   async sendTx(chainId: string, tx: Uint8Array, mode: BroadcastMode) {
-    console.log(chainId, mode);
+
+    enum TxType {
+      Bond = 1,
+      Unbond = 2,
+      Withdraw = 3,
+      Transfer = 4,
+      IBCTransfer = 5,
+      EthBridgeTransfer = 6,
+      RevealPK = 7,
+      VoteProposal = 8,
+    }
+
+
     const props: TxMsgProps = {
       type: AccountType.Mnemonic,
       txType: TxType.Transfer,
