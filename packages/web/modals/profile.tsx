@@ -157,7 +157,10 @@ export const ProfileModal: FunctionComponent<
         }
 
         // TODO fix: only call RPC once
-        if (namadaBalance?.nemonic?.length > 5) {
+        if (
+          namadaBalance?.nemonic?.length &&
+          namadaBalance?.nemonic?.length > 5
+        ) {
           return;
         }
         console.log('Wallet pretty name', wallet?.walletInfo?.prettyName);
