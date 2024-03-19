@@ -133,7 +133,7 @@ export const ProfileModal: FunctionComponent<
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const addNamadaAsset = async (
+  /* const addNamadaAsset = async (
     memonicBalance: string,
     shieldedBalance: string
   ) => {
@@ -147,7 +147,7 @@ export const ProfileModal: FunctionComponent<
     } catch (error) {
       console.error('adding namada balance error', error);
     }
-  };
+  }; */
 
   useEffect(() => {
     if (isNamadaLoc && wallet?.address) {
