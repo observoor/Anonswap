@@ -78,7 +78,6 @@ export const ProfileModal: FunctionComponent<
   } = useDisclosure();
 
   const wallet = accountStore.getWallet(chainId);
-  console.log('Wallet pretty name', wallet?.walletInfo?.prettyName);
 
   const [hasCopied, setHasCopied] = useState(false);
   const [isDisconnecting, setIsDisconnecting] = useState(false);
@@ -161,6 +160,7 @@ export const ProfileModal: FunctionComponent<
         if (namadaBalance?.nemonic?.length) {
           return;
         }
+        console.log('Wallet pretty name', wallet?.walletInfo?.prettyName);
 
         const accountType = 'shielded-keys';
         const shieldedAddress = (await namadaClient?.accounts())?.find(
