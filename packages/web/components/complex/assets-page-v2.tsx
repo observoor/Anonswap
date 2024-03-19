@@ -25,13 +25,14 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
   const isNamada = wallet?.walletInfo?.prettyName?.toLowerCase() === 'namada';
   const tokenID = 'tnam1qxvg64psvhwumv3mwrrjfcz0h3t3274hwggyzcee';
   const NotificationBar = () => (
-    <div className="bg-blue-500 text-white fixed top-0 left-0 w-full p-4">
+    <div className="fixed bottom-5 left-5 z-40 border-x-chartGradientPrimary bg-wosmongton-200 p-4 text-chartGradientPrimary">
       {notificationMessage}
+
       <button
         onClick={() => setShowNotification(false)}
-        className="bg-blue-500 text-white"
+        className="rounded-md border-2 border-chartGradientPrimary"
       >
-        Close
+        X
       </button>
     </div>
   );
@@ -55,7 +56,7 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
       },*/
     ],
   });
-  const [showNotification, setShowNotification] = useState(false);
+  const [showNotification, setShowNotification] = useState(true);
   const [notificationMessage, setNotificationMessage] = useState('');
   const [namdaData, setNamdaData] = useState({
     nemonicBalance: '' as string | null,
@@ -145,10 +146,10 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
   const submitTransfer = async () => {
     try {
       if (!isNamada) {
-        throw new Error('Wallet is not namada');
+        setNotificationMessage('Wallet is not Namada');
+        setShowNotification(true);
+        return;
       }
-      setNotificationMessage('No address found');
-      setShowNotification(true);
 
       const chainId = 'namada';
       const tranMsgInst = new Message<TransferMsgValue>();
@@ -158,7 +159,9 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
           namdaData?.nemonicAddress,
           namdaData?.shieldedAddress
         );
-        setNotificationMessage('No address found');
+        setNotificationMessage(
+          'Namada address not found, please change wallet'
+        );
         setShowNotification(true);
         return;
       }
@@ -201,7 +204,21 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
   const submitIBC = async () => {
     try {
       if (!isNamada) {
-        throw new Error('Wallet is not namada');
+        setNotificationMessage('Wallet is not Namada');
+        setShowNotification(true);
+        return;
+      }
+      if (!namdaData?.nemonicAddress || !namdaData?.shieldedAddress) {
+        console.error(
+          'No address found',
+          namdaData?.nemonicAddress,
+          namdaData?.shieldedAddress
+        );
+        setNotificationMessage(
+          'Namada address not found, please change wallet'
+        );
+        setShowNotification(true);
+        return;
       }
 
       const osmosisChanel = 'channel-5802'; //osmosis test 5802
