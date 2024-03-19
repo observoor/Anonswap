@@ -1,46 +1,46 @@
-import { logEvent } from "@amplitude/analytics-browser";
-import { Popover } from "@headlessui/react";
-import { useQuery } from "@tanstack/react-query";
-import classNames from "classnames";
-import dayjs from "dayjs";
-import { observer } from "mobx-react-lite";
-import Image from "next/image";
-import { useRouter } from "next/router";
-import { Fragment, FunctionComponent, useEffect, useRef } from "react";
-import { useLocalStorage } from "react-use";
+import { logEvent } from '@amplitude/analytics-browser';
+import { Popover } from '@headlessui/react';
+import { useQuery } from '@tanstack/react-query';
+import classNames from 'classnames';
+import dayjs from 'dayjs';
+import { observer } from 'mobx-react-lite';
+import Image from 'next/image';
+import { useRouter } from 'next/router';
+import { Fragment, FunctionComponent, useEffect, useRef } from 'react';
+import { useLocalStorage } from 'react-use';
 
-import { Icon } from "~/components/assets";
-import { Button } from "~/components/buttons";
-import IconButton from "~/components/buttons/icon-button";
-import ClientOnly from "~/components/client-only";
-import SkeletonLoader from "~/components/loaders/skeleton-loader";
-import { MainMenu } from "~/components/main-menu";
-import { CustomClasses, MainLayoutMenu } from "~/components/types";
-import { EventName } from "~/config";
-import { useTranslation } from "~/hooks";
-import { useAmplitudeAnalytics, useDisclosure } from "~/hooks";
-import { useICNSName } from "~/hooks/queries/osmosis/use-icns-name";
-import { useFeatureFlags } from "~/hooks/use-feature-flags";
-import { useWalletSelect } from "~/hooks/wallet-select";
+import { Icon } from '~/components/assets';
+import { Button } from '~/components/buttons';
+import IconButton from '~/components/buttons/icon-button';
+import ClientOnly from '~/components/client-only';
+import SkeletonLoader from '~/components/loaders/skeleton-loader';
+import { MainMenu } from '~/components/main-menu';
+import { CustomClasses, MainLayoutMenu } from '~/components/types';
+import { EventName } from '~/config';
+import { useTranslation } from '~/hooks';
+import { useAmplitudeAnalytics, useDisclosure } from '~/hooks';
+import { useICNSName } from '~/hooks/queries/osmosis/use-icns-name';
+import { useFeatureFlags } from '~/hooks/use-feature-flags';
+import { useWalletSelect } from '~/hooks/wallet-select';
 import {
   NotifiContextProvider,
   NotifiModal,
   NotifiPopover,
-} from "~/integrations/notifi";
-import { ModalBase, ModalBaseProps, SettingsModal } from "~/modals";
+} from '~/integrations/notifi';
+import { ModalBase, ModalBaseProps, SettingsModal } from '~/modals';
 import {
   ExternalLinkModal,
   handleExternalLink,
-} from "~/modals/external-links-modal";
-import { ProfileModal } from "~/modals/profile";
-import { queryOsmosisCMS } from "~/server/queries/osmosis/cms/query-osmosis-cms";
-import { useStore } from "~/stores";
-import { UnverifiedAssetsState } from "~/stores/user-settings";
-import { noop } from "~/utils/function";
-import { getDeepValue } from "~/utils/object";
-import { formatICNSName, getShortAddress } from "~/utils/string";
-import { api } from "~/utils/trpc";
-import { removeQueryParam } from "~/utils/url";
+} from '~/modals/external-links-modal';
+import { ProfileModal } from '~/modals/profile';
+import { queryOsmosisCMS } from '~/server/queries/osmosis/cms/query-osmosis-cms';
+import { useStore } from '~/stores';
+import { UnverifiedAssetsState } from '~/stores/user-settings';
+import { noop } from '~/utils/function';
+import { getDeepValue } from '~/utils/object';
+import { formatICNSName, getShortAddress } from '~/utils/string';
+import { api } from '~/utils/trpc';
+import { removeQueryParam } from '~/utils/url';
 
 export const NavBar: FunctionComponent<
   {
@@ -96,10 +96,10 @@ export const NavBar: FunctionComponent<
      * @see https://github.com/osmosis-labs/fe-content/blob/main/cms/top-announcement-banner.json
      */
     const { data: topAnnouncementBannerData } = useQuery({
-      queryKey: ["osmosis-top-announcement-banner"],
+      queryKey: ['osmosis-top-announcement-banner'],
       queryFn: async () =>
         queryOsmosisCMS<TopAnnouncementBannerResponse>({
-          filePath: "cms/top-announcement-banner.json",
+          filePath: 'cms/top-announcement-banner.json',
         }),
       staleTime: 1000 * 60 * 3, // 3 minutes
       cacheTime: 1000 * 60 * 3, // 3 minutes
@@ -110,16 +110,16 @@ export const NavBar: FunctionComponent<
         closeMobileMenuRef.current();
       };
 
-      router.events.on("routeChangeComplete", handler);
-      return () => router.events.off("routeChangeComplete", handler);
+      router.events.on('routeChangeComplete', handler);
+      return () => router.events.off('routeChangeComplete', handler);
     }, [router.events]);
 
     useEffect(() => {
-      const UnverifiedAssetsQueryKey = "unverified_assets";
-      if (router.query[UnverifiedAssetsQueryKey] === "true") {
+      const UnverifiedAssetsQueryKey = 'unverified_assets';
+      if (router.query[UnverifiedAssetsQueryKey] === 'true') {
         onOpenFrontierMigration();
         userSettings
-          .getUserSettingById<UnverifiedAssetsState>("unverified-assets")
+          .getUserSettingById<UnverifiedAssetsState>('unverified-assets')
           ?.setState({ showUnverifiedAssets: true });
         removeQueryParam(UnverifiedAssetsQueryKey);
       }
@@ -127,14 +127,14 @@ export const NavBar: FunctionComponent<
 
     const wallet = accountStore.getWallet(chainId);
     const walletSupportsNotifications =
-      wallet?.walletInfo?.features?.includes("notifications");
+      wallet?.walletInfo?.features?.includes('notifications');
 
     const { data: icnsQuery, isLoading: isLoadingICNSQuery } = useICNSName({
-      address: wallet?.address ?? "",
+      address: wallet?.address ?? '',
     });
 
     // announcement banner
-    const defaultBannerLocalStorageKey = "banner";
+    const defaultBannerLocalStorageKey = 'banner';
     const [_showBanner, setShowBanner] = useLocalStorage(
       topAnnouncementBannerData?.banner?.localStorageKey ??
         defaultBannerLocalStorageKey,
@@ -166,7 +166,7 @@ export const NavBar: FunctionComponent<
       <>
         <div
           className={classNames(
-            "fixed z-[60] flex h-navbar w-[calc(100vw_-_14.58rem)] place-content-between items-center bg-osmoverse-900 px-8 shadow-md lg:gap-5 md:h-navbar-mobile md:w-full md:place-content-start md:px-4",
+            'fixed z-[60] flex h-navbar w-[calc(100vw_-_14.58rem)] place-content-between items-center bg-osmoverse-900 px-8 shadow-md lg:gap-5 md:h-navbar-mobile md:w-full md:place-content-start md:px-4',
             className
           )}
         >
@@ -176,7 +176,7 @@ export const NavBar: FunctionComponent<
                 closeMobileMenuRef.current = closeMobileMainMenu;
 
                 let mobileMenus = menus.concat({
-                  label: "Settings",
+                  label: 'Settings',
                   link: (e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -195,7 +195,7 @@ export const NavBar: FunctionComponent<
 
                 if (featureFlags.notifications && walletSupportsNotifications) {
                   mobileMenus = mobileMenus.concat({
-                    label: "Notifications",
+                    label: 'Notifications',
                     link: (e) => {
                       e.stopPropagation();
                       e.preventDefault();
@@ -257,9 +257,9 @@ export const NavBar: FunctionComponent<
                 ({ className, ...rest }, index) => (
                   <Button
                     className={`h-fit w-[180px] lg:w-fit lg:px-2 ${
-                      className ?? ""
+                      className ?? ''
                     }`}
-                    mode={index > 0 ? "secondary" : undefined}
+                    mode={index > 0 ? 'secondary' : undefined}
                     key={index}
                     size="sm"
                     {...rest}
@@ -278,7 +278,7 @@ export const NavBar: FunctionComponent<
                     className="subtitle2 group mr-0 flex !w-40 transform items-center justify-center whitespace-nowrap bg-osmoverse-700 px-12 font-semibold tracking-wide text-osmoverse-200 transition-all duration-300 ease-in-out hover:px-6"
                     mode="icon-primary"
                     size="unstyled"
-                    style={{ maxWidth: "180px" }}
+                    style={{ maxWidth: '180px' }}
                     onClick={handleTradeClicked}
                   >
                     <Image
@@ -288,7 +288,7 @@ export const NavBar: FunctionComponent<
                       width={24}
                       alt="TFM Logo"
                     />
-                    {t("menu.trade")}
+                    {t('menu.trade')}
                   </Button>
                 </a>
               </div>
@@ -334,8 +334,8 @@ export const NavBar: FunctionComponent<
         {/* Back-layer element to occupy space for the caller */}
         <div
           className={classNames(
-            "bg-osmoverse-900",
-            showBanner ? "h-[124px]" : "h-navbar md:h-navbar-mobile",
+            'bg-osmoverse-900',
+            showBanner ? 'h-[124px]' : 'h-navbar md:h-navbar-mobile',
             backElementClassNames
           )}
         />
@@ -378,16 +378,17 @@ const WalletInfo: FunctionComponent<
   // wallet
   const wallet = accountStore.getWallet(chainId);
   const walletConnected = Boolean(wallet?.isWalletConnected);
+  const isNamada = wallet?.walletInfo?.prettyName?.toLowerCase() === 'namada';
 
   const { data: userOsmoAsset, isLoading: isLoadingUserOsmoAsset } =
     api.edge.assets.getUserAsset.useQuery(
       {
-        findMinDenomOrSymbol: "OSMO",
+        findMinDenomOrSymbol: isNamada ? '' : 'OSMO',
         userOsmoAddress: wallet?.address as string,
       },
       {
         enabled:
-          Boolean(wallet?.address) && typeof wallet?.address === "string",
+          Boolean(wallet?.address) && typeof wallet?.address === 'string',
       }
     );
 
@@ -401,7 +402,7 @@ const WalletInfo: FunctionComponent<
             onOpenWalletSelect(chainId);
           }}
         >
-          <span className="button mx-auto">{t("connectWallet")}</span>
+          <span className="button mx-auto">{t('connectWallet')}</span>
         </Button>
       ) : (
         <SkeletonLoader isLoaded={!isLoadingUserOsmoAsset}>
@@ -413,7 +414,7 @@ const WalletInfo: FunctionComponent<
             className="group flex place-content-between items-center gap-[13px] rounded-xl border border-osmoverse-700 px-1.5 py-1 hover:border-[1.3px] hover:border-wosmongton-300 hover:bg-osmoverse-800 md:w-full"
           >
             <div className="h-8 w-8 shrink-0 overflow-hidden rounded-md bg-osmoverse-700 group-hover:bg-gradient-positive">
-              {profileStore.currentAvatar === "ammelia" ? (
+              {profileStore.currentAvatar === 'ammelia' ? (
                 <Image
                   alt="Wosmongton profile"
                   src="/images/profile-ammelia.png"
@@ -485,10 +486,10 @@ const AnnouncementBanner: FunctionComponent<{
   const router = useRouter();
 
   const isChainHalted = bannerResponse?.isChainHalted;
-  const banner: TopAnnouncementBannerResponse["banner"] | null | undefined =
+  const banner: TopAnnouncementBannerResponse['banner'] | null | undefined =
     isChainHalted
       ? {
-          enTextOrLocalizationPath: t("app.banner.chainHalted"),
+          enTextOrLocalizationPath: t('app.banner.chainHalted'),
           isWarning: true,
         }
       : bannerResponse?.banner;
@@ -512,21 +513,21 @@ const AnnouncementBanner: FunctionComponent<{
       link?.enTextOrLocalizationKey
     ) ??
     link?.enTextOrLocalizationKey ??
-    "Click here to learn more";
+    'Click here to learn more';
 
   const handleLeaveClick = () =>
     handleExternalLink({
-      url: link?.url ?? "",
+      url: link?.url ?? '',
       openModal: onOpenLeavingOsmosis,
     });
 
   return (
     <div
       className={classNames(
-        "fixed top-[71px] z-[51] float-right my-auto ml-sidebar flex w-[calc(100vw_-_14.58rem)] items-center px-8 py-[14px] md:top-[57px] md:ml-0 md:w-full sm:gap-3 sm:px-2",
+        'fixed top-[71px] z-[51] float-right my-auto ml-sidebar flex w-[calc(100vw_-_14.58rem)] items-center px-8 py-[14px] md:top-[57px] md:ml-0 md:w-full sm:gap-3 sm:px-2',
         {
-          "bg-gradient-negative": isWarning,
-          "bg-gradient-neutral": !isWarning,
+          'bg-gradient-negative': isWarning,
+          'bg-gradient-neutral': !isWarning,
         },
         bg
       )}
@@ -534,7 +535,7 @@ const AnnouncementBanner: FunctionComponent<{
       <div className="flex w-full place-content-center items-center gap-1.5 text-center text-subtitle1 lg:gap-1 lg:text-xs lg:tracking-normal md:text-left md:text-xxs sm:items-start">
         <span>
           {isChainHalted
-            ? banner?.enTextOrLocalizationPath ?? ""
+            ? banner?.enTextOrLocalizationPath ?? ''
             : getDeepValue<string>(
                 currentLanguageTranslations,
                 banner?.enTextOrLocalizationPath
@@ -590,10 +591,10 @@ const FrontierMigrationModal: FunctionComponent<
     <ModalBase
       {...props}
       className="!max-w-lg bg-[#332133]"
-      title={t("frontierMigration.introducingUnverifiedAssets")}
+      title={t('frontierMigration.introducingUnverifiedAssets')}
     >
       <span className="subtitle1 mx-auto mt-4 text-[#CBBDCB]">
-        {t("frontierMigration.simplifiedExperience")}
+        {t('frontierMigration.simplifiedExperience')}
       </span>
 
       <div className="mx-auto my-4 h-[235.55px] w-[200px]">
@@ -608,17 +609,17 @@ const FrontierMigrationModal: FunctionComponent<
       <div className="flex flex-col items-center">
         <div className="body2 flex flex-col gap-3">
           <p className="text-white-full">
-            {t("frontierMigration.frontierHasNowMerged")}{" "}
-            <span className="font-bold">app.osmosis.zone</span>.{" "}
-            {t("frontierMigration.thisMeansManaging")}
+            {t('frontierMigration.frontierHasNowMerged')}{' '}
+            <span className="font-bold">app.osmosis.zone</span>.{' '}
+            {t('frontierMigration.thisMeansManaging')}
           </p>
           <p className="text-white-full">
-            {t("frontierMigration.commitmentToDecentralization")}
+            {t('frontierMigration.commitmentToDecentralization')}
             <span className="font-bold">
-              {" "}
-              {t("frontierMigration.settingIsNowEnabled")}
-            </span>{" "}
-            {t("frontierMigration.youMayDisable")}
+              {' '}
+              {t('frontierMigration.settingIsNowEnabled')}
+            </span>{' '}
+            {t('frontierMigration.youMayDisable')}
           </p>
         </div>
 
@@ -632,7 +633,7 @@ const FrontierMigrationModal: FunctionComponent<
               props.onRequestClose?.();
             }}
           >
-            {t("frontierMigration.openSettings")}
+            {t('frontierMigration.openSettings')}
           </Button>
           <Button
             size="sm"
@@ -640,7 +641,7 @@ const FrontierMigrationModal: FunctionComponent<
             className="whitespace-nowrap border-[#DFA12A] bg-[#DFA12A] !px-3.5 text-black hover:border-[#EAC378] hover:bg-[#EAC378]"
             onClick={props.onRequestClose}
           >
-            {t("frontierMigration.proceed")}
+            {t('frontierMigration.proceed')}
           </Button>
         </div>
       </div>

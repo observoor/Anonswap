@@ -1,6 +1,6 @@
 {
   "name": "@cosmos-kit/namada-extension",
-  "version": "2.7.10",
+  "version": "0.0.1",
   "description": "cosmos-kit wallet connector",
   "author": "borut.terpinc@kalmia.si",
   "contributors": [
