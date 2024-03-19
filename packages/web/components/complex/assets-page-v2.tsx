@@ -56,7 +56,7 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
       },*/
     ],
   });
-  const [showNotification, setShowNotification] = useState(true);
+  const [showNotification, setShowNotification] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState('');
   const [namdaData, setNamdaData] = useState({
     nemonicBalance: '' as string | null,
@@ -153,12 +153,8 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
 
       const chainId = 'namada';
       const tranMsgInst = new Message<TransferMsgValue>();
-      if (!namdaData?.nemonicAddress || !namdaData?.shieldedAddress) {
-        console.error(
-          'No address found',
-          namdaData?.nemonicAddress,
-          namdaData?.shieldedAddress
-        );
+      if (!(namdaData?.nemonicAddress || namdaData?.shieldedAddress)) {
+        console.error('No address found', namdaData);
         setNotificationMessage(
           'Namada address not found, please change wallet'
         );
@@ -208,12 +204,8 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
         setShowNotification(true);
         return;
       }
-      if (!namdaData?.nemonicAddress || !namdaData?.shieldedAddress) {
-        console.error(
-          'No address found',
-          namdaData?.nemonicAddress,
-          namdaData?.shieldedAddress
-        );
+      if (!(namdaData?.nemonicAddress || namdaData?.shieldedAddress)) {
+        console.error('No address found', namdaData);
         setNotificationMessage(
           'Namada address not found, please change wallet'
         );

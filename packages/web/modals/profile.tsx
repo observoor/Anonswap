@@ -157,7 +157,7 @@ export const ProfileModal: FunctionComponent<
         }
 
         // TODO fix: only call RPC once
-        if (namadaBalance?.nemonic?.length) {
+        if (namadaBalance?.nemonic?.length > 5) {
           return;
         }
         console.log('Wallet pretty name', wallet?.walletInfo?.prettyName);
@@ -177,10 +177,10 @@ export const ProfileModal: FunctionComponent<
           tokens: ['tnam1qxvg64psvhwumv3mwrrjfcz0h3t3274hwggyzcee'],
         });
         console.log('Namada balance', balance, balanceShielded);
-        await addNamadaAsset(
+        /* await addNamadaAsset(
           balance ? balance[0]?.amount : '',
           balanceShielded ? balanceShielded[0]?.amount : ''
-        );
+        ); */
         setNamdaBalance({
           nemonic: balance ? balance[0]?.amount : '',
           shielded: balanceShielded ? balanceShielded[0]?.amount : '',
