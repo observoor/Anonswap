@@ -24,6 +24,17 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
   const wallet = accountStore.getWallet(chainStore.osmosis.chainId);
   const isNamada = wallet?.walletInfo?.prettyName?.toLowerCase() === 'namada';
   const tokenID = 'tnam1qxvg64psvhwumv3mwrrjfcz0h3t3274hwggyzcee';
+  const NotificationBar = () => (
+    <div className="bg-blue-500 text-white fixed top-0 left-0 w-full p-4">
+      {notificationMessage}
+      <button
+        onClick={() => setShowNotification(false)}
+        className="bg-blue-500 text-white"
+      >
+        Close
+      </button>
+    </div>
+  );
 
   // set nav bar ctas
   useNavBar({
@@ -44,6 +55,8 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
       },*/
     ],
   });
+  const [showNotification, setShowNotification] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState('');
   const [namdaData, setNamdaData] = useState({
     nemonicBalance: '' as string | null,
     shieldedBalance: '' as string | null,
@@ -131,6 +144,12 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
 
   const submitTransfer = async () => {
     try {
+      if (!isNamada) {
+        throw new Error('Wallet is not namada');
+      }
+      setNotificationMessage('No address found');
+      setShowNotification(true);
+
       const chainId = 'namada';
       const tranMsgInst = new Message<TransferMsgValue>();
       if (!namdaData?.nemonicAddress || !namdaData?.shieldedAddress) {
@@ -139,7 +158,9 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
           namdaData?.nemonicAddress,
           namdaData?.shieldedAddress
         );
-        throw new Error('No address found');
+        setNotificationMessage('No address found');
+        setShowNotification(true);
+        return;
       }
 
       const messageData = new TransferMsgValue({
@@ -179,6 +200,10 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
 
   const submitIBC = async () => {
     try {
+      if (!isNamada) {
+        throw new Error('Wallet is not namada');
+      }
+
       const osmosisChanel = 'channel-5802'; //osmosis test 5802
       const osmosisPortID = 'transfer';
       const chainId = 'namada';
@@ -232,7 +257,8 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
   };
 
   return (
-    <main className="mx-auto flex max-w-container flex-col gap-20 bg-osmoverse-900 p-8 pt-4 md:gap-8 md:p-4">
+    <main className="mx-auto flex max-w-container flex-col gap-4 bg-osmoverse-900 p-8 pt-4 md:gap-8 md:p-4">
+      {showNotification && <NotificationBar />}
       {/* <AssetsInfoTable
         tableTopPadding={valuesHeight}
         onDeposit={(coinMinimalDenom) => {
@@ -244,9 +270,17 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
       /
       
       > */}
-
       <h1 className="text-xl">Namada to Osmosis</h1>
 
+      <p className="text-md">
+        Wallet type {wallet?.walletInfo?.prettyName}
+        {!isNamada && (
+          <span className="text-md text-chartGradientPrimary">
+            {' '}
+            !Wallet is not Namada !!
+          </span>
+        )}
+      </p>
       <p className="text-md">
         Namada nemonic address: {namdaData.nemonicAddress}
       </p>
@@ -259,7 +293,6 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
       <p className="text-md">
         Namada shielded balance: {namdaData?.shieldedBalance || ''}
       </p>
-
       <div>
         <p>Osmos address</p>
         <input
@@ -280,7 +313,6 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
           className="border-wosmongton-100 bg-wosmongton-100/30 px-2 py-0"
         />
       </div>
-
       <button
         className="flex shrink-0 items-center gap-2 rounded-md border border-wosmongton-100 px-2 py-0 hover:bg-wosmongton-100/30"
         onClick={onTransferToShieldedClick}
@@ -288,7 +320,6 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
         {' '}
         Transfer to shielded{' '}
       </button>
-
       <button
         className="flex shrink-0 items-center gap-2 rounded-md border border-wosmongton-100 px-2 py-0 hover:bg-wosmongton-100/30"
         onClick={onDeployToOsmosisClick}
@@ -296,16 +327,19 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
         {' '}
         Deploy to osmosis{' '}
       </button>
-
-      <AssetsInfoTable
-        tableTopPadding={10}
-        onDeposit={(coinMinimalDenom) => {
-          console.log('Deposit', coinMinimalDenom);
-        }}
-        onWithdraw={(coinMinimalDenom) => {
-          console.log('Withdraw', coinMinimalDenom);
-        }}
-      />
+      <div className="pt-8">
+        <p className="py-1"> Assets info</p>
+        <hr className="py-1"></hr>
+        <AssetsInfoTable
+          tableTopPadding={10}
+          onDeposit={(coinMinimalDenom) => {
+            console.log('Deposit', coinMinimalDenom);
+          }}
+          onWithdraw={(coinMinimalDenom) => {
+            console.log('Withdraw', coinMinimalDenom);
+          }}
+        />
+      </div>
     </main>
   );
 });
