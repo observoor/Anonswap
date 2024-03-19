@@ -5,7 +5,7 @@ import { useLocalStorageState } from "../window/use-localstorage-state";
 export function useUserFavoriteAssetDenoms() {
   const [favoritesList, setFavoritesList] = useLocalStorageState(
     "favoritesList",
-    ["OSMO", "ATOM", "TIA"]
+    ["OSMO", "ATOM", "NAM"]
   );
 
   const onAddFavoriteDenom = useCallback(

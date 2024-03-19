@@ -1,6 +1,21 @@
-import { Logger, SignOptions, WalletClient } from '@cosmos-kit/core';
+import { BroadcastMode, DirectSignDoc, Logger, SignOptions, WalletClient } from '@cosmos-kit/core';
 
-import { BalancesProps, Namada } from './types';
+import { BalancesProps, Namada, SignArbitraryProps, TxMsgProps } from './types';
+import { AccountType } from './namada-types';
+import { toBase64, fromBase64 } from '@cosmjs/encoding';
+import { DirectSignResponse } from '@cosmjs/proto-signing';
+import { SignDoc } from "cosmjs-types/cosmos/tx/v1beta1/tx";
+
+enum TxType {
+  Bond = 1,
+  Unbond = 2,
+  Withdraw = 3,
+  Transfer = 4,
+  IBCTransfer = 5,
+  EthBridgeTransfer = 6,
+  RevealPK = 7,
+  VoteProposal = 8,
+}
 
 export class NamadaClient implements WalletClient {
   readonly client: Namada;
@@ -10,6 +25,7 @@ export class NamadaClient implements WalletClient {
     preferNoSetMemo: true,
     disableBalanceCheck: true,
   };
+
 
   get defaultSignOptions() {
     return this._defaultSignOptions;
@@ -64,4 +80,45 @@ export class NamadaClient implements WalletClient {
       username: 'Namada Wallet',
     };
   }
+
+  async signDirect(
+    chainId: string,
+    signer: string,
+    signDoc: DirectSignDoc,
+  ) {
+
+    const signProps: SignArbitraryProps = {
+      signer,
+      data: toBase64(signDoc?.bodyBytes || new Uint8Array())
+    };
+
+    const sigature = await this.client?.sign(signProps);
+    const signerNew = await (this.client.getSigner());
+    const pubKey = (await signerNew.accounts(chainId))?.find((account) => account.address === signer)?.publicKey || '';
+
+    const response: DirectSignResponse = {
+      signed: signDoc as SignDoc,
+      signature: {
+        signature: sigature?.signature || '',
+        pubkey: fromBase64(pubKey) || new Uint8Array(),
+      } as any
+
+    }
+    return response;
+  }
+
+  async sendTx(chainId: string, tx: Uint8Array, mode: BroadcastMode) {
+    console.log(chainId, mode);
+    const props: TxMsgProps = {
+      type: AccountType.Mnemonic,
+      txType: TxType.Transfer,
+      specificMsg: toBase64(tx),
+      txMsg: toBase64(tx),
+    };
+
+    await this.client.submitTx(props);
+    return tx;
+  }
+
+
 }

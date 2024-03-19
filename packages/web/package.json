@@ -170,6 +170,6 @@
     "tsconfig-paths": "^4.2.0",
     "tsx": "^4.6.2",
     "use-debugger-hooks": "^1.3.0",
-    "cosmos-kit/namada-extension": "0.0.1"
+    "local-package": "file:../namada-extension"
   }
 }

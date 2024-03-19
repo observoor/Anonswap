@@ -82,7 +82,8 @@ export const ProfileModal: FunctionComponent<
 
   const [hasCopied, setHasCopied] = useState(false);
   const [isDisconnecting, setIsDisconnecting] = useState(false);
-  const [namdaBalance, setNamdaBalance] = useState({
+  const [namadaClient, setNamadaClient] = useState<Namada | null>(null);
+  const [namadaBalance, setNamdaBalance] = useState({
     nemonic: '' as string | null,
     shielded: '' as string | null,
   });
@@ -92,23 +93,32 @@ export const ProfileModal: FunctionComponent<
     2000
   );
 
+  const initNamadaClient = async () => {
+    const wallet = accountStore.getWallet(chainId);
+    const namadaClient = (await wallet?.mainWallet.client) as NamadaClient;
+    const client: Namada = namadaClient.client;
+    setNamadaClient(client);
+    console.log('Namada client', client);
+  };
+
   const address = wallet?.address ?? '';
-  const isNamada = wallet?.walletInfo?.prettyName?.toLowerCase() === 'namada';
+  const isNamadaLoc =
+    wallet?.walletInfo?.prettyName?.toLowerCase() === 'namada';
 
   const { data: userOsmoAsset } = api.edge.assets.getUserAsset.useQuery(
     {
-      findMinDenomOrSymbol: isNamada ? '' : 'OSMO',
+      findMinDenomOrSymbol: isNamadaLoc ? '' : 'OSMO',
       userOsmoAddress: wallet?.address ?? '',
     },
     {
       enabled:
         Boolean(wallet?.address) &&
         typeof wallet?.address === 'string' &&
-        !isNamada,
+        !isNamadaLoc,
     }
   );
 
-  const symbolName = isNamada ? 'Namada' : 'Osmosis';
+  const symbolName = isNamadaLoc ? 'Namada' : 'Osmosis';
 
   const onCopyAddress = () => {
     copyToClipboard(address);
@@ -141,22 +151,28 @@ export const ProfileModal: FunctionComponent<
   };
 
   useEffect(() => {
-    if (isNamada && wallet?.address) {
+    if (isNamadaLoc && wallet?.address) {
       const getNamadaData = async () => {
-        const namadaClient = (await wallet?.mainWallet.client) as NamadaClient;
-        const client: Namada = namadaClient.client;
+        if (!namadaClient) {
+          await initNamadaClient();
+        }
+
+        // TODO fix: only call RPC once
+        if (namadaBalance?.nemonic?.length) {
+          return;
+        }
 
         const accountType = 'shielded-keys';
-        const shieldedAddress = (await client.accounts())?.find(
+        const shieldedAddress = (await namadaClient?.accounts())?.find(
           (account: any) => account.type === accountType
         )?.address;
 
-        const balance = await client?.balances({
+        const balance = await namadaClient?.balances({
           owner: wallet?.address ?? '',
           tokens: ['tnam1qxvg64psvhwumv3mwrrjfcz0h3t3274hwggyzcee'],
         });
 
-        const balanceShielded = await client?.balances({
+        const balanceShielded = await namadaClient?.balances({
           owner: shieldedAddress ?? '',
           tokens: ['tnam1qxvg64psvhwumv3mwrrjfcz0h3t3274hwggyzcee'],
         });
@@ -273,7 +289,7 @@ export const ProfileModal: FunctionComponent<
 
             <div>
               <h6 className="mb-[4px] tracking-wide text-osmoverse-100">
-                {isNamada
+                {isNamadaLoc
                   ? ''
                   : formatPretty(
                       userOsmoAsset?.usdValue ??
@@ -287,16 +303,16 @@ export const ProfileModal: FunctionComponent<
               </h6>
 
               <p className="text-h5 font-h5">
-                {isNamada
-                  ? namdaBalance?.nemonic
+                {isNamadaLoc
+                  ? namadaBalance?.nemonic
                   : formatPretty(userOsmoAsset?.amount ?? new Dec(0), {
                       minimumFractionDigits: 2,
                       maximumSignificantDigits: undefined,
                       notation: 'standard',
                     })}
               </p>
-              {isNamada && (
-                <p className="text-h5 font-h5">{namdaBalance?.shielded}</p>
+              {isNamadaLoc && (
+                <p className="text-h5 font-h5">{namadaBalance?.shielded}</p>
               )}
             </div>
           </div>

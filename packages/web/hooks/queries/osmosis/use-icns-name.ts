@@ -8,6 +8,9 @@ export const useICNSName = ({ address }: { address: string }) => {
     queryFn: () => queryICNSName({ address }),
     enabled: Boolean(address) && typeof address === "string",
     select: ({ data: { names, primary_name } }) => {
+      if (address.startsWith("tnam")) {
+        return null;
+      }
       return {
         names: names,
         primaryName: primary_name,

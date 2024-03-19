@@ -32,6 +32,14 @@ export class ObservableCosmwasmContractChainQuery<
 
     return new Promise<void>((resolve) => {
       this.disposer = autorun(() => {
+        if (this.url.toString().includes("tam")) {
+          resolve();
+        }
+
+        if (this.contractAddress.startsWith("tam")) {
+          resolve();
+        }
+
         const chainInfo = this.chainGetter.getChain(this.chainId);
         if (chainInfo.features && chainInfo.features.includes("wasmd_0.24+")) {
           if (this.url.startsWith("/wasm/v1/")) {
@@ -75,8 +83,8 @@ export class ObservableCosmwasmContractChainQuery<
 
     const wasmResult = (response.data as unknown) as
       | {
-          data: any;
-        }
+        data: any;
+      }
       | undefined;
 
     if (!wasmResult) {

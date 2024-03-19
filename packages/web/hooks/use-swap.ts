@@ -483,13 +483,18 @@ export function useSwapAssets({
     },
     {
       enabled: canLoadAssets,
-      getNextPageParam: (lastPage) => lastPage.nextCursor,
+      getNextPageParam: (lastPage) => lastPage?.nextCursor,
       initialCursor: 0,
     }
   );
 
   const allSelectableAssets = useMemo(
-    () => selectableAssetPages?.pages.flatMap(({ items }) => items) ?? [],
+    () => {
+      if (!selectableAssetPages?.pages) {
+        return [];
+      }
+      return selectableAssetPages?.pages?.flatMap((data) => data?.items || []) ?? []
+    },
     [selectableAssetPages?.pages]
   );
 

@@ -384,7 +384,7 @@ const WalletInfo: FunctionComponent<
     api.edge.assets.getUserAsset.useQuery(
       {
         findMinDenomOrSymbol: isNamada ? '' : 'OSMO',
-        userOsmoAddress: wallet?.address as string,
+        userOsmoAddress: (wallet?.address as string) || '',
       },
       {
         enabled:

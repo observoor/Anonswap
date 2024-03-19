@@ -90,7 +90,7 @@ export const AssetsInfoTable: FunctionComponent<{
     {
       userOsmoAddress: account?.address || '',
       preferredDenoms: favoritesList,
-      limit: 20,
+      limit: 10,
       search: searchQuery,
       onlyVerified: showUnverifiedAssets === false,
       includePreview: showPreviewAssets,

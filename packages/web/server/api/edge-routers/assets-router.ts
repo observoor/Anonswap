@@ -66,7 +66,10 @@ export const assetsRouter = createTRPCRouter({
         .merge(UserOsmoAddressSchema)
     )
     .query(async ({ input: { findMinDenomOrSymbol, userOsmoAddress } }) => {
-      console.log('namadaBalance', namadaBalance);
+
+      if (userOsmoAddress.startsWith("tnam")) {
+        return null;
+      }
 
       if (findMinDenomOrSymbol === '') {
         return null;
@@ -92,6 +95,10 @@ export const assetsRouter = createTRPCRouter({
           includePreview,
         },
       }) => {
+        if (userOsmoAddress.startsWith("tnam")) {
+          return null;
+        }
+
         return maybeCachePaginatedItems({
           getFreshItems: () =>
             mapGetUserAssetCoins({
@@ -129,6 +136,10 @@ export const assetsRouter = createTRPCRouter({
         .merge(UserOsmoAddressSchema)
     )
     .query(async ({ input: { findMinDenomOrSymbol, userOsmoAddress } }) => {
+      if (userOsmoAddress.startsWith("tnam")) {
+        return null;
+      }
+
       const asset = await getAsset({ anyDenom: findMinDenomOrSymbol });
 
       const userAsset = await getUserAssetCoin({ asset, userOsmoAddress });
@@ -175,6 +186,9 @@ export const assetsRouter = createTRPCRouter({
         maybeCachePaginatedItems({
           getFreshItems: async () => {
             const isDefaultSort = !sortInput && !search;
+            if (userOsmoAddress.startsWith("tnam")) {
+              return [];
+            }
 
             let assets;
             assets = await mapGetMarketAssets({
