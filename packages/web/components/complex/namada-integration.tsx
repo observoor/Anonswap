@@ -75,13 +75,14 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
   });
 
   useEffect(() => {
-    if (chainId && accountStore) {
+    loadNamadaData().then();
+    /*if (chainId && accountStore) {
       wallet.current = accountStore.getWallet(chainId);
 
       if (wallet.current) {
-        loadNamadaData();
+        
       }
-    }
+    }*/
   }, [chainId, accountStore, accountStore.walletManager]);
 
   async function initNamadaClient() {
@@ -90,8 +91,18 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
       // if (wallet.current. {
       //   displayToast({ message: 'mainWallet is not NAMADA' }, ToastType.ERROR);
       //} else
-      const namFromExt = await getNamadaFromExtension();
-      namadaClient.current = namFromExt;
+      try {
+        const namFromExt = await getNamadaFromExtension();
+        namadaClient.current = namFromExt;
+        await namadaClient.current?.connect();
+      } catch (e) {
+        console.error(e);
+        displayToast(
+          { message: 'No NAMADA extension, please install it!' },
+          ToastType.ERROR
+        );
+        return false;
+      }
       return true;
     } else {
       return true;
