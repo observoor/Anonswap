@@ -90,7 +90,7 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
       // if (wallet.current. {
       //   displayToast({ message: 'mainWallet is not NAMADA' }, ToastType.ERROR);
       //} else
-      if (wallet?.current?.mainWallet) {
+      if (wallet.current?.address?.startsWith('tnam')) {
         namadaClient.current = (
           wallet?.current.mainWallet.client as NamadaClient
         ).client;
