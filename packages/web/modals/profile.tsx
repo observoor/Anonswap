@@ -1,12 +1,12 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { Namada, NamadaClient } from '@cosmos-kit/namada-extension';
-import { Dec, PricePretty } from '@keplr-wallet/unit';
-import classNames from 'classnames';
-import { observer } from 'mobx-react-lite';
-import dynamic from 'next/dynamic';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { Namada, NamadaClient } from "@cosmos-kit/namada-extension";
+import { Dec, PricePretty } from "@keplr-wallet/unit";
+import classNames from "classnames";
+import { observer } from "mobx-react-lite";
+import dynamic from "next/dynamic";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/router";
 import {
   AnchorHTMLAttributes,
   ButtonHTMLAttributes,
@@ -17,8 +17,8 @@ import {
   HTMLAttributes,
   useEffect,
   useState,
-} from 'react';
-import { useCopyToClipboard, useTimeoutFn } from 'react-use';
+} from "react";
+import { useCopyToClipboard, useTimeoutFn } from "react-use";
 
 import {
   CopyIcon,
@@ -26,29 +26,29 @@ import {
   Icon,
   LogOutIcon,
   QRIcon,
-} from '~/components/assets';
-import { CreditCardIcon } from '~/components/assets/credit-card-icon';
-import { ArrowButton } from '~/components/buttons';
+} from "~/components/assets";
+import { CreditCardIcon } from "~/components/assets/credit-card-icon";
+import { ArrowButton } from "~/components/buttons";
 import {
   Drawer,
   DrawerButton,
   DrawerContent,
   DrawerOverlay,
   DrawerPanel,
-} from '~/components/drawers';
-import Spinner from '~/components/loaders/spinner';
-import { EventName } from '~/config';
-import { useTranslation } from '~/hooks';
-import { useAmplitudeAnalytics, useDisclosure, useWindowSize } from '~/hooks';
-import { useBridge } from '~/hooks/bridge';
-import { ModalBase, ModalBaseProps } from '~/modals/base';
-import { DEFAULT_VS_CURRENCY } from '~/server/queries/complex/assets/config';
-import { useStore } from '~/stores';
-import { formatPretty } from '~/utils/formatter';
-import { formatICNSName, getShortAddress } from '~/utils/string';
-import { api } from '~/utils/trpc';
+} from "~/components/drawers";
+import Spinner from "~/components/loaders/spinner";
+import { EventName } from "~/config";
+import { useTranslation } from "~/hooks";
+import { useAmplitudeAnalytics, useDisclosure, useWindowSize } from "~/hooks";
+import { useBridge } from "~/hooks/bridge";
+import { ModalBase, ModalBaseProps } from "~/modals/base";
+import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
+import { useStore } from "~/stores";
+import { formatPretty } from "~/utils/formatter";
+import { formatICNSName, getShortAddress } from "~/utils/string";
+import { api } from "~/utils/trpc";
 
-const QRCode = dynamic(() => import('~/components/qrcode'));
+const QRCode = dynamic(() => import("~/components/qrcode"));
 
 export const ProfileModal: FunctionComponent<
   ModalBaseProps & { icnsName?: string }
@@ -83,8 +83,8 @@ export const ProfileModal: FunctionComponent<
   const [isDisconnecting, setIsDisconnecting] = useState(false);
   const [namadaClient, setNamadaClient] = useState<Namada | null>(null);
   const [namadaBalance, setNamdaBalance] = useState({
-    nemonic: '' as string | null,
-    shielded: '' as string | null,
+    nemonic: "" as string | null,
+    shielded: "" as string | null,
   });
   const [_state, copyToClipboard] = useCopyToClipboard();
   const [_isReady, _cancel, reset] = useTimeoutFn(
@@ -97,27 +97,26 @@ export const ProfileModal: FunctionComponent<
     const namadaClient = (await wallet?.mainWallet.client) as NamadaClient;
     const client: Namada = namadaClient.client;
     setNamadaClient(client);
-    console.log('Namada client', client);
   };
 
-  const address = wallet?.address ?? '';
+  const address = wallet?.address ?? "";
   const isNamadaLoc =
-    wallet?.walletInfo?.prettyName?.toLowerCase() === 'namada';
+    wallet?.walletInfo?.prettyName?.toLowerCase() === "namada";
 
   const { data: userOsmoAsset } = api.edge.assets.getUserAsset.useQuery(
     {
-      findMinDenomOrSymbol: isNamadaLoc ? '' : 'OSMO',
-      userOsmoAddress: wallet?.address ?? '',
+      findMinDenomOrSymbol: isNamadaLoc ? "" : "OSMO",
+      userOsmoAddress: wallet?.address ?? "",
     },
     {
       enabled:
         Boolean(wallet?.address) &&
-        typeof wallet?.address === 'string' &&
+        typeof wallet?.address === "string" &&
         !isNamadaLoc,
     }
   );
 
-  const symbolName = isNamadaLoc ? 'Namada' : 'Osmosis';
+  const symbolName = isNamadaLoc ? "Namada" : "Osmosis";
 
   const onCopyAddress = () => {
     copyToClipboard(address);
@@ -128,8 +127,8 @@ export const ProfileModal: FunctionComponent<
 
   useEffect(() => {
     const onCloseModal = () => props.onRequestClose?.();
-    router.events.on('routeChangeComplete', onCloseModal);
-    return () => router.events.off('routeChangeComplete', onCloseModal);
+    router.events.on("routeChangeComplete", onCloseModal);
+    return () => router.events.off("routeChangeComplete", onCloseModal);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -163,38 +162,38 @@ export const ProfileModal: FunctionComponent<
         ) {
           return;
         }
-        console.log('Wallet pretty name', wallet?.walletInfo?.prettyName);
 
-        const accountType = 'shielded-keys';
+        const accountType = "shielded-keys";
         const shieldedAddress = (await namadaClient?.accounts())?.find(
           (account: any) => account.type === accountType
         )?.address;
 
         const balance = await namadaClient?.balances({
-          owner: wallet?.address ?? '',
-          tokens: ['tnam1qxvg64psvhwumv3mwrrjfcz0h3t3274hwggyzcee'],
+          owner: wallet?.address ?? "",
+          tokens: ["tnam1qxvg64psvhwumv3mwrrjfcz0h3t3274hwggyzcee"],
         });
 
         const balanceShielded = await namadaClient?.balances({
-          owner: shieldedAddress ?? '',
-          tokens: ['tnam1qxvg64psvhwumv3mwrrjfcz0h3t3274hwggyzcee'],
+          owner: shieldedAddress ?? "",
+          tokens: ["tnam1qxvg64psvhwumv3mwrrjfcz0h3t3274hwggyzcee"],
         });
-        console.log('Namada balance', balance, balanceShielded);
+
         /* await addNamadaAsset(
           balance ? balance[0]?.amount : '',
           balanceShielded ? balanceShielded[0]?.amount : ''
         ); */
         setNamdaBalance({
-          nemonic: balance ? balance[0]?.amount : '',
-          shielded: balanceShielded ? balanceShielded[0]?.amount : '',
+          nemonic: balance ? balance[0]?.amount : "",
+          shielded: balanceShielded ? balanceShielded[0]?.amount : "",
         });
       };
       getNamadaData();
     }
-  });
+  }, []);
+
   return (
     <ModalBase
-      title={t('profile.modalTitle')}
+      title={t("profile.modalTitle")}
       {...props}
       isOpen={props.isOpen}
       onRequestClose={() => {
@@ -214,7 +213,7 @@ export const ProfileModal: FunctionComponent<
           onClose={onCloseAvatarSelect}
         >
           <DrawerButton className="transform transition-transform duration-300 ease-in-out hover:scale-105">
-            {profileStore.currentAvatar === 'ammelia' ? (
+            {profileStore.currentAvatar === "ammelia" ? (
               <AmmeliaAvatar className="mt-10" aria-label="Select avatar" />
             ) : (
               <WosmongtonAvatar className="mt-10" aria-label="Select avatar" />
@@ -229,14 +228,14 @@ export const ProfileModal: FunctionComponent<
                 <div className="text-center">
                   <WosmongtonAvatar
                     isSelectable
-                    isSelected={profileStore.currentAvatar === 'wosmongton'}
+                    isSelected={profileStore.currentAvatar === "wosmongton"}
                     onSelect={() => {
                       onCloseAvatarSelect();
                       logEvent([
                         EventName.ProfileModal.selectAvatarClicked,
-                        { avatar: 'wosmongton' },
+                        { avatar: "wosmongton" },
                       ]);
-                      profileStore.setCurrentAvatar('wosmongton');
+                      profileStore.setCurrentAvatar("wosmongton");
                     }}
                     className="outline-none"
                   />
@@ -248,14 +247,14 @@ export const ProfileModal: FunctionComponent<
                 <div className="text-center">
                   <AmmeliaAvatar
                     isSelectable
-                    isSelected={profileStore.currentAvatar === 'ammelia'}
+                    isSelected={profileStore.currentAvatar === "ammelia"}
                     onSelect={() => {
                       onCloseAvatarSelect();
                       logEvent([
                         EventName.ProfileModal.selectAvatarClicked,
-                        { avatar: 'ammelia' },
+                        { avatar: "ammelia" },
                       ]);
-                      profileStore.setCurrentAvatar('ammelia');
+                      profileStore.setCurrentAvatar("ammelia");
                     }}
                     className="outline-none"
                   />
@@ -286,21 +285,21 @@ export const ProfileModal: FunctionComponent<
                 height={24}
               />
               <p className="subtitle1 tracking-wide text-osmoverse-300">
-                {t('profile.balance')}
+                {t("profile.balance")}
               </p>
             </div>
 
             <div>
               <h6 className="mb-[4px] tracking-wide text-osmoverse-100">
                 {isNamadaLoc
-                  ? ''
+                  ? ""
                   : formatPretty(
                       userOsmoAsset?.usdValue ??
                         new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0)),
                       {
                         minimumFractionDigits: 2,
                         maximumSignificantDigits: undefined,
-                        notation: 'standard',
+                        notation: "standard",
                       }
                     )}
               </h6>
@@ -311,7 +310,7 @@ export const ProfileModal: FunctionComponent<
                   : formatPretty(userOsmoAsset?.amount ?? new Dec(0), {
                       minimumFractionDigits: 2,
                       maximumSignificantDigits: undefined,
-                      notation: 'standard',
+                      notation: "standard",
                     })}
               </p>
               {isNamadaLoc && (
@@ -331,16 +330,16 @@ export const ProfileModal: FunctionComponent<
               <CreditCardIcon
                 isAnimated
                 classes={{
-                  backCard: 'group-hover:stroke-[2]',
+                  backCard: "group-hover:stroke-[2]",
                   frontCard:
-                    'group-hover:fill-[#71B5EB] group-hover:stroke-[2]',
+                    "group-hover:fill-[#71B5EB] group-hover:stroke-[2]",
                 }}
               />
-              <span>{t('buyTokens')}</span>
+              <span>{t("buyTokens")}</span>
             </button>
 
             <Link href="/assets" passHref legacyBehavior>
-              <ArrowButton isLink>{t('profile.viewAllAssets')}</ArrowButton>
+              <ArrowButton isLink>{t("profile.viewAllAssets")}</ArrowButton>
             </Link>
           </div>
         </div>
@@ -352,7 +351,7 @@ export const ProfileModal: FunctionComponent<
               className="h-[24px] w-[24px] text-osmoverse-300"
             />
             <p className="subtitle1 tracking-wide text-osmoverse-300">
-              {t('profile.wallet')}
+              {t("profile.wallet")}
             </p>
           </div>
 
@@ -361,7 +360,7 @@ export const ProfileModal: FunctionComponent<
               <div className="h-12 w-12 shrink-0">
                 <img
                   alt="wallet-icon"
-                  src={wallet?.walletInfo.logo ?? '/'}
+                  src={wallet?.walletInfo.logo ?? "/"}
                   height={48}
                   width={48}
                 />
@@ -386,7 +385,7 @@ export const ProfileModal: FunctionComponent<
                     ) : (
                       <CopyIcon
                         classes={{
-                          container: 'w-[20px] h-[20px] text-osmoverse-200',
+                          container: "w-[20px] h-[20px] text-osmoverse-200",
                         }}
                         isAnimated
                       />
@@ -457,7 +456,7 @@ export const ProfileModal: FunctionComponent<
                           <CopyIcon
                             isAnimated
                             classes={{
-                              container: 'text-osmoverse-200',
+                              container: "text-osmoverse-200",
                             }}
                           />
                         )}
@@ -503,13 +502,13 @@ const ActionButton = forwardRef<
     AnchorHTMLAttributes<HTMLAnchorElement> & { isLink?: boolean }
 >((props, ref) => {
   const { isLink, ...rest } = props;
-  const Component = (isLink ? 'a' : 'button') as ElementType<typeof props>;
+  const Component = (isLink ? "a" : "button") as ElementType<typeof props>;
   return (
     <Component
       {...rest}
       ref={ref}
       className={classNames(
-        'flex h-9 w-9 items-center justify-center rounded-lg bg-osmoverse-600 p-1.5',
+        "flex h-9 w-9 items-center justify-center rounded-lg bg-osmoverse-600 p-1.5",
         props.className
       )}
     >
@@ -531,11 +530,11 @@ const BaseAvatar = forwardRef<
       {...props}
       ref={ref}
       className={classNames(
-        'h-[140px] w-[140px] overflow-hidden rounded-3xl',
+        "h-[140px] w-[140px] overflow-hidden rounded-3xl",
         {
-          'group transition-all duration-300 ease-in-out active:border-[2px] active:border-wosmongton-200':
+          "group transition-all duration-300 ease-in-out active:border-[2px] active:border-wosmongton-200":
             isSelectable,
-          'border-[2px] border-wosmongton-200': isSelected,
+          "border-[2px] border-wosmongton-200": isSelected,
         },
         props.className
       )}
@@ -543,7 +542,7 @@ const BaseAvatar = forwardRef<
     >
       <div
         className={classNames({
-          'transform transition-transform duration-300 ease-in-out group-hover:scale-[1.13]':
+          "transform transition-transform duration-300 ease-in-out group-hover:scale-[1.13]":
             isSelectable,
         })}
       >
@@ -560,9 +559,9 @@ const WosmongtonAvatar = forwardRef<any, ComponentProps<typeof BaseAvatar>>(
         {...props}
         ref={ref}
         className={classNames(
-          'bg-[linear-gradient(139.12deg,#A247B9_7.8%,#460E7F_88.54%)]',
+          "bg-[linear-gradient(139.12deg,#A247B9_7.8%,#460E7F_88.54%)]",
           props.isSelectable &&
-            'hover:bg-[linear-gradient(139.12deg,#F35DC7_7.8%,#7B0DE2_88.54%)] hover:shadow-[0px_4px_20px_4px_#AA4990] focus:bg-[linear-gradient(139.12deg,#F35DC7_7.8%,#7B0DE2_88.54%)]',
+            "hover:bg-[linear-gradient(139.12deg,#F35DC7_7.8%,#7B0DE2_88.54%)] hover:shadow-[0px_4px_20px_4px_#AA4990] focus:bg-[linear-gradient(139.12deg,#F35DC7_7.8%,#7B0DE2_88.54%)]",
           props.className
         )}
       >
@@ -584,9 +583,9 @@ const AmmeliaAvatar = forwardRef<any, ComponentProps<typeof BaseAvatar>>(
         {...props}
         ref={ref}
         className={classNames(
-          'bg-[linear-gradient(139.12deg,#462ADF_7.8%,#4ECAFF_88.54%)]',
+          "bg-[linear-gradient(139.12deg,#462ADF_7.8%,#4ECAFF_88.54%)]",
           props.isSelectable &&
-            'hover:bg-[linear-gradient(139.12deg,#9044F2_7.8%,#6BFFFF_88.54%)] hover:shadow-[0px_0px_20px_4px_#60ADD3] focus:bg-[linear-gradient(139.12deg,#9044F2_7.8%,#6BFFFF_88.54%)]',
+            "hover:bg-[linear-gradient(139.12deg,#9044F2_7.8%,#6BFFFF_88.54%)] hover:shadow-[0px_0px_20px_4px_#60ADD3] focus:bg-[linear-gradient(139.12deg,#9044F2_7.8%,#6BFFFF_88.54%)]",
           props.className
         )}
       >
