@@ -1,6 +1,4 @@
 import { observer } from 'mobx-react-lite';
-import { useRouter } from 'next/router';
-import { useEffect } from 'react';
 
 import { ProgressiveSvgImage } from '~/components/progressive-svg-image';
 import { EventName } from '~/config';
@@ -8,10 +6,10 @@ import { useAmplitudeAnalytics, useFeatureFlags } from '~/hooks';
 
 const Home = () => {
   const featureFlags = useFeatureFlags();
-  const router = useRouter();
+  /*const router = useRouter();
   useEffect(() => {
     router.push('/assets');
-  }, [router]);
+  }, [router]); */
 
   useAmplitudeAnalytics({
     onLoadEvent: [EventName.Swap.pageViewed, { isOnHome: true }],

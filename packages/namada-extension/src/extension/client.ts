@@ -47,6 +47,7 @@ export class NamadaClient implements WalletClient {
 
   async getSimpleAccount() {
 
+    this.logger?.info('Connecting to Namada wallet');
     await this.client.connect();
     const chain = await this.client.getChain();
     if (!chain) {
@@ -56,7 +57,10 @@ export class NamadaClient implements WalletClient {
 
     //const accountType = 'shielded-keys';
     const accountType = 'mnemonic';
-    const address = (await this.client.accounts())?.find((account) => account.type === accountType)?.address;
+    const accounts = await this.client.accounts();
+    const address = accounts?.find((account) => account.type === accountType)?.address;
+
+    this.logger?.info('Got account from Namada wallet', address, accounts);
 
     const returnData = {
       namespace: 'namada',
