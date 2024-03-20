@@ -192,24 +192,22 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
     setLoading((l) => ({ ...l, transfer: false }));
 
     try {
-      const encodedMsg = new Message<TransferMsgValue>().encode(
-        new TransferMsgValue({
-          source: data.address,
-          target: data.shieldedAddress,
-          amount: new BigNumber(amount),
-          token: tokenId,
-          nativeToken: 'NAM',
-        })
-      );
+      const msg = new TransferMsgValue({
+        source: data.address,
+        target: data.shieldedAddress,
+        amount: new BigNumber(amount),
+        token: tokenId,
+        nativeToken: 'NAM',
+      });
+      const encodedMsg = new Message<TransferMsgValue>().encode(msg);
 
-      const encodedTx = new Message<TxMsgValue>().encode(
-        new TxMsgValue({
-          token: tokenId,
-          feeAmount: new BigNumber(0),
-          gasLimit: new BigNumber(20_000),
-          chainId,
-        })
-      );
+      const tx = new TxMsgValue({
+        token: tokenId,
+        feeAmount: new BigNumber(0),
+        gasLimit: new BigNumber(20_000),
+        chainId,
+      });
+      const encodedTx = new Message<TxMsgValue>().encode(tx);
 
       namadaClient.current.submitTx({
         type: AccountType.Mnemonic,
@@ -218,7 +216,17 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
         txMsg: toBase64(encodedTx),
       });
 
-      console.debug('Transfer using submitTX', encodedMsg, encodedTx);
+      console.debug(
+        'Transfer using submitTX',
+        'msg',
+        msg,
+        'tx',
+        tx,
+        'txType',
+        TxType.Transfer,
+        'accountType',
+        AccountType.Mnemonic
+      );
     } catch (e) {
       console.error(e);
     }
@@ -251,25 +259,24 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
     setLoading((l) => ({ ...l, deploy: false }));
 
     try {
-      const encodedMsg = new Message<IbcTransferMsgValue>().encode(
-        new IbcTransferMsgValue({
-          source: data.address,
-          receiver: osmosisAddress,
-          amount: new BigNumber(amount),
-          token: OsmoToken,
-          portId: 'transfer',
-          channelId: 'channel-5802', //osmosis test 5802
-        })
-      );
+      const msg = new IbcTransferMsgValue({
+        source: data.address,
+        receiver: osmosisAddress,
+        amount: new BigNumber(amount),
+        token: OsmoToken,
+        portId: 'transfer',
+        channelId: 'channel-5802', //osmosis test 5802
+      });
+      const encodedMsg = new Message<IbcTransferMsgValue>().encode(msg);
 
-      const encodedTx = new Message<TxMsgValue>().encode(
-        new TxMsgValue({
-          token: tokenId,
-          feeAmount: new BigNumber(0),
-          gasLimit: new BigNumber(20_000),
-          chainId,
-        })
-      );
+      const tx = new TxMsgValue({
+        token: tokenId,
+        feeAmount: new BigNumber(0),
+        gasLimit: new BigNumber(20_000),
+        chainId,
+      });
+
+      const encodedTx = new Message<TxMsgValue>().encode(tx);
 
       await namadaClient.current.submitTx({
         type: AccountType.Mnemonic,
@@ -278,7 +285,17 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
         txMsg: toBase64(encodedTx),
       });
 
-      console.debug('Deploy using submitTX', encodedMsg, encodedTx);
+      console.debug(
+        'Deploy using submitTX',
+        'msg',
+        msg,
+        'tx',
+        tx,
+        'txType',
+        TxType.IBCTransfer,
+        'accountType',
+        AccountType.Mnemonic
+      );
     } catch (e) {
       console.error(e);
     }
