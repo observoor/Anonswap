@@ -15,7 +15,6 @@ import BigNumber from 'bignumber.js';
 import { observer } from 'mobx-react-lite';
 import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 
-import { AssetsInfoTable } from '~/components/table/asset-info';
 import { useNavBar } from '~/hooks';
 import { useStore } from '~/stores';
 
@@ -343,7 +342,7 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
       <div className="pt-8">
         <p className="py-1"> Assets info</p>
         <hr className="py-1"></hr>
-        <AssetsInfoTable
+        {/* <AssetsInfoTable
           tableTopPadding={10}
           onDeposit={(coinMinimalDenom) => {
             console.log('Deposit', coinMinimalDenom);
@@ -351,7 +350,7 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
           onWithdraw={(coinMinimalDenom) => {
             console.log('Withdraw', coinMinimalDenom);
           }}
-        />
+        /> */}
       </div>
     </main>
   );
