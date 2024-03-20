@@ -85,12 +85,14 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
   }, [chainId, accountStore, accountStore.walletManager]);
 
   function initNamadaClient() {
+    console.debug('Init client', wallet.current);
     if (!namadaClient.current) {
-      if (wallet.current?.mainWallet?.walletName !== 'namada-extension') {
-        displayToast({ message: 'mainWallet is not NAMADA' }, ToastType.ERROR);
-      } else if (wallet.current.mainWallet) {
+      // if (wallet.current. {
+      //   displayToast({ message: 'mainWallet is not NAMADA' }, ToastType.ERROR);
+      //} else
+      if (wallet?.current?.mainWallet) {
         namadaClient.current = (
-          wallet.current.mainWallet.client as NamadaClient
+          wallet?.current.mainWallet.client as NamadaClient
         ).client;
         return true;
       } else {
@@ -110,6 +112,7 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
     }
 
     setLoading((l) => ({ ...l, data: true }));
+    console.debug('Loading namada data');
 
     try {
       const accounts = await namadaClient.current.accounts();
@@ -127,6 +130,7 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
         address,
         shieldedAddress,
       }));
+      console.debug('Loading namada data done');
     } catch (e) {
       console.error(e);
     }
