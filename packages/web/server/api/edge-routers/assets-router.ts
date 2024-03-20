@@ -68,7 +68,7 @@ export const assetsRouter = createTRPCRouter({
     .query(async ({ input: { findMinDenomOrSymbol, userOsmoAddress } }) => {
 
       if (userOsmoAddress.startsWith("tnam")) {
-        return [];
+        return null;
       }
 
       if (findMinDenomOrSymbol === '') {
@@ -137,7 +137,7 @@ export const assetsRouter = createTRPCRouter({
     )
     .query(async ({ input: { findMinDenomOrSymbol, userOsmoAddress } }) => {
       if (userOsmoAddress.startsWith("tnam")) {
-        return [];
+        return null;
       }
 
       const asset = await getAsset({ anyDenom: findMinDenomOrSymbol });
