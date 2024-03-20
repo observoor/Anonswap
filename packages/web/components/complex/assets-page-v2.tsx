@@ -1,5 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { toBase64 } from '@cosmjs/encoding';
+import { toBase64 } from "@cosmjs/encoding";
 import {
   AccountType,
   IbcTransferMsgValue,
@@ -10,14 +10,20 @@ import {
   TransferMsgValue,
   TxMsgProps,
   TxMsgValue,
-} from '@cosmos-kit/namada-extension';
-import BigNumber from 'bignumber.js';
-import { observer } from 'mobx-react-lite';
-import { FunctionComponent, useCallback, useEffect, useState } from 'react';
+} from "@cosmos-kit/namada-extension";
+import BigNumber from "bignumber.js";
+import { observer } from "mobx-react-lite";
+import {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
-import { AssetsInfoTable } from '~/components/table/asset-info';
-import { useNavBar } from '~/hooks';
-import { useStore } from '~/stores';
+import { AssetsInfoTable } from "~/components/table/asset-info";
+import { useNavBar } from "~/hooks";
+import { useStore } from "~/stores";
 
 export const AssetsPageV2: FunctionComponent = observer(() => {
   const {
@@ -27,7 +33,7 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
     accountStore,
   } = useStore();
   const wallet = accountStore.getWallet(chainId);
-  const tokenID = 'tnam1qxvg64psvhwumv3mwrrjfcz0h3t3274hwggyzcee';
+  const tokenID = "tnam1qxvg64psvhwumv3mwrrjfcz0h3t3274hwggyzcee";
   const NotificationBar = () => (
     <div className="fixed bottom-5 left-5 z-40 border-x-chartGradientPrimary bg-wosmongton-200 p-4 text-chartGradientPrimary">
       {notificationMessage}
@@ -60,36 +66,38 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
       },*/
     ],
   });
+
   const [showNotification, setShowNotification] = useState(false);
-  const [notificationMessage, setNotificationMessage] = useState('');
-  const [namdaData, setNamdaData] = useState({
-    nemonicBalance: '' as string | null,
-    shieldedBalance: '' as string | null,
-    nemonicAddress: '' as string | null,
-    shieldedAddress: '' as string | null,
+  const [notificationMessage, setNotificationMessage] = useState("");
+  const oldNamdaData = useRef({
+    nemonicBalance: "" as string | null,
+    shieldedBalance: "" as string | null,
+    nemonicAddress: "" as string | null,
+    shieldedAddress: "" as string | null,
   });
+  const [namdaData, setNamdaData] = useState(oldNamdaData.current);
 
   const [namadaClient, setNamadaClient] = useState<Namada | null>(null);
   const [osmoAddress, setOsmoAddress] = useState(
-    'osmo178nutp2lnwp3qjx055sluz8fxvx3nywurhp6rd'
+    "osmo178nutp2lnwp3qjx055sluz8fxvx3nywurhp6rd"
   );
-  const [amount, setAmount] = useState('10');
+  const amount = useRef("10");
 
   useEffect(() => {
     if (!namdaData?.shieldedAddress?.length) {
-      console.debug('wallet?.address', wallet?.address, wallet);
-      if (wallet?.address?.startsWith('tnam') || wallet?.address) {
+      console.debug("wallet?.address", wallet?.address, wallet);
+      if (wallet?.address?.startsWith("tnam") || wallet?.address) {
         getNamadaData();
       }
     }
-  });
+  }, []);
 
   const initNamadaClient = async () => {
-    console.debug('Start init client', wallet);
+    console.debug("Start init client", wallet);
     const namadaClient = (await wallet?.mainWallet.client) as NamadaClient;
     const client: Namada = namadaClient.client;
     setNamadaClient(client);
-    console.debug('Namada client initialized', client);
+    console.debug("Namada client initialized", client);
   };
 
   const getNamadaData = async () => {
@@ -97,37 +105,42 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
       await initNamadaClient();
     }
 
-    console.debug('Getting namada data', wallet?.address);
+    console.debug("Getting namada data", wallet?.address);
 
     const accounts = await namadaClient?.accounts();
 
     const shieldedAddress = accounts?.find(
-      (account: any) => account.type === 'shielded-keys'
+      (account: any) => account.type === "shielded-keys"
     )?.address;
 
     const nemonicAddress = accounts?.find(
-      (account: any) => account.type === 'mnemonic'
+      (account: any) => account.type === "mnemonic"
     )?.address;
 
     const balance = await namadaClient?.balances({
-      owner: wallet?.address ?? '',
-      tokens: ['tnam1qxvg64psvhwumv3mwrrjfcz0h3t3274hwggyzcee'],
+      owner: wallet?.address ?? "",
+      tokens: ["tnam1qxvg64psvhwumv3mwrrjfcz0h3t3274hwggyzcee"],
     });
 
-    const balanceShielded = await namadaClient?.balances({
-      owner: shieldedAddress ?? '',
-      tokens: ['tnam1qxvg64psvhwumv3mwrrjfcz0h3t3274hwggyzcee'],
-    });
+    const balanceShielded = [{ amount: "0" }];
 
-    console.debug('Setting namada balance', balance, balanceShielded);
-    console.debug('Setting namada address', nemonicAddress, shieldedAddress);
+    // const balanceShielded = await namadaClient?.balances({
+    //   owner: shieldedAddress ?? "",
+    //   tokens: ["tnam1qxvg64psvhwumv3mwrrjfcz0h3t3274hwggyzcee"],
+    // });
 
-    setNamdaData({
-      nemonicBalance: balance ? balance[0]?.amount : '',
-      shieldedBalance: balanceShielded ? balanceShielded[0]?.amount : '',
-      nemonicAddress: nemonicAddress || '',
-      shieldedAddress: shieldedAddress || '',
-    });
+    console.debug("Setting namada balance", balance, balanceShielded);
+    console.debug("Setting namada address", nemonicAddress, shieldedAddress);
+
+    const newNamdaData = {
+      nemonicBalance: balance ? balance[0]?.amount : "",
+      shieldedBalance: balanceShielded ? balanceShielded[0]?.amount : "",
+      nemonicAddress: nemonicAddress || "",
+      shieldedAddress: shieldedAddress || "",
+    };
+
+    setNamdaData(newNamdaData);
+    oldNamdaData.current = newNamdaData;
   };
 
   const onTransferToShieldedClick = useCallback(async () => {
@@ -155,30 +168,37 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
     try {
       // await initNamadaClient();
       // await getNamadaData();
-      console.debug('Starting transfer', namdaData);
-      if (!namdaData?.nemonicAddress?.toString().startsWith('tnam')) {
-        setNotificationMessage('Wallet is not Namada');
+      console.debug("Starting transfer", JSON.stringify(oldNamdaData.current));
+      if (
+        !oldNamdaData.current?.nemonicAddress?.toString().startsWith("tnam")
+      ) {
+        setNotificationMessage("Wallet is not Namada");
         setShowNotification(true);
         return;
       }
 
-      const chainId = 'namada';
+      const chainId = "namada";
       const tranMsgInst = new Message<TransferMsgValue>();
-      if (!(namdaData?.nemonicAddress || namdaData?.shieldedAddress)) {
-        console.error('No address found', namdaData);
+      if (
+        !(
+          oldNamdaData.current?.nemonicAddress ||
+          oldNamdaData.current?.shieldedAddress
+        )
+      ) {
+        console.error("No address found", oldNamdaData.current);
         setNotificationMessage(
-          'Namada address not found, please change wallet'
+          "Namada address not found, please change wallet"
         );
         setShowNotification(true);
         return;
       }
 
       const messageData = new TransferMsgValue({
-        source: namdaData?.nemonicAddress || '',
-        target: namdaData?.shieldedAddress || '',
-        amount: new BigNumber(amount),
+        source: oldNamdaData.current?.nemonicAddress || "",
+        target: oldNamdaData.current?.shieldedAddress || "",
+        amount: new BigNumber(amount.current),
         token: tokenID,
-        nativeToken: 'NAM',
+        nativeToken: "NAM",
       });
 
       const tranEncoded = tranMsgInst.encode(messageData);
@@ -199,12 +219,12 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
         specificMsg: toBase64(tranEncoded),
         txMsg: toBase64(txEncoded),
       };
-      console.log('Transfer data', props, txMsgValue, messageData);
+      console.log("Transfer data", props, txMsgValue, messageData);
       const data = await namadaClient?.submitTx(props);
-      console.log('Transfer submitted', data);
+      console.log("Transfer submitted", data);
       return props;
     } catch (error) {
-      console.error('Error while submitting transfer', error);
+      console.error("Error while submitting transfer", error);
     }
   };
 
@@ -212,38 +232,38 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
     try {
       // await initNamadaClient();
       // await getNamadaData();
-      if (!namdaData?.nemonicAddress?.toString().startsWith('tnam')) {
-        setNotificationMessage('Wallet is not Namada');
+      if (!namdaData?.nemonicAddress?.toString().startsWith("tnam")) {
+        setNotificationMessage("Wallet is not Namada");
         setShowNotification(true);
         return;
       }
       if (!(namdaData?.nemonicAddress || namdaData?.shieldedAddress)) {
-        console.error('No address found', namdaData);
+        console.error("No address found", namdaData);
         setNotificationMessage(
-          'Namada address not found, please change wallet'
+          "Namada address not found, please change wallet"
         );
         setShowNotification(true);
         return;
       }
 
-      const osmosisChanel = 'channel-5802'; //osmosis test 5802
-      const osmosisPortID = 'transfer';
-      const chainId = 'namada';
+      const osmosisChanel = "channel-5802"; //osmosis test 5802
+      const osmosisPortID = "transfer";
+      const chainId = "namada";
 
       const tranMsgInst = new Message<IbcTransferMsgValue>();
 
       const tokenData: TokenInfo = {
-        symbol: 'OSMO',
+        symbol: "OSMO",
         type: 128,
         path: 0,
-        coin: 'Osmo',
-        url: 'https://osmosis.zone/',
-        address: '',
-        coinGeckoId: 'osmosis',
+        coin: "Osmo",
+        url: "https://osmosis.zone/",
+        address: "",
+        coinGeckoId: "osmosis",
       };
 
       const messageData = new IbcTransferMsgValue({
-        source: namdaData?.nemonicAddress || '',
+        source: namdaData?.nemonicAddress || "",
         receiver: osmoAddress,
         amount: new BigNumber(amount),
         token: tokenData,
@@ -269,12 +289,12 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
         txMsg: toBase64(txEncoded),
       };
 
-      console.log('IBC Transfer data', props, txMsgValue, messageData);
+      console.log("IBC Transfer data", props, txMsgValue, messageData);
       const data = await namadaClient?.submitTx(props);
-      console.log('IBC Transfer submitted', data);
+      console.log("IBC Transfer submitted", data);
       return props;
     } catch (error) {
-      console.error('Error while submitting transfer', error);
+      console.error("Error while submitting transfer", error);
     }
   };
 
@@ -305,7 +325,7 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
         Wallet type {wallet?.walletInfo?.prettyName}
         {!namdaData.shieldedAddress && (
           <span className="text-md text-chartGradientPrimary">
-            {' '}
+            {" "}
             !Wallet is not Namada !!
           </span>
         )}
@@ -317,10 +337,10 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
         Namada nemonic balance: {namdaData?.nemonicBalance}
       </p>
       <p className="text-md">
-        Namada shielded address: {namdaData?.shieldedAddress || ''}
+        Namada shielded address: {namdaData?.shieldedAddress || ""}
       </p>
       <p className="text-md">
-        Namada shielded balance: {namdaData?.shieldedBalance || ''}
+        Namada shielded balance: {namdaData?.shieldedBalance || ""}
       </p>
       <div>
         <p>Osmos address</p>
@@ -336,8 +356,7 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
         <p>Amount</p>
         <input
           type="number"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
+          onChange={(e) => (amount.current = e.target.value)}
           placeholder="Enter amount"
           className="border-wosmongton-100 bg-wosmongton-100/30 px-2 py-0"
         />
@@ -346,15 +365,15 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
         className="flex shrink-0 items-center gap-2 rounded-md border border-wosmongton-100 px-2 py-0 hover:bg-wosmongton-100/30"
         onClick={onTransferToShieldedClick}
       >
-        {' '}
-        Transfer to shielded{' '}
+        {" "}
+        Transfer to shielded{" "}
       </button>
       <button
         className="flex shrink-0 items-center gap-2 rounded-md border border-wosmongton-100 px-2 py-0 hover:bg-wosmongton-100/30"
         onClick={onDeployToOsmosisClick}
       >
-        {' '}
-        Deploy to osmosis{' '}
+        {" "}
+        Deploy to osmosis{" "}
       </button>
       <div className="pt-8">
         <p className="py-1"> Assets info</p>
@@ -362,10 +381,10 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
         <AssetsInfoTable
           tableTopPadding={10}
           onDeposit={(coinMinimalDenom) => {
-            console.log('Deposit', coinMinimalDenom);
+            console.log("Deposit", coinMinimalDenom);
           }}
           onWithdraw={(coinMinimalDenom) => {
-            console.log('Withdraw', coinMinimalDenom);
+            console.log("Withdraw", coinMinimalDenom);
           }}
         />
       </div>
