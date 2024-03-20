@@ -20,9 +20,13 @@ import { useNavBar } from '~/hooks';
 import { useStore } from '~/stores';
 
 export const AssetsPageV2: FunctionComponent = observer(() => {
-  const { accountStore, chainStore } = useStore();
-  const wallet = accountStore.getWallet(chainStore.osmosis.chainId);
-  const isNamada = wallet?.walletInfo?.prettyName?.toLowerCase() === 'namada';
+  const {
+    chainStore: {
+      osmosis: { chainId },
+    },
+    accountStore,
+  } = useStore();
+  const wallet = accountStore.getWallet(chainId);
   const tokenID = 'tnam1qxvg64psvhwumv3mwrrjfcz0h3t3274hwggyzcee';
   const NotificationBar = () => (
     <div className="fixed bottom-5 left-5 z-40 border-x-chartGradientPrimary bg-wosmongton-200 p-4 text-chartGradientPrimary">
@@ -78,7 +82,7 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
   });
 
   const initNamadaClient = async () => {
-    const wallet = accountStore.getWallet(chainStore.osmosis.chainId);
+    console.debug('Start init client', wallet);
     const namadaClient = (await wallet?.mainWallet.client) as NamadaClient;
     const client: Namada = namadaClient.client;
     setNamadaClient(client);
@@ -86,7 +90,8 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
   };
 
   const getNamadaData = async () => {
-    if (isNamada && wallet?.address) {
+    console.debug('wallet?.address', wallet?.address, wallet);
+    if (wallet?.address?.startsWith('tnam') || wallet?.address) {
       const getNamadaData = async () => {
         if (!namadaClient) {
           await initNamadaClient();
@@ -109,7 +114,7 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
           tokens: ['tnam1qxvg64psvhwumv3mwrrjfcz0h3t3274hwggyzcee'],
         });
 
-        console.debug('Namada balance', balance, balanceShielded);
+        console.debug('Sett5ing namada balance', balance, balanceShielded);
 
         setNamdaData({
           nemonicBalance: balance ? balance[0]?.amount : '',
@@ -145,8 +150,9 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
 
   const submitTransfer = async () => {
     try {
-      // await initNamadaClient();
+      await initNamadaClient();
       await getNamadaData();
+      console.debug('Starting transfer', namdaData);
       if (!namdaData?.nemonicAddress?.toString().startsWith('tnam')) {
         setNotificationMessage('Wallet is not Namada');
         setShowNotification(true);
@@ -271,6 +277,13 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
 
   return (
     <main className="mx-auto flex max-w-container flex-col gap-4 bg-osmoverse-900 p-8 pt-4 md:gap-8 md:p-4">
+      <button
+        className="flex shrink-0 items-center gap-2 rounded-md border border-wosmongton-100 px-2 py-0 hover:bg-wosmongton-100/30"
+        onClick={getNamadaData}
+      >
+        Refresh namada data
+      </button>
+
       {showNotification && <NotificationBar />}
       {/* <AssetsInfoTable
         tableTopPadding={valuesHeight}
@@ -287,7 +300,7 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
 
       <p className="text-md">
         Wallet type {wallet?.walletInfo?.prettyName}
-        {!isNamada && (
+        {!namdaData.shieldedAddress && (
           <span className="text-md text-chartGradientPrimary">
             {' '}
             !Wallet is not Namada !!
