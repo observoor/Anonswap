@@ -106,13 +106,13 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
   }
 
   async function loadNamadaData() {
+    console.debug('Loading namada data', JSON.stringify(namadaClient.current));
     if (!initNamadaClient() || !namadaClient.current) {
       displayToast({ message: 'No NAMADA client' }, ToastType.ERROR);
       return;
     }
 
     setLoading((l) => ({ ...l, data: true }));
-    console.debug('Loading namada data');
 
     try {
       const accounts = await namadaClient.current.accounts();
@@ -205,14 +205,14 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
         })
       );
 
-      const res = await namadaClient.current.submitTx({
+      namadaClient.current.submitTx({
         type: AccountType.Mnemonic,
         txType: TxType.Transfer,
         specificMsg: toBase64(encodedMsg),
         txMsg: toBase64(encodedTx),
       });
 
-      console.log(res);
+      console.debug('Transfer using submitTX', encodedMsg, encodedTx);
     } catch (e) {
       console.error(e);
     }
@@ -272,7 +272,7 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
         txMsg: toBase64(encodedTx),
       });
 
-      console.log(res);
+      console.debug('Deploy using submitTX', encodedMsg, encodedTx);
     } catch (e) {
       console.error(e);
     }
@@ -335,7 +335,7 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
         txArgs,
         shielded ? 'shielded-keys' : 'mnemonic'
       );
-      console.log(
+      console.debug(
         'Transfer submitted using props',
         txArgs,
         transferArgs,
