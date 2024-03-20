@@ -68,7 +68,7 @@ export const assetsRouter = createTRPCRouter({
     .query(async ({ input: { findMinDenomOrSymbol, userOsmoAddress } }) => {
 
       if (userOsmoAddress.startsWith("tnam")) {
-        return null;
+        return [];
       }
 
       if (findMinDenomOrSymbol === '') {
@@ -137,7 +137,7 @@ export const assetsRouter = createTRPCRouter({
     )
     .query(async ({ input: { findMinDenomOrSymbol, userOsmoAddress } }) => {
       if (userOsmoAddress.startsWith("tnam")) {
-        return null;
+        return [];
       }
 
       const asset = await getAsset({ anyDenom: findMinDenomOrSymbol });
@@ -296,8 +296,8 @@ export const assetsRouter = createTRPCRouter({
         ]),
       })
     )
-    .query(({ input: { coinDenom, timeFrame } }) =>
-      getAssetHistoricalPrice({
+    .query(({ input: { coinDenom, timeFrame } }) => {
+      return getAssetHistoricalPrice({
         coinDenom,
         ...(typeof timeFrame === "string"
           ? { timeFrame }
@@ -306,6 +306,7 @@ export const assetsRouter = createTRPCRouter({
             numRecentFrames?: number;
           })),
       })
+    }
     ),
   getAssetPairHistoricalPrice: publicProcedure
     .input(

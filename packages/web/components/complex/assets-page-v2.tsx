@@ -77,7 +77,10 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
 
   useEffect(() => {
     if (!namdaData?.shieldedAddress?.length) {
-      getNamadaData();
+      console.debug('wallet?.address', wallet?.address, wallet);
+      if (wallet?.address?.startsWith('tnam') || wallet?.address) {
+        getNamadaData();
+      }
     }
   });
 
@@ -90,41 +93,41 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
   };
 
   const getNamadaData = async () => {
-    console.debug('wallet?.address', wallet?.address, wallet);
-    if (wallet?.address?.startsWith('tnam') || wallet?.address) {
-      const getNamadaData = async () => {
-        if (!namadaClient) {
-          await initNamadaClient();
-        }
-
-        console.debug('Getting namada data', wallet?.address);
-
-        const accountType = 'shielded-keys';
-        const shieldedAddress = (await namadaClient?.accounts())?.find(
-          (account: any) => account.type === accountType
-        )?.address;
-
-        const balance = await namadaClient?.balances({
-          owner: wallet?.address ?? '',
-          tokens: ['tnam1qxvg64psvhwumv3mwrrjfcz0h3t3274hwggyzcee'],
-        });
-
-        const balanceShielded = await namadaClient?.balances({
-          owner: shieldedAddress ?? '',
-          tokens: ['tnam1qxvg64psvhwumv3mwrrjfcz0h3t3274hwggyzcee'],
-        });
-
-        console.debug('Sett5ing namada balance', balance, balanceShielded);
-
-        setNamdaData({
-          nemonicBalance: balance ? balance[0]?.amount : '',
-          shieldedBalance: balanceShielded ? balanceShielded[0]?.amount : '',
-          nemonicAddress: wallet?.address || '',
-          shieldedAddress: shieldedAddress || '',
-        });
-      };
-      getNamadaData();
+    if (!namadaClient?.version) {
+      await initNamadaClient();
     }
+
+    console.debug('Getting namada data', wallet?.address);
+
+    const accounts = await namadaClient?.accounts();
+
+    const shieldedAddress = accounts?.find(
+      (account: any) => account.type === 'shielded-keys'
+    )?.address;
+
+    const nemonicAddress = accounts?.find(
+      (account: any) => account.type === 'mnemonic'
+    )?.address;
+
+    const balance = await namadaClient?.balances({
+      owner: wallet?.address ?? '',
+      tokens: ['tnam1qxvg64psvhwumv3mwrrjfcz0h3t3274hwggyzcee'],
+    });
+
+    const balanceShielded = await namadaClient?.balances({
+      owner: shieldedAddress ?? '',
+      tokens: ['tnam1qxvg64psvhwumv3mwrrjfcz0h3t3274hwggyzcee'],
+    });
+
+    console.debug('Setting namada balance', balance, balanceShielded);
+    console.debug('Setting namada address', nemonicAddress, shieldedAddress);
+
+    setNamdaData({
+      nemonicBalance: balance ? balance[0]?.amount : '',
+      shieldedBalance: balanceShielded ? balanceShielded[0]?.amount : '',
+      nemonicAddress: nemonicAddress || '',
+      shieldedAddress: shieldedAddress || '',
+    });
   };
 
   const onTransferToShieldedClick = useCallback(async () => {
@@ -150,8 +153,8 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
 
   const submitTransfer = async () => {
     try {
-      await initNamadaClient();
-      await getNamadaData();
+      // await initNamadaClient();
+      // await getNamadaData();
       console.debug('Starting transfer', namdaData);
       if (!namdaData?.nemonicAddress?.toString().startsWith('tnam')) {
         setNotificationMessage('Wallet is not Namada');
@@ -208,7 +211,7 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
   const submitIBC = async () => {
     try {
       // await initNamadaClient();
-      await getNamadaData();
+      // await getNamadaData();
       if (!namdaData?.nemonicAddress?.toString().startsWith('tnam')) {
         setNotificationMessage('Wallet is not Namada');
         setShowNotification(true);
