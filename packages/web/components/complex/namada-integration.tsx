@@ -2,10 +2,10 @@
 import { toBase64 } from '@cosmjs/encoding';
 import {
   AccountType,
+  getNamadaFromExtension,
   IbcTransferMsgValue,
   Message,
   Namada,
-  NamadaClient,
   TokenInfo,
   TransferMsgValue,
   TxMsgValue,
@@ -84,20 +84,15 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
     }
   }, [chainId, accountStore, accountStore.walletManager]);
 
-  function initNamadaClient() {
+  async function initNamadaClient() {
     console.debug('Init client', wallet.current);
     if (!namadaClient.current) {
       // if (wallet.current. {
       //   displayToast({ message: 'mainWallet is not NAMADA' }, ToastType.ERROR);
       //} else
-      if (wallet.current?.address?.startsWith('tnam')) {
-        namadaClient.current = (
-          wallet?.current.mainWallet.client as NamadaClient
-        ).client;
-        return true;
-      } else {
-        displayToast({ message: 'No mainWallet' }, ToastType.ERROR);
-      }
+      const namFromExt = await getNamadaFromExtension();
+      namadaClient.current = namFromExt;
+      return true;
     } else {
       return true;
     }
@@ -107,7 +102,7 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
 
   async function loadNamadaData() {
     console.debug('Loading namada data', JSON.stringify(namadaClient.current));
-    if (!initNamadaClient() || !namadaClient.current) {
+    if (!(await initNamadaClient()) || !namadaClient.current) {
       displayToast({ message: 'No NAMADA client' }, ToastType.ERROR);
       return;
     }
@@ -265,7 +260,7 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
         })
       );
 
-      const res = await namadaClient.current.submitTx({
+      await namadaClient.current.submitTx({
         type: AccountType.Mnemonic,
         txType: TxType.IBCTransfer,
         specificMsg: toBase64(encodedMsg),
