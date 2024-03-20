@@ -9,6 +9,7 @@ import {
   TokenInfo,
   TransferMsgValue,
   TxMsgValue,
+  WindowWithNamada,
 } from '@cosmos-kit/namada-extension';
 import BigNumber from 'bignumber.js';
 import { observer } from 'mobx-react-lite';
@@ -70,6 +71,7 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
     data: false,
     transfer: false,
     deploy: false,
+    transferToNam: false,
   });
 
   useEffect(() => {
@@ -274,6 +276,74 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
     setLoading((l) => ({ ...l, deploy: false }));
   }
 
+  /**
+   * Transfer amount to osmosis type 2
+   */
+  async function onTransferUsingSigner(shielded: boolean = false) {
+    if (!namadaClient.current) {
+      displayToast({ message: 'No NAMADA client' }, ToastType.ERROR);
+      return;
+    }
+
+    if (!data.address.startsWith('tnam')) {
+      displayToast({ message: 'Wallet is not NAMADA' }, ToastType.ERROR);
+      return;
+    }
+
+    if (!data.address || !data.shieldedAddress) {
+      displayToast(
+        { message: 'NAMADA address not found, please change wallet' },
+        ToastType.ERROR
+      );
+      return;
+    }
+
+    setLoading((l) => ({ ...l, transferToNam: false }));
+
+    try {
+      const cli = namadaClient.current as WindowWithNamada['namada'];
+      const signer = cli.getSigner();
+      const chain = await cli.getChain();
+      const defaultAccount = await cli.defaultAccount();
+
+      const transferArgs = {
+        source: data.address,
+        target: osmosisAddress,
+        token: tokenId, // TODO: Update to support other tokens again!
+        amount: new BigNumber(amount),
+        nativeToken: tokenId,
+      };
+
+      const txArgs = {
+        token: tokenId, // TODO: Update to support other tokens again!
+        nativeToken: tokenId,
+        feeAmount: new BigNumber(20_000),
+        gasLimit: new BigNumber(20_000),
+        chainId: chain?.chainId || '',
+        publicKey: defaultAccount?.publicKey || '',
+        signer: undefined,
+        disposableSigningKey: shielded,
+        memo: '',
+      };
+
+      signer.submitTransfer(
+        transferArgs,
+        txArgs,
+        shielded ? 'shielded-keys' : 'mnemonic'
+      );
+      console.log(
+        'Transfer submitted using props',
+        txArgs,
+        transferArgs,
+        shielded ? 'shielded-keys' : 'mnemonic'
+      );
+    } catch (e) {
+      console.error(e);
+    }
+
+    setLoading((l) => ({ ...l, transferToNam: false }));
+  }
+
   return (
     <div className="rounded-3xl bg-osmoverse-800 p-4">
       <h2 className="text-xl">Namada to Osmosis</h2>
@@ -285,7 +355,7 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
 
       <code className="mb-6 mt-2 block break-all">{JSON.stringify(data)}</code>
 
-      <p className="mb-1 text-base">Osmosis address</p>
+      <p className="mb-1 text-base">Osmosis or Namada address</p>
       <InputBox
         currentValue={osmosisAddress}
         className="mb-4"
@@ -304,6 +374,11 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
         <Button onClick={() => onTransfer()}>
           Transfer to shielded
           {loading.transfer && <Spinner />}
+        </Button>
+
+        <Button onClick={() => onTransferUsingSigner()}>
+          Transfer to Mnemonic
+          {loading.deploy && <Spinner />}
         </Button>
 
         <Button onClick={() => onDeploy()}>
