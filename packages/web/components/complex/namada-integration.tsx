@@ -1,5 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { toBase64 } from "@cosmjs/encoding";
+import { fromBase64, toBase64 } from '@cosmjs/encoding';
 import {
   AccountType,
   getNamadaFromExtension,
@@ -12,17 +12,18 @@ import {
   TxMsgValue,
   TxProps,
   WindowWithNamada,
-} from "@cosmos-kit/namada-extension";
-import { type AccountStoreWallet } from "@osmosis-labs/stores/src/account/types";
-import BigNumber from "bignumber.js";
-import { observer } from "mobx-react-lite";
-import { FunctionComponent, useEffect, useRef, useState } from "react";
+} from '@cosmos-kit/namada-extension';
+import { deserialize } from '@dao-xyz/borsh';
+import { type AccountStoreWallet } from '@osmosis-labs/stores/src/account/types';
+import BigNumber from 'bignumber.js';
+import { observer } from 'mobx-react-lite';
+import { FunctionComponent, useEffect, useRef, useState } from 'react';
 
-import { displayToast, ToastType } from "~/components/alert";
-import { InputBox } from "~/components/input";
-import { Spinner } from "~/components/loaders";
-import { Button } from "~/components/ui/button";
-import { useStore } from "~/stores";
+import { displayToast, ToastType } from '~/components/alert';
+import { InputBox } from '~/components/input';
+import { Spinner } from '~/components/loaders';
+import { Button } from '~/components/ui/button';
+import { useStore } from '~/stores';
 
 enum TxType {
   Bond = 1,
@@ -35,7 +36,7 @@ enum TxType {
   VoteProposal = 8,
 }
 
-const tokenId = "tnam1qxvg64psvhwumv3mwrrjfcz0h3t3274hwggyzcee";
+const tokenId = 'tnam1qxvg64psvhwumv3mwrrjfcz0h3t3274hwggyzcee';
 
 /*const OsmoToken: TokenInfo = {
   symbol: 'OSMO',
@@ -48,13 +49,13 @@ const tokenId = "tnam1qxvg64psvhwumv3mwrrjfcz0h3t3274hwggyzcee";
 }; */
 
 const NanToken: TokenInfo = {
-  symbol: "NaaN",
+  symbol: 'NaaN',
   type: 877,
   path: 0,
-  coin: "NAAN",
-  url: "https://osmosis.zone/",
-  address: "naan",
-  coinGeckoId: "osmosis",
+  coin: 'NAAN',
+  url: 'https://osmosis.zone/',
+  address: tokenId,
+  coinGeckoId: 'osmosis',
 };
 
 export const NamadaIntegration: FunctionComponent = observer(() => {
@@ -63,22 +64,25 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
       osmosis: { chainId },
     },
     accountStore,
-    ibcTransferHistoryStore,
   } = useStore();
 
-  const wallet = useRef<AccountStoreWallet>(accountStore.getWallet(chainId));
+  const wallet = useRef<AccountStoreWallet>(
+    accountStore.getWallet(chainId) as AccountStoreWallet
+  );
   const namadaClient = useRef<Namada>();
 
   const [osmosisAddress, setOsmosisAddress] = useState(
-    "osmo178nutp2lnwp3qjx055sluz8fxvx3nywurhp6rd"
+    'osmo178nutp2lnwp3qjx055sluz8fxvx3nywurhp6rd'
   );
-  const [amount, setAmount] = useState("10");
+  const [amount, setAmount] = useState('10');
+  const [channel, setChannel] = useState('channel-5802');
+  const namadaChainId = 'shielded-expedition.88f17d1d14';
 
   const [data, setData] = useState({
-    address: "",
-    shieldedAddress: "",
-    balance: "",
-    shieldedBalance: "",
+    address: '',
+    shieldedAddress: '',
+    balance: '',
+    shieldedBalance: '',
   });
 
   const [loading, setLoading] = useState({
@@ -98,18 +102,20 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
       // ) {
       //   console.log(event.data);
       // }
-      console.log(event.data);
+      if (typeof event.data?.type?.includes('namada')) {
+        console.log('Proxy event', event.data);
+      }
     };
 
-    window.addEventListener("message", onMessage);
+    window.addEventListener('message', onMessage);
 
-    return () => window.removeEventListener("message", onMessage);
+    return () => window.removeEventListener('message', onMessage);
   }, []);
 
   useEffect(() => {
     loadNamadaData().then();
     if (chainId && accountStore) {
-      wallet.current = accountStore.getWallet(chainId);
+      wallet.current = accountStore.getWallet(chainId) as AccountStoreWallet;
 
       // if (wallet.current) {
 
@@ -118,7 +124,7 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
   }, [chainId, accountStore, accountStore.walletManager]);
 
   async function initNamadaClient() {
-    console.debug("Init client", wallet.current);
+    console.debug('Init client', wallet.current);
     if (!namadaClient.current) {
       // if (wallet.current. {
       //   displayToast({ message: 'mainWallet is not NAMADA' }, ToastType.ERROR);
@@ -130,7 +136,7 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
       } catch (e) {
         console.error(e);
         displayToast(
-          { message: "No NAMADA extension, please install it!" },
+          { message: 'No NAMADA extension, please install it!' },
           ToastType.ERROR
         );
         return false;
@@ -144,9 +150,9 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
   }
 
   async function loadNamadaData() {
-    console.debug("Loading namada data", JSON.stringify(namadaClient.current));
+    console.debug('Loading namada data', JSON.stringify(namadaClient.current));
     if (!(await initNamadaClient()) || !namadaClient.current) {
-      displayToast({ message: "No NAMADA client" }, ToastType.ERROR);
+      displayToast({ message: 'No NAMADA client' }, ToastType.ERROR);
       return;
     }
 
@@ -156,19 +162,19 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
       const accounts = await namadaClient.current.accounts();
 
       const address =
-        accounts?.find((a) => a.type === "mnemonic")?.address || "";
+        accounts?.find((a) => a.type === 'mnemonic')?.address || '';
       const shieldedAddress =
-        accounts?.find((a) => a.type === "shielded-keys")?.address || "";
+        accounts?.find((a) => a.type === 'shielded-keys')?.address || '';
 
-      loadNamadaBalance(address, "balance");
-      loadNamadaBalance(shieldedAddress, "shieldedBalance");
+      loadNamadaBalance(address, 'balance');
+      loadNamadaBalance(shieldedAddress, 'shieldedBalance');
 
       setData((data) => ({
         ...data,
         address,
         shieldedAddress,
       }));
-      console.debug("Loading namada data done");
+      console.debug('Loading namada data done');
     } catch (e) {
       console.error(e);
     }
@@ -178,14 +184,14 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
 
   async function loadNamadaBalance(
     owner: string,
-    state: "balance" | "shieldedBalance"
+    state: 'balance' | 'shieldedBalance'
   ) {
     if (!namadaClient.current) {
-      displayToast({ message: "No NAMADA client" }, ToastType.ERROR);
+      displayToast({ message: 'No NAMADA client' }, ToastType.ERROR);
       return;
     }
 
-    let balance = "0";
+    let balance = '0';
 
     const balances = await namadaClient.current.balances({
       owner,
@@ -202,20 +208,20 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
   /**
    * Transfer `amount` from mnemonic to shielded account
    */
-  async function onTransfer() {
+  async function onTransfer(shielded: boolean = false) {
     if (!namadaClient.current) {
-      displayToast({ message: "No NAMADA client" }, ToastType.ERROR);
+      displayToast({ message: 'No NAMADA client' }, ToastType.ERROR);
       return;
     }
 
-    if (!data.address.startsWith("tnam")) {
-      displayToast({ message: "Wallet is not NAMADA" }, ToastType.ERROR);
+    if (!data.address.startsWith('tnam')) {
+      displayToast({ message: 'Wallet is not NAMADA' }, ToastType.ERROR);
       return;
     }
 
     if (!data.address || !data.shieldedAddress) {
       displayToast(
-        { message: "NAMADA address not found, please change wallet" },
+        { message: 'NAMADA address not found, please change wallet' },
         ToastType.ERROR
       );
       return;
@@ -224,12 +230,14 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
     setLoading((l) => ({ ...l, transfer: false }));
 
     try {
+      const cli = namadaClient.current as WindowWithNamada['namada'];
+      const defaultAccount = await cli.defaultAccount();
       const msg = new TransferMsgValue({
         source: data.address,
         target: data.shieldedAddress,
         amount: new BigNumber(amount),
         token: tokenId,
-        nativeToken: "NAM",
+        nativeToken: 'NAM',
       });
       const encodedMsg = new Message<TransferMsgValue>().encode(msg);
 
@@ -237,26 +245,27 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
         token: tokenId,
         feeAmount: new BigNumber(0),
         gasLimit: new BigNumber(20_000),
-        chainId,
+        chainId: namadaChainId,
+        publicKey: defaultAccount?.publicKey || '',
       });
       const encodedTx = new Message<TxMsgValue>().encode(tx);
 
       namadaClient.current.submitTx({
-        type: AccountType.Mnemonic,
+        type: shielded ? AccountType.ShieldedKeys : AccountType.Mnemonic,
         txType: TxType.Transfer,
         specificMsg: toBase64(encodedMsg),
         txMsg: toBase64(encodedTx),
       });
 
       console.debug(
-        "Transfer using submitTX",
-        "msg",
+        'Transfer using submitTX',
+        'msg',
         msg,
-        "tx",
+        'tx',
         tx,
-        "txType",
+        'txType',
         TxType.Transfer,
-        "accountType",
+        'accountType',
         AccountType.Mnemonic
       );
     } catch (e) {
@@ -271,18 +280,18 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
    */
   async function onDeploy() {
     if (!namadaClient.current) {
-      displayToast({ message: "No NAMADA client" }, ToastType.ERROR);
+      displayToast({ message: 'No NAMADA client' }, ToastType.ERROR);
       return;
     }
 
-    if (!data.address.startsWith("tnam")) {
-      displayToast({ message: "Wallet is not NAMADA" }, ToastType.ERROR);
+    if (!data.address.startsWith('tnam')) {
+      displayToast({ message: 'Wallet is not NAMADA' }, ToastType.ERROR);
       return;
     }
 
     if (!data.address || !data.shieldedAddress) {
       displayToast(
-        { message: "NAMADA address not found, please change wallet" },
+        { message: 'NAMADA address not found, please change wallet' },
         ToastType.ERROR
       );
       return;
@@ -291,13 +300,16 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
     setLoading((l) => ({ ...l, deploy: false }));
 
     try {
+      const cli = namadaClient.current as WindowWithNamada['namada'];
+      const defaultAccount = await cli.defaultAccount();
+
       const msg = new IbcTransferMsgValue({
-        source: "bernat2", // data.address,
-        receiver: "osmo19f3wqyv6t0h3khzwpr2m76m9lu9095vf26rz49", //osmosisAddress,
+        source: data.address,
+        receiver: osmosisAddress,
         amount: new BigNumber(amount),
         token: NanToken,
-        portId: "transfer",
-        channelId: "channel-995", //osmosis test 5802
+        portId: 'transfer',
+        channelId: channel, //osmosis test 5802
       });
       const encodedMsg = new Message<IbcTransferMsgValue>().encode(msg);
 
@@ -305,10 +317,28 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
         token: tokenId,
         feeAmount: new BigNumber(0),
         gasLimit: new BigNumber(20_000),
-        chainId,
+        chainId: namadaChainId,
+        publicKey: defaultAccount?.publicKey || '',
       });
 
+      const dataSpecific = fromBase64(
+        'LQAAAHRuYW0xcXpjZDRwY2Y3NXllZmZ1N2dzbDVoZGw3cHMzamx1NTl1Z3BuZnE4cSsAAABvc21vMTlmM3dxeXY2dDBoM2toendwcjJtNzZtOWx1OTA5NXZmMjZyejQ5LQAAAHRuYW0xcThjdGs3dHIzMzdmODVkdzY5cTByc3JnZ2FzeGpqZjVqcTJzMndwaAEAAAAxCAAAAHRyYW5zZmVyCwAAAGNoYW5uZWwtMTI4AAA='
+      );
+
+      const datatxMsg = fromBase64(
+        'LQAAAHRuYW0xcXh2ZzY0cHN2aHd1bXYzbXdycmpmY3owaDN0MzI3NGh3Z2d5emNlZQEAAAAwBQAAADIwMDAwHgAAAHNoaWVsZGVkLWV4cGVkaXRpb24uODhmMTdkMWQxNAFCAAAAdHBrbmFtMXFxZ3FwcHI5NHBkeXc4YTA1NDdhNjd4eWdjbG5lcWc3NWNkYTY2MmFlNXZnOHY5bGdkZ3BzODBtcGg2AAAA'
+      );
+      const destxMsg = deserialize(datatxMsg, TxMsgValue);
+      console.log('The desTx - form namada', destxMsg);
+
       const encodedTx = new Message<TxMsgValue>().encode(tx);
+      const destxTx = deserialize(encodedTx, TxMsgValue);
+      console.log('The desTx', destxTx);
+
+      const desSpecific = deserialize(dataSpecific, IbcTransferMsgValue);
+      console.log('The desSpec - from namada', desSpecific);
+      const destxsPEC = deserialize(encodedMsg, IbcTransferMsgValue);
+      console.log('The destxsPEC', destxsPEC);
 
       await namadaClient.current.submitTx({
         type: AccountType.Mnemonic,
@@ -318,14 +348,14 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
       });
 
       console.debug(
-        "Deploy using submitTX",
-        "msg",
+        'Deploy using submitTX',
+        'msg',
         msg,
-        "tx",
+        'tx',
         tx,
-        "txType",
+        'txType',
         TxType.IBCTransfer,
-        "accountType",
+        'accountType',
         AccountType.Mnemonic
       );
     } catch (e) {
@@ -340,18 +370,18 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
    */
   async function onTransferUsingSigner(shielded: boolean = false) {
     if (!namadaClient.current) {
-      displayToast({ message: "No NAMADA client" }, ToastType.ERROR);
+      displayToast({ message: 'No NAMADA client' }, ToastType.ERROR);
       return;
     }
 
-    if (!data.address.startsWith("tnam")) {
-      displayToast({ message: "Wallet is not NAMADA" }, ToastType.ERROR);
+    if (!data.address.startsWith('tnam')) {
+      displayToast({ message: 'Wallet is not NAMADA' }, ToastType.ERROR);
       return;
     }
 
     if (!data.address || !data.shieldedAddress) {
       displayToast(
-        { message: "NAMADA address not found, please change wallet" },
+        { message: 'NAMADA address not found, please change wallet' },
         ToastType.ERROR
       );
       return;
@@ -360,7 +390,7 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
     setLoading((l) => ({ ...l, transferToNam: false }));
 
     try {
-      const cli = namadaClient.current as WindowWithNamada["namada"];
+      const cli = namadaClient.current as WindowWithNamada['namada'];
       const signer = cli.getSigner();
       const chain = await cli.getChain();
       const defaultAccount = await cli.defaultAccount();
@@ -376,25 +406,25 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
       const txArgs = {
         token: tokenId, // TODO: Update to support other tokens again!
         nativeToken: tokenId,
-        feeAmount: new BigNumber(20_000),
+        feeAmount: new BigNumber(0),
         gasLimit: new BigNumber(20_000),
-        chainId: chain?.chainId || "",
-        publicKey: defaultAccount?.publicKey || "",
+        chainId: chain?.chainId || '',
+        publicKey: defaultAccount?.publicKey || '',
         signer: undefined,
         disposableSigningKey: shielded,
-        memo: "",
+        memo: '',
       };
 
       signer.submitTransfer(
-        transferArgs,
         txArgs,
-        shielded ? "shielded-keys" : "mnemonic"
+        transferArgs,
+        shielded ? 'shielded-keys' : 'mnemonic'
       );
       console.debug(
-        "Transfer submitted using props",
+        'Transfer submitted using props',
         txArgs,
         transferArgs,
-        shielded ? "shielded-keys" : "mnemonic"
+        shielded ? 'shielded-keys' : 'mnemonic'
       );
     } catch (e) {
       console.error(e);
@@ -405,18 +435,18 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
 
   async function onDeployUsingSigner(shielded: boolean = false) {
     if (!namadaClient.current) {
-      displayToast({ message: "No NAMADA client" }, ToastType.ERROR);
+      displayToast({ message: 'No NAMADA client' }, ToastType.ERROR);
       return;
     }
 
-    if (!data.address.startsWith("tnam")) {
-      displayToast({ message: "Wallet is not NAMADA" }, ToastType.ERROR);
+    if (!data.address.startsWith('tnam')) {
+      displayToast({ message: 'Wallet is not NAMADA' }, ToastType.ERROR);
       return;
     }
 
     if (!data.address || !data.shieldedAddress) {
       displayToast(
-        { message: "NAMADA address not found, please change wallet" },
+        { message: 'NAMADA address not found, please change wallet' },
         ToastType.ERROR
       );
       return;
@@ -425,7 +455,7 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
     setLoading((l) => ({ ...l, transferToNam: false }));
 
     try {
-      const cli = namadaClient.current as WindowWithNamada["namada"];
+      const cli = namadaClient.current as WindowWithNamada['namada'];
       const signer = cli.getSigner();
       const chain = await cli.getChain();
       const defaultAccount = await cli.defaultAccount();
@@ -435,29 +465,29 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
         receiver: osmosisAddress,
         token: NanToken, // TODO: Update to support other tokens again!
         amount: new BigNumber(amount),
-        portId: "transfer",
-        channelId: "channel-995",
+        portId: 'transfer',
+        channelId: channel,
       };
 
       const txArgs: TxProps = {
-        token: "naan", // TODO: Update to support other tokens again!
-        feeAmount: new BigNumber(20_000),
+        token: tokenId, // TODO: Update to support other tokens again!
+        feeAmount: new BigNumber(0),
         gasLimit: new BigNumber(20_000),
-        chainId: chain?.chainId || "",
+        chainId: chain?.chainId || '',
         disposableSigningKey: shielded,
-        memo: "TEST",
+        memo: 'TEST',
       };
 
       signer.submitIbcTransfer(
         transferArgs,
         txArgs,
-        shielded ? "shielded-keys" : "mnemonic"
+        shielded ? 'shielded-keys' : 'mnemonic'
       );
       console.debug(
-        "IBC submitted using signer props",
+        'IBC submitted using signer props',
         transferArgs,
         txArgs,
-        shielded ? "shielded-keys" : "mnemonic"
+        shielded ? 'shielded-keys' : 'mnemonic'
       );
     } catch (e) {
       console.error(e);
@@ -491,15 +521,27 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
         className="mb-4"
         onInput={(v) => setAmount(v)}
       />
+      <p className="mb-1 text-base">Channel</p>
+      <InputBox
+        currentValue={channel}
+        type="string"
+        className="mb-4"
+        onInput={(v) => setChannel(v)}
+      />
 
       <div className="flex gap-4">
-        <Button onClick={() => onTransfer()}>
+        <Button onClick={() => onTransfer(true)}>
           Transfer to shielded
           {loading.transfer && <Spinner />}
         </Button>
 
-        <Button onClick={() => onTransferUsingSigner()}>
-          Transfer to Mnemonic using signer
+        <Button onClick={() => onTransfer()}>
+          Transfer to Mnemonic
+          {loading.deploy && <Spinner />}
+        </Button>
+
+        <Button className="invisible" onClick={() => onTransferUsingSigner()}>
+          Transfer to Mnemonic
           {loading.deploy && <Spinner />}
         </Button>
 
@@ -507,7 +549,7 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
           Deploy to Osmosis
           {loading.deploy && <Spinner />}
         </Button>
-        <Button onClick={() => onDeployUsingSigner()}>
+        <Button className="invisible" onClick={() => onDeployUsingSigner()}>
           Deploy to Osmosis using signer
           {loading.deploy && <Spinner />}
         </Button>
