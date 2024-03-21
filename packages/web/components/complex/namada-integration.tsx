@@ -36,7 +36,7 @@ enum TxType {
 
 const tokenId = 'tnam1qxvg64psvhwumv3mwrrjfcz0h3t3274hwggyzcee';
 
-const OsmoToken: TokenInfo = {
+/*const OsmoToken: TokenInfo = {
   symbol: 'OSMO',
   type: 128,
   path: 0,
@@ -44,7 +44,7 @@ const OsmoToken: TokenInfo = {
   url: 'https://osmosis.zone/',
   address: '',
   coinGeckoId: 'osmosis',
-};
+}; */
 
 const NanToken: TokenInfo = {
   symbol: 'NaaN',
