@@ -4,11 +4,13 @@ import {
   AccountType,
   getNamadaFromExtension,
   IbcTransferMsgValue,
+  IbcTransferProps,
   Message,
   Namada,
   TokenInfo,
   TransferMsgValue,
   TxMsgValue,
+  TxProps,
   WindowWithNamada,
 } from '@cosmos-kit/namada-extension';
 import BigNumber from 'bignumber.js';
@@ -41,6 +43,16 @@ const OsmoToken: TokenInfo = {
   coin: 'Osmo',
   url: 'https://osmosis.zone/',
   address: '',
+  coinGeckoId: 'osmosis',
+};
+
+const NanToken: TokenInfo = {
+  symbol: 'NaaN',
+  type: 877,
+  path: 0,
+  coin: 'NAAN',
+  url: 'https://osmosis.zone/',
+  address: 'naan',
   coinGeckoId: 'osmosis',
 };
 
@@ -260,12 +272,12 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
 
     try {
       const msg = new IbcTransferMsgValue({
-        source: data.address,
-        receiver: osmosisAddress,
+        source: 'bernat2', // data.address,
+        receiver: 'osmo19f3wqyv6t0h3khzwpr2m76m9lu9095vf26rz49', //osmosisAddress,
         amount: new BigNumber(amount),
-        token: OsmoToken,
+        token: NanToken,
         portId: 'transfer',
-        channelId: 'channel-5802', //osmosis test 5802
+        channelId: 'channel-995', //osmosis test 5802
       });
       const encodedMsg = new Message<IbcTransferMsgValue>().encode(msg);
 
@@ -371,6 +383,69 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
     setLoading((l) => ({ ...l, transferToNam: false }));
   }
 
+  async function onDeployUsingSigner(shielded: boolean = false) {
+    if (!namadaClient.current) {
+      displayToast({ message: 'No NAMADA client' }, ToastType.ERROR);
+      return;
+    }
+
+    if (!data.address.startsWith('tnam')) {
+      displayToast({ message: 'Wallet is not NAMADA' }, ToastType.ERROR);
+      return;
+    }
+
+    if (!data.address || !data.shieldedAddress) {
+      displayToast(
+        { message: 'NAMADA address not found, please change wallet' },
+        ToastType.ERROR
+      );
+      return;
+    }
+
+    setLoading((l) => ({ ...l, transferToNam: false }));
+
+    try {
+      const cli = namadaClient.current as WindowWithNamada['namada'];
+      const signer = cli.getSigner();
+      const chain = await cli.getChain();
+      const defaultAccount = await cli.defaultAccount();
+
+      const transferArgs: IbcTransferProps = {
+        source: data.address,
+        receiver: osmosisAddress,
+        token: NanToken, // TODO: Update to support other tokens again!
+        amount: new BigNumber(amount),
+        portId: 'transfer',
+        channelId: 'channel-995',
+      };
+
+      const txArgs: TxProps = {
+        token: 'naan', // TODO: Update to support other tokens again!
+        feeAmount: new BigNumber(20_000),
+        gasLimit: new BigNumber(20_000),
+        chainId: chain?.chainId || '',
+        disposableSigningKey: shielded,
+        memo: 'TEST',
+      };
+
+      signer.submitIbcTransfer(
+        transferArgs,
+        txArgs,
+        shielded ? 'shielded-keys' : 'mnemonic'
+      );
+      console.debug(
+        'IBC submitted using signer props',
+        transferArgs,
+        txArgs,
+        shielded ? 'shielded-keys' : 'mnemonic'
+      );
+    } catch (e) {
+      console.error(e);
+    }
+
+    setLoading((l) => ({ ...l, transferToNam: false }));
+  }
+
   return (
     <div className="rounded-3xl bg-osmoverse-800 p-4">
       <h2 className="text-xl">Namada to Osmosis</h2>
@@ -404,12 +479,16 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
         </Button>
 
         <Button onClick={() => onTransferUsingSigner()}>
-          Transfer to Mnemonic
+          Transfer to Mnemonic using signer
           {loading.deploy && <Spinner />}
         </Button>
 
         <Button onClick={() => onDeploy()}>
           Deploy to Osmosis
+          {loading.deploy && <Spinner />}
+        </Button>
+        <Button onClick={() => onDeployUsingSigner()}>
+          Deploy to Osmosis using signer
           {loading.deploy && <Spinner />}
         </Button>
       </div>
