@@ -1,5 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { fromBase64, toBase64 } from '@cosmjs/encoding';
+import { toBase64 } from '@cosmjs/encoding';
 import {
   AccountType,
   getNamadaFromExtension,
@@ -13,7 +13,6 @@ import {
   TxProps,
   WindowWithNamada,
 } from '@cosmos-kit/namada-extension';
-import { deserialize } from '@dao-xyz/borsh';
 import { type AccountStoreWallet } from '@osmosis-labs/stores/src/account/types';
 import BigNumber from 'bignumber.js';
 import { observer } from 'mobx-react-lite';
@@ -75,7 +74,7 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
     'osmo178nutp2lnwp3qjx055sluz8fxvx3nywurhp6rd'
   );
   const [amount, setAmount] = useState('10');
-  const [channel, setChannel] = useState('channel-5802');
+  const [channel, setChannel] = useState('channel-995');
   const namadaChainId = 'shielded-expedition.88f17d1d14';
 
   const [data, setData] = useState({
@@ -92,7 +91,7 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
     transferToNam: false,
   });
 
-  useEffect(() => {
+  /* useEffect(() => {
     const onMessage = (event: MessageEvent) => {
       // if (
       //   typeof event.data?.type === "string" &&
@@ -110,7 +109,7 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
     window.addEventListener('message', onMessage);
 
     return () => window.removeEventListener('message', onMessage);
-  }, []);
+  }, []); */
 
   useEffect(() => {
     loadNamadaData().then();
@@ -234,15 +233,16 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
       const defaultAccount = await cli.defaultAccount();
       const msg = new TransferMsgValue({
         source: data.address,
-        target: data.shieldedAddress,
+        target: shielded ? data.shieldedAddress : osmosisAddress,
         amount: new BigNumber(amount),
         token: tokenId,
-        nativeToken: 'NAM',
+        nativeToken: tokenId,
       });
       const encodedMsg = new Message<TransferMsgValue>().encode(msg);
 
       const tx = new TxMsgValue({
         token: tokenId,
+        disposableSigningKey: false, // shielded This needs to be checked could be false or true for shielded
         feeAmount: new BigNumber(0),
         gasLimit: new BigNumber(20_000),
         chainId: namadaChainId,
@@ -250,8 +250,29 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
       });
       const encodedTx = new Message<TxMsgValue>().encode(tx);
 
+      /* Helper for debugging
+      const dataSpecific = fromBase64(
+        'LQAAAHRuYW0xcXpjZDRwY2Y3NXllZmZ1N2dzbDVoZGw3cHMzamx1NTl1Z3BuZnE4cVIAAAB6bmFtMXF6eHVtOTBzMzdnenVmN3UwODJsMnp4NDBncGx0OGEyN3BkZnFlcHhxOXJ2N3B4OXI0MGc2ODB2dDI4M2YyZWEyNHk1d3BzZnZqbHk5LQAAAHRuYW0xcXh2ZzY0cHN2aHd1bXYzbXdycmpmY3owaDN0MzI3NGh3Z2d5emNlZQEAAAAyLQAAAHRuYW0xcXh2ZzY0cHN2aHd1bXYzbXdycmpmY3owaDN0MzI3NGh3Z2d5emNlZQ=='
+      );
+
+      const datatxMsg = fromBase64(
+        'LQAAAHRuYW0xcXh2ZzY0cHN2aHd1bXYzbXdycmpmY3owaDN0MzI3NGh3Z2d5emNlZQYAAAAwLjAwMDEFAAAAMjAwMDAeAAAAc2hpZWxkZWQtZXhwZWRpdGlvbi44OGYxN2QxZDE0AUIAAAB0cGtuYW0xcXFncXBwcjk0cGR5dzhhMDU0N2E2N3h5Z2NsbmVxZzc1Y2RhNjYyYWU1dmc4djlsZ2RncHM4MG1waDYBAAAA'
+      );
+
+      const destxMsg = deserialize(datatxMsg, TxMsgValue);
+      console.log('The desTx - form namada', destxMsg);
+
+      const destxTx = deserialize(encodedTx, TxMsgValue);
+      console.log('The desTx', destxTx);
+
+      const desSpecific = deserialize(dataSpecific, TransferMsgValue);
+      console.log('The desSpec - from namada', desSpecific);
+
+      const destxsPEC = deserialize(encodedMsg, TransferMsgValue);
+      console.log('The destxSpec', destxsPEC); */
+
       namadaClient.current.submitTx({
-        type: shielded ? AccountType.ShieldedKeys : AccountType.Mnemonic,
+        type: AccountType.Mnemonic,
         txType: TxType.Transfer,
         specificMsg: toBase64(encodedMsg),
         txMsg: toBase64(encodedTx),
@@ -321,7 +342,10 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
         publicKey: defaultAccount?.publicKey || '',
       });
 
-      const dataSpecific = fromBase64(
+      const encodedTx = new Message<TxMsgValue>().encode(tx);
+
+      /* -- Helper for debugging
+     const dataSpecific = fromBase64(
         'LQAAAHRuYW0xcXpjZDRwY2Y3NXllZmZ1N2dzbDVoZGw3cHMzamx1NTl1Z3BuZnE4cSsAAABvc21vMTlmM3dxeXY2dDBoM2toendwcjJtNzZtOWx1OTA5NXZmMjZyejQ5LQAAAHRuYW0xcThjdGs3dHIzMzdmODVkdzY5cTByc3JnZ2FzeGpqZjVqcTJzMndwaAEAAAAxCAAAAHRyYW5zZmVyCwAAAGNoYW5uZWwtMTI4AAA='
       );
 
@@ -331,14 +355,14 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
       const destxMsg = deserialize(datatxMsg, TxMsgValue);
       console.log('The desTx - form namada', destxMsg);
 
-      const encodedTx = new Message<TxMsgValue>().encode(tx);
+      
       const destxTx = deserialize(encodedTx, TxMsgValue);
       console.log('The desTx', destxTx);
 
       const desSpecific = deserialize(dataSpecific, IbcTransferMsgValue);
       console.log('The desSpec - from namada', desSpecific);
       const destxsPEC = deserialize(encodedMsg, IbcTransferMsgValue);
-      console.log('The destxsPEC', destxsPEC);
+      console.log('The destxsPEC', destxsPEC); */
 
       await namadaClient.current.submitTx({
         type: AccountType.Mnemonic,
