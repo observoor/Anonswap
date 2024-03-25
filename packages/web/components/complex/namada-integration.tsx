@@ -13,6 +13,7 @@ import {
   TxProps,
   WindowWithNamada,
 } from '@cosmos-kit/namada-extension';
+import { AppCurrency } from '@keplr-wallet/types';
 import { type AccountStoreWallet } from '@osmosis-labs/stores/src/account/types';
 import BigNumber from 'bignumber.js';
 import { observer } from 'mobx-react-lite';
@@ -64,6 +65,8 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
     },
     accountStore,
   } = useStore();
+
+  const osmosisAccount = accountStore.getWallet(chainId);
 
   const wallet = useRef<AccountStoreWallet>(
     accountStore.getWallet(chainId) as AccountStoreWallet
@@ -144,8 +147,45 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
     } else {
       return true;
     }
+  }
 
-    return false;
+  /**
+   *
+   * Osmosis functions
+   */
+
+  async function withdraw() {
+    const toNamChan = {
+      portId: 'transfer',
+      channelId: channel,
+      counterpartyChainId: namadaChainId,
+    };
+    const currency: AppCurrency = {
+      coinMinimalDenom: 'Naam',
+      coinDenom: 'naam',
+      coinDecimals: 6,
+    };
+
+    const toAddress = data.address;
+
+    console.debug('Withdraw data:', amount, toNamChan, currency, toAddress);
+
+    try {
+      const withRet = await osmosisAccount?.cosmos?.sendIBCTransferMsg(
+        toNamChan,
+        amount,
+        currency,
+        toAddress,
+        (tx) => {
+          console.debug('On thx', tx);
+        },
+        'test'
+      );
+      console.debug('Withdraw done', withRet);
+    } catch (e) {
+      displayToast({ message: 'Error deploying' + e }, ToastType.ERROR);
+      console.error(e);
+    }
   }
 
   async function loadNamadaData() {
@@ -554,10 +594,10 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
       />
 
       <div className="flex gap-4">
-        <Button onClick={() => onTransfer(true)}>
+        {/* <Button className="invisible" onClick={() => onTransfer(true)}>
           Transfer to shielded
           {loading.transfer && <Spinner />}
-        </Button>
+        </Button> */}
 
         <Button onClick={() => onTransfer()}>
           Transfer to Mnemonic
@@ -573,6 +613,12 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
           Deploy to Osmosis
           {loading.deploy && <Spinner />}
         </Button>
+
+        <Button onClick={() => withdraw()}>
+          Deploy to Namada from Osmosis
+          {loading.deploy && <Spinner />}
+        </Button>
+
         <Button className="invisible" onClick={() => onDeployUsingSigner()}>
           Deploy to Osmosis using signer
           {loading.deploy && <Spinner />}
