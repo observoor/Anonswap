@@ -45,7 +45,7 @@ export const TransferAssetSelectModal: FunctionComponent<
               token: {
                 currency: { coinDenom },
               },
-            }) => coinDenom === 'NAAN'
+            }) => coinDenom === 'NAM'
           )?.token.denom
         : tokens.find(
             ({

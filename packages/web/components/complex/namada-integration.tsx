@@ -17,7 +17,7 @@ import { AppCurrency } from '@keplr-wallet/types';
 import { type AccountStoreWallet } from '@osmosis-labs/stores/src/account/types';
 import BigNumber from 'bignumber.js';
 import { observer } from 'mobx-react-lite';
-import { FunctionComponent, useEffect, useRef, useState } from 'react';
+import { FunctionComponent, useEffect, useMemo, useRef, useState } from 'react';
 
 import { displayToast, ToastType } from '~/components/alert';
 import { InputBox } from '~/components/input';
@@ -49,10 +49,10 @@ const tokenId = 'tnam1qxvg64psvhwumv3mwrrjfcz0h3t3274hwggyzcee';
 }; */
 
 const NanToken: TokenInfo = {
-  symbol: 'NaaN',
+  symbol: 'NAM',
   type: 877,
   path: 0,
-  coin: 'NAAN',
+  coin: 'NAM',
   url: 'https://osmosis.zone/',
   address: tokenId,
   coinGeckoId: 'osmosis',
@@ -83,7 +83,7 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
     shieldedAddress: 'Connect to Namada extension!',
     balance: null,
     shieldedBalance: null,
-    osmosisAddress: 'Connect wallet!',
+    osmosisAddress: osmosisAccount || 'Connect wallet!',
   });
 
   const [loading, setLoading] = useState({
@@ -116,14 +116,12 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
 
   useEffect(() => {
     loadNamadaData().then();
-    if (chainId && accountStore) {
-      wallet.current = accountStore.getWallet(chainId) as AccountStoreWallet;
-    }
-    data.osmosisAddress = wallet?.current?.address || 'Connect wallet!';
-    if (data.osmosisAddress.length > 2) {
-      setOsmosisAddress(data.osmosisAddress);
-    }
-  }, [chainId, accountStore, accountStore.walletManager, wallet.current]);
+  }, [chainId, accountStore, accountStore.walletManager]);
+
+  useMemo(() => {
+    data.osmosisAddress = osmosisAccount?.address || 'Connect wallet!';
+    setOsmosisAddress(osmosisAccount?.address || 'Connect wallet!');
+  }, [osmosisAccount?.address]);
 
   async function initNamadaClient() {
     console.debug('Init client', wallet.current);

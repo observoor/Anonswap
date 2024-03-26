@@ -299,7 +299,7 @@ const Navigation = observer((props: NavigationProps) => {
   const language = useCurrentLanguage();
   const [favoritesList, setFavoritesList] = useLocalStorageState(
     'favoritesList',
-    ['OSMO', 'NAAN']
+    ['OSMO', 'NAM']
   );
 
   const details = useMemo(() => {

@@ -60,6 +60,7 @@ function getBatchLoader() {
 }
 
 export function getPriceBatched(asset: Asset) {
+  console.debug(`Getting price for ${asset.coinMinimalDenom} from SQS`);
   return cachified({
     cache: sidecarCache,
     key: `sidecar-price-${asset.coinMinimalDenom}`,

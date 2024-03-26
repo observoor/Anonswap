@@ -21,15 +21,22 @@ export async function getPriceFromCoinGecko(
 ) {
   let coinGeckoId = asset.coingeckoId;
 
-  if (!coinGeckoId) {
-    coinGeckoId = await searchCoinGeckoCoinId({ symbol: asset.symbol });
+  try {
+    if (!coinGeckoId) {
+      coinGeckoId = await searchCoinGeckoCoinId({ symbol: asset.symbol });
+    }
+
+    if (!coinGeckoId) {
+      throw new Error(`No CoinGecko ID found for ${asset.symbol}`);
+    }
+    return getCoingeckoPrice({ coinGeckoId, currency });
+  }
+  catch (e) {
+    console.error('Error getting data from coinGecko', e);
+    return new Dec(0);
   }
 
-  if (!coinGeckoId) {
-    throw new Error(`No CoinGecko ID found for ${asset.symbol}`);
-  }
 
-  return getCoingeckoPrice({ coinGeckoId, currency });
 }
 
 /** Used with `DataLoader` to make batched calls to CoinGecko.
@@ -55,24 +62,31 @@ export async function getCoingeckoPrice({
   currency: CoingeckoVsCurrencies;
 }) {
   // Create a loader per given currency.
-  const currencyBatchLoader = await cachified({
-    cache: coinGeckoCache,
-    key: `prices-batch-loader-${currency}`,
-    getFreshValue: async () => {
-      return new EdgeDataLoader((ids: readonly string[]) =>
-        batchFetchCoingeckoPrices(ids, currency)
-      );
-    },
-  });
+  try {
 
-  // Cache a result per CoinGecko ID *and* currency ID.
-  return cachified({
-    cache: coinGeckoCache,
-    key: `coingecko-price-${coinGeckoId}-${currency}`,
-    ttl: 1000 * 60, // 1 minute
-    getFreshValue: () =>
-      currencyBatchLoader.load(coinGeckoId).then((price) => new Dec(price)),
-  });
+
+    const currencyBatchLoader = await cachified({
+      cache: coinGeckoCache,
+      key: `prices-batch-loader-${currency}`,
+      getFreshValue: async () => {
+        return new EdgeDataLoader((ids: readonly string[]) =>
+          batchFetchCoingeckoPrices(ids, currency)
+        );
+      },
+    });
+
+    // Cache a result per CoinGecko ID *and* currency ID.
+    return cachified({
+      cache: coinGeckoCache,
+      key: `coingecko-price-${coinGeckoId}-${currency}`,
+      ttl: 1000 * 60, // 1 minute
+      getFreshValue: () =>
+        currencyBatchLoader.load(coinGeckoId).then((price) => new Dec(price)),
+    });
+  } catch (e) {
+    console.error('Error getting data from coinGecko', e);
+    return new Dec(0);
+  }
 }
 
 /** Cached CoinGecko ID for needs of price function. */

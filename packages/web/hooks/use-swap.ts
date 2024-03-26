@@ -64,7 +64,7 @@ type SwapOptions = {
  *  * Assets search query
  *  * Debounced quote fetching from user input */
 export function useSwap({
-  initialFromDenom = "NAAN",
+  initialFromDenom = "NAM",
   initialToDenom = "OSMO",
   useQueryParams = true,
   useOtherCurrencies = true,
@@ -430,7 +430,7 @@ export function useSwap({
  *  * Paginated swappable assets, with user balances if wallet connected
  *  * Assets search query */
 export function useSwapAssets({
-  initialFromDenom = "NAAN",
+  initialFromDenom = "NAM",
   initialToDenom = "OSMO",
   useQueryParams = true,
   useOtherCurrencies = true,

@@ -121,11 +121,20 @@ export const assetsRouter = createTRPCRouter({
       })
     )
     .query(async ({ input: { coinMinimalDenom } }) => {
-      const price = await getAssetPrice({
-        asset: { coinMinimalDenom },
-      });
+      try {
+        if (coinMinimalDenom === "ibc/99581A4B65484A38441411A90B2050CC5AC2EF78CFD9367C7BD8460BFBEED3BA") {
+          return new PricePretty(DEFAULT_VS_CURRENCY, 0.0001);
+        }
 
-      return new PricePretty(DEFAULT_VS_CURRENCY, price);
+        const price = await getAssetPrice({
+          asset: { coinMinimalDenom },
+        });
+
+        return new PricePretty(DEFAULT_VS_CURRENCY, price);
+      } catch (e) {
+        console.error(`Error getting asset price for ${coinMinimalDenom}`, e);
+        return new PricePretty(DEFAULT_VS_CURRENCY, 1);
+      }
     }),
   getMarketAsset: publicProcedure
     .input(

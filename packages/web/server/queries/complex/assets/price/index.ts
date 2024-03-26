@@ -34,31 +34,40 @@ export async function getAssetPrice({
   currency?: CoingeckoVsCurrencies;
   priceProvider?: PriceProvider;
 }): Promise<Dec> {
-  const coinMinimalDenom =
-    "coinMinimalDenom" in asset ? asset.coinMinimalDenom : undefined;
-  const sourceDenom = "sourceDenom" in asset ? asset.sourceDenom : undefined;
+  try {
+    const coinMinimalDenom =
+      "coinMinimalDenom" in asset ? asset.coinMinimalDenom : undefined;
+    const sourceDenom = "sourceDenom" in asset ? asset.sourceDenom : undefined;
 
-  const foundAsset = AssetLists.map((assets) => assets.assets)
-    .flat()
-    .find(
-      (asset) =>
-        (coinMinimalDenom && asset.coinMinimalDenom === coinMinimalDenom) ||
-        (sourceDenom && asset.sourceDenom === sourceDenom)
-    );
+    const foundAsset = AssetLists.map((assets) => assets.assets)
+      .flat()
+      .find(
+        (asset) =>
+          (coinMinimalDenom && asset.coinMinimalDenom === coinMinimalDenom) ||
+          (sourceDenom && asset.sourceDenom === sourceDenom)
+      );
 
-  if (!foundAsset)
-    throw new Error(
-      `Asset ${
-        asset.coinDenom ?? coinMinimalDenom ?? sourceDenom
-      } not found in asset list registry.`
-    );
+    if (!foundAsset)
+      throw new Error(
+        `Asset ${asset.coinDenom ?? coinMinimalDenom ?? sourceDenom
+        } not found in asset list registry.`
+      );
 
-  return cachified({
-    key: `asset-price-${foundAsset.coinMinimalDenom}`,
-    cache: pricesCache,
-    ttl: 1000 * 30, // 30 seconds, as calculating prices is expensive and cached remotely
-    getFreshValue: () => priceProvider(foundAsset, currency),
-  });
+    return cachified({
+      key: `asset-price-${foundAsset.coinMinimalDenom}`,
+      cache: pricesCache,
+      ttl: 1000 * 30, // 30 seconds, as calculating prices is expensive and cached remotely
+      getFreshValue: () => priceProvider(foundAsset, currency),
+    });
+  } catch (e) {
+    console.error(e);
+    return cachified({
+      key: `asset-price-error`,
+      cache: pricesCache,
+      ttl: 1000 * 30, // 30 seconds, as calculating prices is expensive and cached remotely
+      getFreshValue: () => new Dec(0),
+    });
+  }
 }
 
 /** Calculates the fiat value of a given coin.

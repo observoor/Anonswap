@@ -87,13 +87,13 @@ export class ObservableQueryCoingeckoCoinInfos extends ObservableQueryExternalBa
     try {
       if (
         !this.response ||
-        typeof this.response.data?.market_data.total_value_locked.usd !==
-          "number"
+        typeof this.response.data?.market_data.total_value_locked?.usd !==
+        "number"
       )
         return;
 
       const totalValueLocked =
-        this.response.data.market_data.total_value_locked.usd;
+        this.response.data.market_data.total_value_locked?.usd;
       if (isNaN(totalValueLocked)) return;
       return totalValueLocked;
     } catch {
@@ -111,11 +111,11 @@ export class ObservableQueryCoingeckoCoinInfos extends ObservableQueryExternalBa
     try {
       if (
         !this.response ||
-        typeof this.response.data?.market_data.market_cap.usd !== "number"
+        typeof this.response.data?.market_data.market_cap?.usd !== "number"
       )
         return;
 
-      const totalValueLocked = this.response.data.market_data.market_cap.usd;
+      const totalValueLocked = this.response.data.market_data.market_cap?.usd;
       if (isNaN(totalValueLocked)) return;
       return totalValueLocked;
     } catch {

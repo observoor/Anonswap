@@ -1,10 +1,10 @@
-import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
-import { ObservableQueryPool, QuasarVault } from "@osmosis-labs/stores";
-import classNames from "classnames";
-import debounce from "debounce";
-import { observer } from "mobx-react-lite";
-import dynamic from "next/dynamic";
-import Image from "next/image";
+import { CoinPretty, Dec, DecUtils, PricePretty } from '@keplr-wallet/unit';
+import { ObservableQueryPool, QuasarVault } from '@osmosis-labs/stores';
+import classNames from 'classnames';
+import debounce from 'debounce';
+import { observer } from 'mobx-react-lite';
+import dynamic from 'next/dynamic';
+import Image from 'next/image';
 import React, {
   FunctionComponent,
   ReactNode,
@@ -13,43 +13,43 @@ import React, {
   useMemo,
   useRef,
   useState,
-} from "react";
+} from 'react';
 
-import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
-import { Button } from "~/components/buttons";
-import { ChartButton } from "~/components/buttons";
-import IconButton from "~/components/buttons/icon-button";
+import { Icon, PoolAssetsIcon, PoolAssetsName } from '~/components/assets';
+import { Button } from '~/components/buttons';
+import { ChartButton } from '~/components/buttons';
+import IconButton from '~/components/buttons/icon-button';
 import {
   ChartUnavailable,
   PriceChartHeader,
-} from "~/components/chart/token-pair-historical";
-import { DepositAmountGroup } from "~/components/cl-deposit-input-group";
-import { Pill } from "~/components/indicators/pill";
-import { InputBox } from "~/components/input";
-import Spinner from "~/components/loaders/spinner";
-import { CustomClasses } from "~/components/types";
-import { Checkbox } from "~/components/ui/checkbox";
-import { EventName } from "~/config";
+} from '~/components/chart/token-pair-historical';
+import { DepositAmountGroup } from '~/components/cl-deposit-input-group';
+import { Pill } from '~/components/indicators/pill';
+import { InputBox } from '~/components/input';
+import Spinner from '~/components/loaders/spinner';
+import { CustomClasses } from '~/components/types';
+import { Checkbox } from '~/components/ui/checkbox';
+import { EventName } from '~/config';
 import {
   ObservableAddConcentratedLiquidityConfig,
   useAmplitudeAnalytics,
   useTranslation,
-} from "~/hooks";
+} from '~/hooks';
 import {
   ObservableHistoricalAndLiquidityData,
   useHistoricalAndLiquidityData,
-} from "~/hooks/ui-config/use-historical-and-depth-data";
-import { useStore } from "~/stores";
-import { formatPretty } from "~/utils/formatter";
+} from '~/hooks/ui-config/use-historical-and-depth-data';
+import { useStore } from '~/stores';
+import { formatPretty } from '~/utils/formatter';
 
-import { Tooltip } from "../tooltip";
+import { Tooltip } from '../tooltip';
 
 const ConcentratedLiquidityDepthChart = dynamic(
-  () => import("~/components/chart/concentrated-liquidity-depth"),
+  () => import('~/components/chart/concentrated-liquidity-depth'),
   { ssr: false }
 );
 const TokenPairHistoricalChart = dynamic(
-  () => import("~/components/chart/token-pair-historical"),
+  () => import('~/components/chart/token-pair-historical'),
   { ssr: false }
 );
 
@@ -79,14 +79,14 @@ export const AddConcLiquidity: FunctionComponent<
     return (
       <div
         className={classNames(
-          "flex flex-col",
-          addLiquidityConfig.modalView === "overview" ? "gap-8" : "gap-5",
+          'flex flex-col',
+          addLiquidityConfig.modalView === 'overview' ? 'gap-8' : 'gap-5',
           className
         )}
       >
         {(() => {
           switch (addLiquidityConfig.modalView) {
-            case "overview":
+            case 'overview':
               return (
                 <Overview
                   pool={pool}
@@ -95,7 +95,7 @@ export const AddConcLiquidity: FunctionComponent<
                   onRequestClose={onRequestClose}
                 />
               );
-            case "add_manual":
+            case 'add_manual':
               return (
                 <AddConcLiqView
                   pool={pool}
@@ -103,7 +103,7 @@ export const AddConcLiquidity: FunctionComponent<
                   actionButton={actionButton}
                 />
               );
-            case "add_managed":
+            case 'add_managed':
               return (
                 <AddConcLiqManaged
                   quasarVaults={quasarVaults}
@@ -128,7 +128,7 @@ const Overview: FunctionComponent<
   const { priceStore, queriesExternalStore, derivedDataStore } = useStore();
   const { t } = useTranslation();
   const [selected, selectView] =
-    useState<typeof addLiquidityConfig.modalView>("add_manual");
+    useState<typeof addLiquidityConfig.modalView>('add_manual');
   const queryPoolFeeMetrics = queriesExternalStore.queryPoolFeeMetrics;
 
   const superfluidPoolDetail = derivedDataStore.superfluidPoolDetails.get(
@@ -142,7 +142,7 @@ const Overview: FunctionComponent<
       <div className="align-center relative flex flex-row">
         <div className="absolute left-0 flex h-full items-center text-sm" />
         <h6 className="flex-1 text-center">
-          {t("addConcentratedLiquidity.step1Title")}
+          {t('addConcentratedLiquidity.step1Title')}
         </h6>
         <div className="absolute right-0">
           <IconButton
@@ -188,14 +188,14 @@ const Overview: FunctionComponent<
           </div>
           {superfluidPoolDetail?.isSuperfluid && (
             <span className="body2 text-superfluid-gradient">
-              {t("pool.superfluidEnabled")}
+              {t('pool.superfluidEnabled')}
             </span>
           )}
         </div>
         <div className="flex items-center gap-10 xs:flex-wrap xs:gap-y-4 xs:gap-x-6">
           <div className="gap-[3px]">
             <span className="body2 text-osmoverse-400">
-              {t("pool.24hrTradingVolume")}
+              {t('pool.24hrTradingVolume')}
             </span>
             <h6 className="text-osmoverse-100">
               {queryPoolFeeMetrics
@@ -205,7 +205,7 @@ const Overview: FunctionComponent<
           </div>
           <div className="gap-[3px]">
             <span className="body2 text-osmoverse-400">
-              {t("pool.liquidity")}
+              {t('pool.liquidity')}
             </span>
             <h6 className="text-osmoverse-100">
               {pool?.computeTotalValueLocked(priceStore).toString()}
@@ -213,7 +213,7 @@ const Overview: FunctionComponent<
           </div>
           <div className="gap-[3px]">
             <span className="body2 text-osmoverse-400">
-              {t("pool.spreadFactor")}
+              {t('pool.spreadFactor')}
             </span>
             <h6 className="text-osmoverse-100">{pool?.swapFee.toString()}</h6>
           </div>
@@ -224,28 +224,28 @@ const Overview: FunctionComponent<
           <div>
             {hasProvidersVaults ? (
               <StrategySelector
-                title={t("addConcentratedLiquidity.managed")}
-                description={t("addConcentratedLiquidity.managedDescription")}
-                selected={selected === "add_managed"}
-                onClick={() => selectView("add_managed")}
+                title={t('addConcentratedLiquidity.managed')}
+                description={t('addConcentratedLiquidity.managedDescription')}
+                selected={selected === 'add_managed'}
+                onClick={() => selectView('add_managed')}
                 imgSrc="/images/cl-pool-providers.png"
                 isNew
               />
             ) : (
               <StrategySelector
-                title={t("addConcentratedLiquidity.managed")}
-                description={t("addConcentratedLiquidity.managedDescription")}
-                selected={selected === "add_managed"}
+                title={t('addConcentratedLiquidity.managed')}
+                description={t('addConcentratedLiquidity.managedDescription')}
+                selected={selected === 'add_managed'}
                 imgSrc="/images/cl-managed-pick-strategy.png"
               />
             )}
           </div>
           <div>
             <StrategySelector
-              title={t("addConcentratedLiquidity.manual")}
-              description={t("addConcentratedLiquidity.manualDescription")}
-              selected={selected === "add_manual"}
-              onClick={() => selectView("add_manual")}
+              title={t('addConcentratedLiquidity.manual')}
+              description={t('addConcentratedLiquidity.manualDescription')}
+              selected={selected === 'add_manual'}
+              onClick={() => selectView('add_manual')}
               imgSrc="/images/cl-manual-pick-strategy.png"
             />
           </div>
@@ -258,7 +258,7 @@ const Overview: FunctionComponent<
             addLiquidityConfig.setModalView(selected);
           }}
         >
-          {t("pools.createPool.buttonNext")}
+          {t('pools.createPool.buttonNext')}
         </Button>
       </div>
     </>
@@ -278,19 +278,19 @@ const StrategySelector: FunctionComponent<{
   return (
     <div
       className={classNames(
-        "flex flex-1 flex-col items-center justify-center gap-4 rounded-2xl bg-osmoverse-700/[.6] p-[2px]",
+        'flex flex-1 flex-col items-center justify-center gap-4 rounded-2xl bg-osmoverse-700/[.6] p-[2px]',
         {
-          "bg-supercharged": selected,
-          "cursor-pointer hover:bg-supercharged": onClick,
+          'bg-supercharged': selected,
+          'cursor-pointer hover:bg-supercharged': onClick,
         }
       )}
       onClick={onClick}
     >
       <div
         className={classNames(
-          "flex h-full w-full flex-col items-center justify-center gap-[20px] rounded-2xl py-8 px-4",
+          'flex h-full w-full flex-col items-center justify-center gap-[20px] rounded-2xl py-8 px-4',
           {
-            "bg-osmoverse-700": Boolean(onClick),
+            'bg-osmoverse-700': Boolean(onClick),
           }
         )}
       >
@@ -298,7 +298,7 @@ const StrategySelector: FunctionComponent<{
           {title}
           {isNew && (
             <Pill>
-              <span className="button py-[4px]">{t("new")}</span>
+              <span className="button py-[4px]">{t('new')}</span>
             </Pill>
           )}
         </div>
@@ -379,7 +379,7 @@ const AddConcLiqView: FunctionComponent<
       <div className="align-center relative flex flex-row xs:items-center xs:gap-4">
         <button
           className="absolute left-0 flex h-full cursor-pointer items-center xs:static"
-          onClick={() => setModalView("overview")}
+          onClick={() => setModalView('overview')}
         >
           <Image
             alt="left"
@@ -388,14 +388,14 @@ const AddConcLiqView: FunctionComponent<
             height={24}
           />
           <span className="body2 pl-1 text-osmoverse-100">
-            {t("addConcentratedLiquidity.back")}
+            {t('addConcentratedLiquidity.back')}
           </span>
         </button>
         <h6 className="mx-auto whitespace-nowrap">
-          {t("addConcentratedLiquidity.step2Title")}
+          {t('addConcentratedLiquidity.step2Title')}
         </h6>
         <span className="caption absolute right-0 flex h-full items-center text-osmoverse-200 md:hidden">
-          {t("addConcentratedLiquidity.priceShownIn", {
+          {t('addConcentratedLiquidity.priceShownIn', {
             base: baseDepositAmountIn.sendCurrency.coinDenom,
             quote: quoteDepositAmountIn.sendCurrency.coinDenom,
           })}
@@ -403,7 +403,7 @@ const AddConcLiqView: FunctionComponent<
       </div>
       <div className="flex flex-col">
         <span className="subtitle1 px-4 pb-3">
-          {t("addConcentratedLiquidity.priceRange")}
+          {t('addConcentratedLiquidity.priceRange')}
         </span>
         <div className="flex w-full gap-1">
           <div className="flex h-[20.1875rem] flex-grow flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6 md:hidden">
@@ -489,12 +489,12 @@ const AddConcLiqView: FunctionComponent<
                 <div className="absolute right-8 top-5 flex select-none flex-col text-right">
                   <div className="flex items-center justify-end gap-1">
                     <span className="text-osmoverse-300">
-                      {t("addConcentratedLiquidity.estimated")}
+                      {t('addConcentratedLiquidity.estimated')}
                     </span>
                     <Tooltip
                       content={
                         <span>
-                          {t("addConcentratedLiquidity.estimatedInfo")}
+                          {t('addConcentratedLiquidity.estimatedInfo')}
                         </span>
                       }
                     >
@@ -505,8 +505,8 @@ const AddConcLiqView: FunctionComponent<
                     <Spinner className="m-auto mt-1.5" />
                   ) : (
                     <h5 className="text-osmoverse-100">
-                      {queryCurrentRangeApr.apr.maxDecimals(1).toString() ?? ""}{" "}
-                      {t("pool.APR")}
+                      {queryCurrentRangeApr.apr.maxDecimals(1).toString() ?? ''}{' '}
+                      {t('pool.APR')}
                     </h5>
                   )}
                 </div>
@@ -514,13 +514,13 @@ const AddConcLiqView: FunctionComponent<
             </div>
             <div className="flex flex-col items-center justify-center gap-4 pr-8 sm:pr-3">
               <PriceInputBox
-                label={t("addConcentratedLiquidity.high")}
+                label={t('addConcentratedLiquidity.high')}
                 forPriceIndex={1}
                 addConcLiquidityConfig={addLiquidityConfig}
                 inputRef={highSpotPriceInputRef}
               />
               <PriceInputBox
-                label={t("addConcentratedLiquidity.low")}
+                label={t('addConcentratedLiquidity.low')}
                 forPriceIndex={0}
                 addConcLiquidityConfig={addLiquidityConfig}
               />
@@ -534,7 +534,7 @@ const AddConcLiqView: FunctionComponent<
       />
       <section className="flex flex-col">
         <div className="subtitle1 flex place-content-between items-baseline px-4 pb-3">
-          {t("addConcentratedLiquidity.amountToDeposit")}
+          {t('addConcentratedLiquidity.amountToDeposit')}
           {superfluidPoolDetail.isSuperfluid && (
             <div className="flex gap-3">
               <Checkbox
@@ -548,12 +548,12 @@ const AddConcLiqView: FunctionComponent<
               />
               <label
                 htmlFor="superfluid-stake"
-                className={classNames("flex flex-col gap-1", {
-                  "opacity-30": sfStakingDisabled,
+                className={classNames('flex flex-col gap-1', {
+                  'opacity-30': sfStakingDisabled,
                 })}
               >
                 <h6 className="md:text-subtitle1 md:font-subtitle1">
-                  {t("lockToken.superfluidStake")}{" "}
+                  {t('lockToken.superfluidStake')}{' '}
                   {superfluidPoolDetail.superfluidApr.toDec().isPositive()
                     ? `(+${superfluidPoolDetail.superfluidApr.maxDecimals(
                         0
@@ -561,7 +561,7 @@ const AddConcLiqView: FunctionComponent<
                     : undefined}
                 </h6>
                 <span className="caption text-osmoverse-300">
-                  {t("lockToken.bondingRequirement", {
+                  {t('lockToken.bondingRequirement', {
                     numDays: superfluidPoolDetail.unstakingDuration
                       .asDays()
                       .toString(),
@@ -578,7 +578,7 @@ const AddConcLiqView: FunctionComponent<
             priceInputClass=" md:!w-full"
             onUpdate={useCallback(
               (amount) => {
-                setAnchorAsset("base");
+                setAnchorAsset('base');
                 baseDepositAmountIn.setAmount(amount.toString());
               },
               [baseDepositAmountIn, setAnchorAsset]
@@ -594,7 +594,7 @@ const AddConcLiqView: FunctionComponent<
             priceInputClass=" md:!w-full"
             onUpdate={useCallback(
               (amount) => {
-                setAnchorAsset("quote");
+                setAnchorAsset('quote');
                 quoteDepositAmountIn.setAmount(amount.toString());
               },
               [quoteDepositAmountIn, setAnchorAsset]
@@ -623,14 +623,14 @@ const AddConcLiqManaged: FunctionComponent<
 
   const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
 
-  if (!fiat) throw new Error("Could not find fiat currency from price store.");
+  if (!fiat) throw new Error('Could not find fiat currency from price store.');
 
   return (
     <>
       <div className="align-center relative flex flex-row xs:items-center xs:gap-4">
         <button
           className="absolute left-0 flex h-full cursor-pointer items-center xs:static"
-          onClick={() => setModalView("overview")}
+          onClick={() => setModalView('overview')}
         >
           <Image
             alt="left"
@@ -639,11 +639,11 @@ const AddConcLiqManaged: FunctionComponent<
             height={24}
           />
           <span className="body2 pl-1 text-osmoverse-100">
-            {t("addConcentratedLiquidity.back")}
+            {t('addConcentratedLiquidity.back')}
           </span>
         </button>
         <h6 className="mx-auto whitespace-nowrap">
-          {t("addConcentratedLiquidity.step2TitleManaged")}
+          {t('addConcentratedLiquidity.step2TitleManaged')}
         </h6>
       </div>
       <div className="flex flex-col gap-3">
@@ -680,7 +680,7 @@ const AddConcLiqManaged: FunctionComponent<
                     <p className="text-sm text-osmoverse-200">TVL</p>
                     <p className="text-lg">
                       {formatPretty(
-                        new PricePretty(fiat, vault.tvl.usd)
+                        new PricePretty(fiat, vault?.tvl?.usd)
                       ).toString()}
                     </p>
                   </div>
@@ -760,20 +760,20 @@ const StrategySelectorGroup: FunctionComponent<
   const { currentStrategy } = props.addLiquidityConfig;
 
   let descriptionText = t(
-    "addConcentratedLiquidity.volatilityCustomDescription"
+    'addConcentratedLiquidity.volatilityCustomDescription'
   );
 
-  if (currentStrategy === "passive") {
+  if (currentStrategy === 'passive') {
     descriptionText = t(
-      "addConcentratedLiquidity.volatilityPassiveDescription"
+      'addConcentratedLiquidity.volatilityPassiveDescription'
     );
-  } else if (currentStrategy === "aggressive") {
+  } else if (currentStrategy === 'aggressive') {
     descriptionText = t(
-      "addConcentratedLiquidity.volatilityAggressiveDescription"
+      'addConcentratedLiquidity.volatilityAggressiveDescription'
     );
-  } else if (currentStrategy === "moderate") {
+  } else if (currentStrategy === 'moderate') {
     descriptionText = t(
-      "addConcentratedLiquidity.volatilityModerateDescription"
+      'addConcentratedLiquidity.volatilityModerateDescription'
     );
   }
 
@@ -781,7 +781,7 @@ const StrategySelectorGroup: FunctionComponent<
     <section className="flex flex-row justify-between gap-y-4 1.5md:flex-col">
       <div className="mx-4 flex flex-col gap-2">
         <span className="subtitle1">
-          {t("addConcentratedLiquidity.selectVolatilityRange")}
+          {t('addConcentratedLiquidity.selectVolatilityRange')}
         </span>
         <span className="caption text-osmoverse-200">{descriptionText}</span>
       </div>
@@ -824,7 +824,7 @@ const StrategySelectorGroup: FunctionComponent<
 
 const PresetStrategyCard: FunctionComponent<
   {
-    type: null | "passive" | "moderate" | "aggressive";
+    type: null | 'passive' | 'moderate' | 'aggressive';
     src: string;
     addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
     label: string;
@@ -859,7 +859,7 @@ const PresetStrategyCard: FunctionComponent<
     /** Disabled of aggressive price range is the same.
      *  This can happen with pools with pegged currencies with very concentrated liq. */
     const disabled =
-      "moderate" === type &&
+      'moderate' === type &&
       aggressivePriceRange[0].equals(moderatePriceRange[0]) &&
       aggressivePriceRange[1].equals(moderatePriceRange[1]);
 
@@ -888,16 +888,16 @@ const PresetStrategyCard: FunctionComponent<
           },
         ]);
       switch (type) {
-        case "passive":
+        case 'passive':
           setFullRange(true);
           return;
-        case "moderate":
+        case 'moderate':
           updateInputAndRangeMinMax(
             moderatePriceRange[0],
             moderatePriceRange[1]
           );
           return;
-        case "aggressive":
+        case 'aggressive':
           updateInputAndRangeMinMax(
             aggressivePriceRange[0],
             aggressivePriceRange[1]
@@ -919,10 +919,10 @@ const PresetStrategyCard: FunctionComponent<
     return (
       <div
         className={classNames(
-          "flex w-[114px] cursor-pointer items-center justify-center gap-2 rounded-2xl p-[2px] hover:bg-supercharged",
+          'flex w-[114px] cursor-pointer items-center justify-center gap-2 rounded-2xl p-[2px] hover:bg-supercharged',
           {
-            "bg-supercharged": isSelected,
-            "cursor-not-allowed opacity-30": disabled,
+            'bg-supercharged': isSelected,
+            'cursor-not-allowed opacity-30': disabled,
           },
           className
         )}
@@ -931,9 +931,9 @@ const PresetStrategyCard: FunctionComponent<
         <div className="flex h-full w-full flex-col rounded-2xlinset bg-osmoverse-700 p-3">
           <div
             className={classNames(
-              "mx-auto mb-1.5 transform transition-transform",
+              'mx-auto mb-1.5 transform transition-transform',
               {
-                "scale-110": isSelected,
+                'scale-110': isSelected,
               }
             )}
           >
@@ -942,12 +942,12 @@ const PresetStrategyCard: FunctionComponent<
               src={src}
               width={width || 60}
               height={height || 60}
-              className={!height ? "h-[60px]" : ""}
+              className={!height ? 'h-[60px]' : ''}
             />
           </div>
           <span
-            className={classNames("body2 text-center", {
-              "text-osmoverse-200": !isSelected,
+            className={classNames('body2 text-center', {
+              'text-osmoverse-200': !isSelected,
             })}
           >
             {label}
