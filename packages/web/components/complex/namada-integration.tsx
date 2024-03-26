@@ -73,24 +73,24 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
   );
   const namadaClient = useRef<Namada>();
 
-  const [osmosisAddress, setOsmosisAddress] = useState(
-    'osmo178nutp2lnwp3qjx055sluz8fxvx3nywurhp6rd'
-  );
-  const [amount, setAmount] = useState('10');
+  const [osmosisAddress, setOsmosisAddress] = useState('');
+  const [amount, setAmount] = useState('1');
   const [channel, setChannel] = useState('channel-995');
   const namadaChainId = 'shielded-expedition.88f17d1d14';
 
   const [data, setData] = useState({
-    address: '',
-    shieldedAddress: '',
-    balance: '',
-    shieldedBalance: '',
+    address: 'Connect to Namada extension!',
+    shieldedAddress: 'Connect to Namada extension!',
+    balance: null,
+    shieldedBalance: null,
+    osmosisAddress: 'Connect wallet!',
   });
 
   const [loading, setLoading] = useState({
     data: false,
     transfer: false,
     deploy: false,
+    withdraw: false,
     transferToNam: false,
   });
 
@@ -118,10 +118,10 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
     loadNamadaData().then();
     if (chainId && accountStore) {
       wallet.current = accountStore.getWallet(chainId) as AccountStoreWallet;
-
-      // if (wallet.current) {
-
-      // }
+    }
+    data.osmosisAddress = wallet?.current?.address || 'Connect wallet!';
+    if (data.osmosisAddress.length > 2) {
+      setOsmosisAddress(data.osmosisAddress);
     }
   }, [chainId, accountStore, accountStore.walletManager]);
 
@@ -157,16 +157,20 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
   async function withdraw() {
     const toNamChan = {
       portId: 'transfer',
-      channelId: channel,
+      channelId: 'channel-6478',
       counterpartyChainId: namadaChainId,
     };
     const currency: AppCurrency = {
-      coinMinimalDenom: 'Naam',
-      coinDenom: 'naam',
-      coinDecimals: 6,
+      coinMinimalDenom:
+        'ibc/99581A4B65484A38441411A90B2050CC5AC2EF78CFD9367C7BD8460BFBEED3BA',
+      coinDenom:
+        'ibc/99581A4B65484A38441411A90B2050CC5AC2EF78CFD9367C7BD8460BFBEED3BA',
+      coinDecimals: 0,
     };
 
     const toAddress = data.address;
+
+    setLoading((l) => ({ ...l, withdraw: true }));
 
     console.debug('Withdraw data:', amount, toNamChan, currency, toAddress);
 
@@ -182,8 +186,10 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
         'test'
       );
       console.debug('Withdraw done', withRet);
+      setLoading((l) => ({ ...l, withdraw: false }));
     } catch (e) {
       displayToast({ message: 'Error deploying' + e }, ToastType.ERROR);
+      setLoading((l) => ({ ...l, withdraw: false }));
       console.error(e);
     }
   }
@@ -559,70 +565,136 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
 
     setLoading((l) => ({ ...l, transferToNam: false }));
   }
-
   return (
     <div className="rounded-3xl bg-osmoverse-800 p-4">
-      <h2 className="text-xl">Namada to Osmosis</h2>
+      <h5>Namada</h5>
+      <div className="mt-3 flex flex-row">
+        <img src="/wallets/namada.png" alt="Namada" className="h-10 w-10" />
+        <div className="mx-3">
+          <div className="flex flex-row flex-nowrap gap-2">
+            <p className="text-osmoverse-300">Transaprent: {data.address} </p>{' '}
+            <p className="text-osmoverse-200">Balance: {data.balance}</p>
+            {data.balance === null && <Spinner />}
+          </div>
+          <div className="flex flex-row flex-nowrap gap-2">
+            <p className="text-osmoverse-500">
+              Shielded: {data.shieldedAddress}{' '}
+            </p>
 
-      <Button variant="outline" size="sm" onClick={() => loadNamadaData()}>
-        Refresh
-        {loading.data && <Spinner />}
-      </Button>
-
-      <code className="mb-6 mt-2 block break-all">{JSON.stringify(data)}</code>
-
-      <p className="mb-1 text-base">Osmosis or Namada address</p>
-      <InputBox
-        currentValue={osmosisAddress}
-        className="mb-4"
-        onInput={(v) => setOsmosisAddress(v)}
-      />
-
-      <p className="mb-1 text-base">Transfer amount</p>
-      <InputBox
-        currentValue={amount}
-        type="number"
-        className="mb-4"
-        onInput={(v) => setAmount(v)}
-      />
-      <p className="mb-1 text-base">Channel</p>
-      <InputBox
-        currentValue={channel}
-        type="string"
-        className="mb-4"
-        onInput={(v) => setChannel(v)}
-      />
-
-      <div className="flex gap-4">
-        {/* <Button className="invisible" onClick={() => onTransfer(true)}>
-          Transfer to shielded
-          {loading.transfer && <Spinner />}
-        </Button> */}
-
-        <Button onClick={() => onTransfer()}>
-          Transfer to Mnemonic
-          {loading.deploy && <Spinner />}
-        </Button>
-
-        <Button className="invisible" onClick={() => onTransferUsingSigner()}>
-          Transfer to Mnemonic
-          {loading.deploy && <Spinner />}
-        </Button>
-
+            <p className="text-osmoverse-400">
+              Balace: {data.shieldedBalance}{' '}
+            </p>
+            {data.shieldedBalance === null && <Spinner />}
+          </div>
+        </div>
+      </div>
+      <div className="mt-5 flex  flex-row">
+        <img
+          src="/tokens/generated/osmo.svg"
+          alt="Osmosis"
+          className="h-10 w-10"
+        />
+        <div className="mx-3">
+          <div className="flex flex-row flex-nowrap gap-2">
+            <p className="text-osmoverse-300">
+              Osmosis address: {data.osmosisAddress}{' '}
+            </p>{' '}
+          </div>
+        </div>
+      </div>
+      <div className="mt-3">
+        <p className="mb-1 text-base">Transfer amount</p>
+        <InputBox
+          currentValue={amount}
+          type="number"
+          className="mb-4 w-20"
+          onInput={(v) => setAmount(v)}
+        />
+      </div>
+      <div className="mt-3 flex flex-row gap-2">
         <Button onClick={() => onDeploy()}>
-          Deploy to Osmosis
+          Deposit from Namada to Osmosis
           {loading.deploy && <Spinner />}
         </Button>
 
         <Button onClick={() => withdraw()}>
-          Deploy to Namada from Osmosis
-          {loading.deploy && <Spinner />}
+          Withdraw from Osmosis to Namada{' '}
+          <span className="ml-2">{loading.withdraw && <Spinner />} </span>
+        </Button>
+      </div>
+      <div className="mt-3 text-xs">
+        <p>
+          Note: At current Namada Extension will not provide any information
+          about the transaction (error, success or transaction hash) !!!
+          <br />
+          It usually takes many minutes for the transaction to be processed.
+        </p>
+      </div>
+      <div className="hidden">
+        <h2 className="text-xl">Namada to Osmosis</h2>
+
+        <Button variant="outline" size="sm" onClick={() => loadNamadaData()}>
+          Refresh
+          {loading.data && <Spinner />}
         </Button>
 
-        <Button className="invisible" onClick={() => onDeployUsingSigner()}>
-          Deploy to Osmosis using signer
-          {loading.deploy && <Spinner />}
-        </Button>
+        <code className="mb-6 mt-2 block break-all">
+          {JSON.stringify(data)}
+        </code>
+
+        <p className="mb-1 text-base">Osmosis or Namada address</p>
+        <InputBox
+          currentValue={osmosisAddress}
+          className="mb-4"
+          onInput={(v) => setOsmosisAddress(v)}
+        />
+
+        <p className="mb-1 text-base">Transfer amount</p>
+        <InputBox
+          currentValue={amount}
+          type="number"
+          className="mb-4"
+          onInput={(v) => setAmount(v)}
+        />
+        <p className="mb-1 text-base">Channel</p>
+        <InputBox
+          currentValue={channel}
+          type="string"
+          className="mb-4"
+          onInput={(v) => setChannel(v)}
+        />
+
+        <div className="flex gap-4">
+          {/* <Button className="invisible" onClick={() => onTransfer(true)}>
+          Transfer to shielded
+          {loading.transfer && <Spinner />}
+        </Button> */}
+
+          <Button onClick={() => onTransfer()}>
+            Transfer to Mnemonic
+            {loading.deploy && <Spinner />}
+          </Button>
+
+          <Button className="invisible" onClick={() => onTransferUsingSigner()}>
+            Transfer to Mnemonic
+            {loading.deploy && <Spinner />}
+          </Button>
+
+          <Button onClick={() => onDeploy()}>
+            Deploy to Osmosis
+            {loading.deploy && <Spinner />}
+          </Button>
+
+          <Button onClick={() => withdraw()}>
+            Deploy to Namada from Osmosis
+            {loading.deploy && <Spinner />}
+          </Button>
+
+          <Button className="invisible" onClick={() => onDeployUsingSigner()}>
+            Deploy to Osmosis using signer
+            {loading.deploy && <Spinner />}
+          </Button>
+        </div>
       </div>
     </div>
   );

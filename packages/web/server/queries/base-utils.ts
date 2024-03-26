@@ -12,22 +12,23 @@ export const createNodeQuery =
     path: string | ((params: PathParameters) => string);
     chainList?: Chain[];
   }) =>
-  async (
-    ...params: PathParameters extends Record<any, any>
-      ? [PathParameters & { chainId?: string }]
-      : [{ chainId?: string }?]
-  ): Promise<Result> => {
-    const url = new URL(
-      runIfFn(
-        path,
-        ...((params as [PathParameters & { chainId?: string }]) ?? [])
-      ),
-      getChainRestUrl({
-        chainId:
-          (params as [PathParameters & { chainId?: string }])[0]?.chainId ??
-          chainList[0].chain_id,
-        chainList,
-      })
-    );
-    return apiClient<Result>(url.toString());
-  };
+    async (
+      ...params: PathParameters extends Record<any, any>
+        ? [PathParameters & { chainId?: string }]
+        : [{ chainId?: string }?]
+    ): Promise<Result> => {
+      const url = new URL(
+        runIfFn(
+          path,
+          ...((params as [PathParameters & { chainId?: string }]) ?? [])
+        ),
+        getChainRestUrl({
+          chainId:
+            (params as [PathParameters & { chainId?: string }])[0]?.chainId ??
+            chainList[0].chain_id,
+          chainList,
+        })
+      );
+      console.debug(`Querying node: ${url.toString()}`);
+      return apiClient<Result>(url.toString());
+    };

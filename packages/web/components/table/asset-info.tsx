@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import {
   CellContext,
   createColumnHelper,
@@ -78,6 +79,43 @@ export const AssetsInfoTable: FunctionComponent<{
     showUnverifiedAssetsSetting?.state.showUnverifiedAssets;
 
   const { showPreviewAssets } = useShowPreviewAssets();
+  /* 
+  Used to inject namada balance.
+
+  const namadaClient = useRef<Namada>();
+  const [namadaBalance, setNamadaBalance] = useState<number>(0);
+
+  async function initNamadaClientAndGetBalance() {
+    if (!namadaClient.current) {
+      try {
+        const namFromExt = await getNamadaFromExtension();
+        namadaClient.current = namFromExt;
+        await namadaClient.current?.connect();
+        const accounts = await namadaClient?.current?.accounts();
+        const address =
+          accounts?.find((a) => a.type === 'mnemonic')?.address || '';
+        const tokenId = 'tnam1qxvg64psvhwumv3mwrrjfcz0h3t3274hwggyzcee';
+        const balances = await namadaClient?.current?.balances({
+          owner: address,
+          tokens: [tokenId],
+        });
+        setNamadaBalance(Number(balances?.[0]?.amount || 0));
+      } catch (e) {
+        console.error(e);
+        displayToast(
+          { message: 'No NAMADA extension, please install it!' },
+          ToastType.ERROR
+        );
+        return false;
+      }
+      return true;
+    } else {
+      return true;
+    }
+  }
+  initNamadaClientAndGetBalance().catch(console.error);
+
+  */
 
   // Query
   const {
@@ -115,10 +153,37 @@ export const AssetsInfoTable: FunctionComponent<{
       },
     }
   );
-  const assetsData = useMemo(
-    () => assetPagesData?.pages.flatMap((page) => page?.items) ?? [],
-    [assetPagesData]
-  );
+  const assetsData = useMemo(() => {
+    /*
+    console.debug('assetPagesData', assetPagesData?.pages);
+
+    // Manually change namada token data
+    assetPagesData?.pages.forEach((page) => {
+      page.items = page.items.map((item) => {
+        if (item.coinDenom === 'NAM') {
+          console.debug('namadaBalance', namadaBalance);
+          if (namadaBalance === '0') {
+            const currency: AppCurrency = {
+              coinDenom: 'NAM',
+              coinMinimalDenom: 'nam',
+              coinDecimals: 6,
+            };
+            item.amount = new CoinPretty(
+              currency,
+              Number(namadaBalance) * 10e6
+            );
+          }
+          return {
+            ...item,
+            coinName: 'Namada token',
+          };
+        }
+        return item;
+      });
+    });  */
+
+    return assetPagesData?.pages.flatMap((page) => page?.items) ?? [];
+  }, [assetPagesData]);
 
   // Define columns
   const columnHelper = createColumnHelper<AssetInfo>();
@@ -189,7 +254,7 @@ export const AssetsInfoTable: FunctionComponent<{
         ),
         cell: BalanceCell,
       }),
-      columnHelper.accessor((row) => row, {
+      /*columnHelper.accessor((row) => row, {
         id: 'assetActions',
         header: '',
         cell: (cell) => (
@@ -199,7 +264,7 @@ export const AssetsInfoTable: FunctionComponent<{
             onWithdraw={onWithdraw}
           />
         ),
-      }),
+      }),*/
     ],
     [
       favoritesList,
@@ -380,7 +445,7 @@ const AssetCell: AssetInfoCellComponent<{
       </div>
       <div className="subtitle1 flex max-w-[200px] flex-col place-content-center">
         <div className="flex">
-          <span className="text-white-high">{coinDenom}</span>
+          <span className="text-white-high">{coinDenom} </span>
         </div>
         <span className="overflow-hidden overflow-ellipsis whitespace-nowrap text-osmoverse-400">
           {coinName}

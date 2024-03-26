@@ -187,7 +187,7 @@ export const assetsRouter = createTRPCRouter({
           getFreshItems: async () => {
             const isDefaultSort = !sortInput && !search;
             if (userOsmoAddress.startsWith("tnam")) {
-              return [];
+              throw new Error('Not osmosis address!')
             }
 
             let assets;

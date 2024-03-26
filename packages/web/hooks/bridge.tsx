@@ -1,16 +1,16 @@
-import { CoinPretty } from "@keplr-wallet/unit";
-import { observer } from "mobx-react-lite";
-import { useRouter } from "next/router";
+import { CoinPretty } from '@keplr-wallet/unit';
+import { observer } from 'mobx-react-lite';
+import { useRouter } from 'next/router';
 import {
   ComponentProps,
   FunctionComponent,
   useCallback,
   useEffect,
   useState,
-} from "react";
+} from 'react';
 
-import { EventName } from "~/config";
-import { FiatRampKey } from "~/integrations";
+import { EventName } from '~/config';
+import { FiatRampKey } from '~/integrations';
 import {
   ActivateUnverifiedTokenConfirmation,
   BridgeTransferV1Modal,
@@ -21,22 +21,22 @@ import {
   PreTransferModal,
   SelectAssetSourceModal,
   TransferAssetSelectModal,
-} from "~/modals";
-import { useStore } from "~/stores";
-import { UnverifiedAssetsState } from "~/stores/user-settings";
-import { createContext } from "~/utils/react-context";
-import { removeQueryParam } from "~/utils/url";
+} from '~/modals';
+import { useStore } from '~/stores';
+import { UnverifiedAssetsState } from '~/stores/user-settings';
+import { createContext } from '~/utils/react-context';
+import { removeQueryParam } from '~/utils/url';
 
-import { useDisclosure, useWindowSize } from ".";
-import { useTransferConfig } from "./ui-config";
-import { useAmplitudeAnalytics } from "./use-amplitude-analytics";
-import { useFeatureFlags } from "./use-feature-flags";
+import { useDisclosure, useWindowSize } from '.';
+import { useTransferConfig } from './ui-config';
+import { useAmplitudeAnalytics } from './use-amplitude-analytics';
+import { useFeatureFlags } from './use-feature-flags';
 
 type BridgeContext = {
   /** Start bridging without knowing the asset to bridge yet. */
-  startBridge: (direction: "deposit" | "withdraw") => void;
+  startBridge: (direction: 'deposit' | 'withdraw') => void;
   /** Start bridging a specified asset of coinMinimalDenom or symbol/denom. */
-  bridgeAsset: (anyDenom: string, direction: "deposit" | "withdraw") => void;
+  bridgeAsset: (anyDenom: string, direction: 'deposit' | 'withdraw') => void;
   /** Open a specified fiat on ramp given a specific fiat ramp key and asset key. */
   fiatRamp: (fiatRampKey: FiatRampKey, assetKey: string) => void;
   /** Open fiat ramp selection. */
@@ -47,8 +47,8 @@ const [BridgeInnerProvider, useBridge] = createContext<BridgeContext>();
 
 export { useBridge };
 
-const TransactionTypeQueryParamKey = "transaction_type";
-const DenomQueryParamKey = "denom";
+const TransactionTypeQueryParamKey = 'transaction_type';
+const DenomQueryParamKey = 'denom';
 
 export const BridgeProvider: FunctionComponent = observer(({ children }) => {
   const { assetsStore, userSettings } = useStore();
@@ -58,9 +58,11 @@ export const BridgeProvider: FunctionComponent = observer(({ children }) => {
   const { logEvent } = useAmplitudeAnalytics();
   const { isMobile } = useWindowSize();
 
+  console.debug('Bridge Transfer config IBC', transferConfig.ibcTransferModal);
+
   const [confirmUnverifiedCoin, setConfirmUnverifiedCoin] = useState<{
     coin: CoinPretty;
-    direction: "deposit" | "withdraw";
+    direction: 'deposit' | 'withdraw';
   } | null>(null);
 
   const {
@@ -70,7 +72,7 @@ export const BridgeProvider: FunctionComponent = observer(({ children }) => {
   } = useDisclosure();
 
   const showUnverifiedAssetsSetting =
-    userSettings.getUserSettingById<UnverifiedAssetsState>("unverified-assets");
+    userSettings.getUserSettingById<UnverifiedAssetsState>('unverified-assets');
   const shouldDisplayUnverifiedAssets =
     showUnverifiedAssetsSetting?.state.showUnverifiedAssets;
 
@@ -80,12 +82,13 @@ export const BridgeProvider: FunctionComponent = observer(({ children }) => {
   const launchPreTransferModal = useCallback(
     (coinDenom: string) => {
       // Assets should be verified at this point
+
       const ibcBalance = assetsStore.ibcBalances.find(
         (ibcBalance) => ibcBalance.balance.denom === coinDenom
       );
 
       if (!ibcBalance) {
-        console.error("launchPreTransferModal: ibcBalance not found");
+        console.error('launchPreTransferModal: ibcBalance not found');
         return;
       }
 
@@ -98,7 +101,7 @@ export const BridgeProvider: FunctionComponent = observer(({ children }) => {
         onSelectToken: launchPreTransferModal,
         onWithdraw: () => {
           transferConfig?.transferAsset(
-            "withdraw",
+            'withdraw',
             ibcBalance.chainInfo.chainId,
             coinDenom
           );
@@ -106,7 +109,7 @@ export const BridgeProvider: FunctionComponent = observer(({ children }) => {
         },
         onDeposit: () => {
           transferConfig?.transferAsset(
-            "deposit",
+            'deposit',
             ibcBalance.chainInfo.chainId,
             coinDenom
           );
@@ -119,14 +122,14 @@ export const BridgeProvider: FunctionComponent = observer(({ children }) => {
   );
 
   const startBridge = useCallback(
-    (direction: "deposit" | "withdraw") => {
+    (direction: 'deposit' | 'withdraw') => {
       transferConfig.startTransfer(direction);
     },
     [transferConfig]
   );
 
   const bridgeAsset = useCallback(
-    (anyDenom: string, direction: "deposit" | "withdraw") => {
+    (anyDenom: string, direction: 'deposit' | 'withdraw') => {
       const balance = assetsStore.unverifiedIbcBalances.find(
         ({ balance }) =>
           balance.denom === anyDenom ||
@@ -134,7 +137,7 @@ export const BridgeProvider: FunctionComponent = observer(({ children }) => {
       );
 
       if (!balance) {
-        console.error("Balance not found:", anyDenom);
+        console.error('Balance not found:', anyDenom);
         return;
       }
 
@@ -179,12 +182,12 @@ export const BridgeProvider: FunctionComponent = observer(({ children }) => {
     const direction = router.query[TransactionTypeQueryParamKey];
     const denom = router.query[DenomQueryParamKey];
 
-    if (typeof direction !== "string" || typeof denom !== "string") {
+    if (typeof direction !== 'string' || typeof denom !== 'string') {
       return;
     }
 
-    if (direction !== "deposit" && direction !== "withdraw") {
-      console.warn("Invalid transaction type ", direction);
+    if (direction !== 'deposit' && direction !== 'withdraw') {
+      console.warn('Invalid transaction type ', direction);
       return;
     }
 
@@ -236,7 +239,7 @@ export const BridgeProvider: FunctionComponent = observer(({ children }) => {
 
             if (!balance) {
               console.error(
-                "Balance not found:",
+                'Balance not found:',
                 confirmUnverifiedCoin.coin.denom
               );
               return;
@@ -265,7 +268,7 @@ export const BridgeProvider: FunctionComponent = observer(({ children }) => {
       {transferConfig?.bridgeTransferModal &&
         (!flags.multiBridgeProviders ||
         transferConfig?.bridgeTransferModal?.balance.originBridgeInfo // Show V1 for Nomic
-          ?.bridge === "nomic" ? (
+          ?.bridge === 'nomic' ? (
           <BridgeTransferV1Modal {...transferConfig.bridgeTransferModal} />
         ) : (
           <BridgeTransferV2Modal {...transferConfig.bridgeTransferModal} />

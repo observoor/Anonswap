@@ -1,32 +1,32 @@
-import { WalletStatus } from "@cosmos-kit/core";
+import { WalletStatus } from '@cosmos-kit/core';
 import {
   CoinPretty,
   Dec,
   DecUtils,
   PricePretty,
   RatePretty,
-} from "@keplr-wallet/unit";
-import { DeliverTxResponse } from "@osmosis-labs/stores";
-import { Currency } from "@osmosis-labs/types";
-import classNames from "classnames";
-import dayjs from "dayjs";
-import { observer } from "mobx-react-lite";
-import Link from "next/link";
+} from '@keplr-wallet/unit';
+import { DeliverTxResponse } from '@osmosis-labs/stores';
+import { Currency } from '@osmosis-labs/types';
+import classNames from 'classnames';
+import dayjs from 'dayjs';
+import { observer } from 'mobx-react-lite';
+import Link from 'next/link';
 import {
   FunctionComponent,
   useCallback,
   useEffect,
   useMemo,
   useState,
-} from "react";
-import { useDebounce, useUnmount } from "react-use";
-import { Required } from "utility-types";
-import { isAddress } from "web3-utils";
+} from 'react';
+import { useDebounce, useUnmount } from 'react-use';
+import { Required } from 'utility-types';
+import { isAddress } from 'web3-utils';
 
-import { displayToast, ToastType } from "~/components/alert";
-import { Button, buttonCVA } from "~/components/buttons";
-import { Transfer, TransferProps } from "~/components/complex/transfer";
-import { EventName } from "~/config";
+import { displayToast, ToastType } from '~/components/alert';
+import { Button, buttonCVA } from '~/components/buttons';
+import { Transfer, TransferProps } from '~/components/complex/transfer';
+import { EventName } from '~/config';
 import {
   useAmountConfig,
   useAmplitudeAnalytics,
@@ -34,22 +34,22 @@ import {
   useFakeFeeConfig,
   useLocalStorageState,
   useTranslation,
-} from "~/hooks";
-import { SourceChain, useTxEventToasts } from "~/integrations";
+} from '~/hooks';
+import { SourceChain, useTxEventToasts } from '~/integrations';
 import {
   EthClientChainIds_SourceChainMap,
   type SourceChainKey,
-} from "~/integrations/bridge-info";
+} from '~/integrations/bridge-info';
 import {
   AxelarChainIds_SourceChainMap,
   SourceChainTokenConfig,
-} from "~/integrations/bridges/axelar/types";
-import type { AvailableBridges } from "~/integrations/bridges/bridge-manager";
+} from '~/integrations/bridges/axelar/types';
+import type { AvailableBridges } from '~/integrations/bridges/bridge-manager';
 import {
   CosmosBridgeTransactionRequest,
   EvmBridgeTransactionRequest,
   GetTransferStatusParams,
-} from "~/integrations/bridges/types";
+} from '~/integrations/bridges/types';
 import {
   ChainNames,
   EthWallet,
@@ -57,17 +57,17 @@ import {
   useErc20Balance,
   useNativeBalance,
   useTxReceiptState,
-} from "~/integrations/ethereum";
-import { useAmountConfig as useEvmAmountConfig } from "~/integrations/ethereum/hooks/use-amount-config";
-import type { ObservableWallet } from "~/integrations/wallets";
-import { ModalBase, ModalBaseProps } from "~/modals/base";
-import { useStore } from "~/stores";
-import { IBCBalance } from "~/stores/assets";
-import { ErrorTypes } from "~/utils/error-types";
-import { noop } from "~/utils/function";
-import { getKeyByValue } from "~/utils/object";
-import { createContext } from "~/utils/react-context";
-import { api } from "~/utils/trpc";
+} from '~/integrations/ethereum';
+import { useAmountConfig as useEvmAmountConfig } from '~/integrations/ethereum/hooks/use-amount-config';
+import type { ObservableWallet } from '~/integrations/wallets';
+import { ModalBase, ModalBaseProps } from '~/modals/base';
+import { useStore } from '~/stores';
+import { IBCBalance } from '~/stores/assets';
+import { ErrorTypes } from '~/utils/error-types';
+import { noop } from '~/utils/function';
+import { getKeyByValue } from '~/utils/object';
+import { createContext } from '~/utils/react-context';
+import { api } from '~/utils/trpc';
 
 interface BridgeTransferContext {
   useWrappedToken: boolean;
@@ -80,7 +80,7 @@ interface BridgeTransferContext {
 
 const [BridgeTransferModalProvider, useBridgeTransfer] =
   createContext<BridgeTransferContext>({
-    name: "BridgeTransferModal",
+    name: 'BridgeTransferModal',
     strict: true,
   });
 
@@ -97,7 +97,7 @@ export const BridgeTransferV2Modal: FunctionComponent<BridgeTransferModalProps> 
     const { balance: assetToBridge, sourceChainKey, walletClient } = props;
 
     if (!assetToBridge.originBridgeInfo) {
-      console.error("BridgeTransferModal given unconfigured IBC balance/asset");
+      console.error('BridgeTransferModal given unconfigured IBC balance/asset');
       return null;
     }
 
@@ -110,7 +110,7 @@ export const BridgeTransferV2Modal: FunctionComponent<BridgeTransferModalProps> 
       sourceChainConfig?.erc20ContractAddress &&
         sourceChainConfig?.nativeWrapEquivalent
         ? `bridge-${sourceChainConfig.erc20ContractAddress}-use-wrapped-token`
-        : "",
+        : '',
       false // assume we're transferring native token, since it's the gas token as well and generally takes precedence
     );
 
@@ -164,7 +164,7 @@ export const BridgeTransferV2Modal: FunctionComponent<BridgeTransferModalProps> 
   });
 
 const EvmTransfer: FunctionComponent<
-  Required<BridgeTransferModalProps, "walletClient" | "balance">
+  Required<BridgeTransferModalProps, 'walletClient' | 'balance'>
 > = observer((props) => {
   const {
     isWithdraw,
@@ -186,7 +186,7 @@ const EvmTransfer: FunctionComponent<
   useTxEventToasts(ethWalletClient);
 
   const ethWalletClientChainKey =
-    EthClientChainIds_SourceChainMap[ethWalletClient?.chainId ?? ""] ||
+    EthClientChainIds_SourceChainMap[ethWalletClient?.chainId ?? ''] ||
     ethWalletClient?.chainId;
   const isCorrectChainSelected =
     ethWalletClientChainKey === sourceChainKeyMapped;
@@ -247,7 +247,7 @@ const EvmTransfer: FunctionComponent<
   const [lastDepositAccountEvmAddress, setLastDepositAccountEvmAddress] =
     useLocalStorageState<string | null>(
       isWithdraw
-        ? ""
+        ? ''
         : `axelar-last-deposit-addr-${originCurrency.coinMinimalDenom}`,
       null
     );
@@ -271,11 +271,11 @@ const EvmTransfer: FunctionComponent<
       depositAmount={depositAmount}
       setDepositAmount={setDepositAmount}
       toggleIsDepositAmtMax={toggleIsDepositAmtMax}
-      counterpartyAddress={ethWalletClient.accountAddress ?? ""}
+      counterpartyAddress={ethWalletClient.accountAddress ?? ''}
       warnOfDifferentDepositAddress={warnOfDifferentDepositAddress}
       setLastDepositAccountEvmAddress={setLastDepositAccountEvmAddress}
       isEthTxPending={
-        isEthTxPending || ethWalletClient?.isSending === "eth_sendTransaction"
+        isEthTxPending || ethWalletClient?.isSending === 'eth_sendTransaction'
       }
       ethWalletClient={ethWalletClient}
     />
@@ -283,16 +283,16 @@ const EvmTransfer: FunctionComponent<
 });
 
 const ManualTransfer: FunctionComponent<
-  Omit<BridgeTransferModalProps, "walletClient"> & { chainType: "evm" }
+  Omit<BridgeTransferModalProps, 'walletClient'> & { chainType: 'evm' }
 > = observer((props) => {
   const { t } = useTranslation();
-  const [address, setAddress] = useState("");
+  const [address, setAddress] = useState('');
   const [didAckWithdrawRisk, setAckWithdrawRisk] = useState(false);
   const { sourceChainKeyMapped } = useBridgeTransfer();
 
-  if (props.chainType !== "evm") throw new Error("Unsupported chain type");
+  if (props.chainType !== 'evm') throw new Error('Unsupported chain type');
 
-  const addressConfig: TransferProps<any>["addWithdrawAddrConfig"] = {
+  const addressConfig: TransferProps<any>['addWithdrawAddrConfig'] = {
     customAddress: address,
     setCustomAddress(bech32Address) {
       setAddress(bech32Address);
@@ -300,7 +300,7 @@ const ManualTransfer: FunctionComponent<
     isValid: isAddress(address),
     didAckWithdrawRisk: didAckWithdrawRisk,
     setDidAckWithdrawRisk: setAckWithdrawRisk,
-    inputPlaceholder: t("assets.transfer.enterAddress", {
+    inputPlaceholder: t('assets.transfer.enterAddress', {
       network: sourceChainKeyMapped,
     }),
   };
@@ -315,7 +315,7 @@ const ManualTransfer: FunctionComponent<
       setLastDepositAccountEvmAddress={noop}
       addWithdrawAddrConfig={addressConfig}
       isDisabled={
-        addressConfig?.customAddress === "" ||
+        addressConfig?.customAddress === '' ||
         !addressConfig.isValid ||
         !didAckWithdrawRisk
       }
@@ -324,7 +324,7 @@ const ManualTransfer: FunctionComponent<
   );
 });
 
-const availableBridgeKeys: AvailableBridges[] = ["Skip", "Squid", "Axelar"];
+const availableBridgeKeys: AvailableBridges[] = ['Skip', 'Squid', 'Axelar'];
 
 /** Modal that lets user transfer via non-IBC bridges. */
 export const TransferContent: FunctionComponent<
@@ -349,7 +349,7 @@ export const TransferContent: FunctionComponent<
     warnOfDifferentDepositAddress?: boolean;
     isEthTxPending?: boolean;
     ethWalletClient?: EthWallet;
-    addWithdrawAddrConfig?: TransferProps<any>["addWithdrawAddrConfig"];
+    addWithdrawAddrConfig?: TransferProps<any>['addWithdrawAddrConfig'];
     isDisabled?: boolean;
   }
 > = observer((props) => {
@@ -392,7 +392,7 @@ export const TransferContent: FunctionComponent<
     walletConnected,
   } = useConnectWalletModalRedirect(
     {
-      className: "md:w-full w-2/3 md:p-4 p-6 hover:opacity-75 rounded-2xl",
+      className: 'md:w-full w-2/3 md:p-4 p-6 hover:opacity-75 rounded-2xl',
       onClick: () => {},
     },
     props.onRequestClose
@@ -407,7 +407,7 @@ export const TransferContent: FunctionComponent<
 
   const { chainId: osmosisChainId, chainName } = chainStore.osmosis;
   const osmosisAccount = accountStore.getWallet(osmosisChainId);
-  const osmosisAddress = osmosisAccount?.address ?? "";
+  const osmosisAddress = osmosisAccount?.address ?? '';
   const osmoIcnsName =
     queriesExternalStore.queryICNSNames.getQueryContract(
       osmosisAddress
@@ -416,34 +416,34 @@ export const TransferContent: FunctionComponent<
   const isDeposit = !isWithdraw;
 
   if (!assetToBridge.originBridgeInfo) {
-    console.error("BridgeTransferModal given unconfigured IBC balance/asset");
+    console.error('BridgeTransferModal given unconfigured IBC balance/asset');
     return null;
   }
   const { bridge } = assetToBridge.originBridgeInfo;
 
-  let modalTitle = "";
+  let modalTitle = '';
 
   if (isWithdraw) {
     /** Since the modal will display a toggle, hide the coin denom from the title  */
     if (
-      bridge === "axelar" &&
+      bridge === 'axelar' &&
       Boolean(sourceChainConfig?.nativeWrapEquivalent)
     ) {
-      modalTitle = t("assets.transferAssetSelect.withdraw");
+      modalTitle = t('assets.transferAssetSelect.withdraw');
     } else {
-      modalTitle = t("assets.transfer.titleWithdraw", {
+      modalTitle = t('assets.transfer.titleWithdraw', {
         coinDenom: assetToBridge.balance.currency.coinDenom,
       });
     }
   } else {
     /** Since the modal will display a toggle, hide the coin denom from the title  */
     if (
-      bridge === "axelar" &&
+      bridge === 'axelar' &&
       Boolean(sourceChainConfig?.nativeWrapEquivalent)
     ) {
-      modalTitle = t("assets.transferAssetSelect.deposit");
+      modalTitle = t('assets.transferAssetSelect.deposit');
     } else {
-      modalTitle = t("assets.transfer.titleDeposit", {
+      modalTitle = t('assets.transfer.titleDeposit', {
         coinDenom: assetToBridge.balance.currency.coinDenom,
       });
     }
@@ -482,7 +482,7 @@ export const TransferContent: FunctionComponent<
     [inputAmountRaw]
   );
   const inputAmount = new Dec(
-    debouncedInputValue === "" ? "0" : debouncedInputValue
+    debouncedInputValue === '' ? '0' : debouncedInputValue
   ).mul(
     // CoinPretty only accepts whole amounts
     DecUtils.getTenExponentNInPrecisionRange(originCurrency.coinDecimals)
@@ -500,8 +500,8 @@ export const TransferContent: FunctionComponent<
   const osmosisPath = {
     address: osmosisAddress,
     networkName: chainStore.osmosis.prettyChainName,
-    iconUrl: "/tokens/osmo.svg",
-    source: "account" as const,
+    iconUrl: '/tokens/osmo.svg',
+    source: 'account' as const,
     asset: {
       denom: assetToBridge.balance.currency.coinDenom,
       sourceDenom:
@@ -513,7 +513,7 @@ export const TransferContent: FunctionComponent<
     chain: {
       chainId: osmosisChainId,
       chainName,
-      chainType: "cosmos" as const,
+      chainType: 'cosmos' as const,
     },
   };
 
@@ -521,7 +521,7 @@ export const TransferContent: FunctionComponent<
     address: counterpartyAddress,
     networkName: sourceChainKey,
     iconUrl: assetToBridge.balance.currency.coinImageUrl,
-    source: "counterpartyAccount" as const,
+    source: 'counterpartyAccount' as const,
     asset: {
       denom: assetToBridge.balance.denom,
       sourceDenom:
@@ -537,7 +537,7 @@ export const TransferContent: FunctionComponent<
     chain: {
       chainId: sourceChainConfig?.chainId!,
       chainName: sourceChainConfig?.id!,
-      chainType: "evm" as const,
+      chainType: 'evm' as const,
     },
   };
 
@@ -566,7 +566,7 @@ export const TransferContent: FunctionComponent<
         {
           enabled:
             inputAmount.gt(new Dec(0)) &&
-            counterpartyAddress !== "" &&
+            counterpartyAddress !== '' &&
             isCounterpartyAddressValid,
           staleTime: 5_000,
           cacheTime: 5_000,
@@ -663,10 +663,10 @@ export const TransferContent: FunctionComponent<
 
                 const transferFeeFiatValue = transferFee.fiatValue;
                 const fiat = priceStore.getFiatCurrency(
-                  transferFeeFiatValue?.currency ?? "usd"
+                  transferFeeFiatValue?.currency ?? 'usd'
                 );
 
-                if (!fiat) throw new Error("No fiat currency found");
+                if (!fiat) throw new Error('No fiat currency found');
 
                 return new PricePretty(
                   fiat,
@@ -787,14 +787,14 @@ export const TransferContent: FunctionComponent<
   ]);
 
   const isInsufficientFee =
-    inputAmountRaw !== "" &&
+    inputAmountRaw !== '' &&
     selectedQuote?.transferFee !== undefined &&
     new CoinPretty(assetToBridge.balance.currency, inputAmount)
       .toDec()
       .lt(selectedQuote?.transferFee.toDec());
 
   const isInsufficientBal =
-    inputAmountRaw !== "" &&
+    inputAmountRaw !== '' &&
     availableBalance &&
     new CoinPretty(assetToBridge.balance.currency, inputAmount)
       .toDec()
@@ -830,12 +830,12 @@ export const TransferContent: FunctionComponent<
   const [transferInitiated, setTransferInitiated] = useState(false);
   const trackTransferStatus = useCallback(
     (providerId: AvailableBridges, params: GetTransferStatusParams) => {
-      if (inputAmountRaw !== "") {
+      if (inputAmountRaw !== '') {
         nonIbcBridgeHistoryStore.pushTxNow(
           `${providerId}${JSON.stringify(params)}`,
           new CoinPretty(originCurrency, inputAmount).trim(true).toString(),
           isWithdraw,
-          osmosisAccount?.address ?? "" // use osmosis account for account keys (vs any EVM account)
+          osmosisAccount?.address ?? '' // use osmosis account for account keys (vs any EVM account)
         );
       }
     },
@@ -853,7 +853,7 @@ export const TransferContent: FunctionComponent<
 
   // close modal when initial eth transaction is committed
   const isSendTxPending = isWithdraw
-    ? osmosisAccount?.txTypeInProgress !== ""
+    ? osmosisAccount?.txTypeInProgress !== ''
     : isEthTxPending;
   useEffect(() => {
     if (transferInitiated && !isSendTxPending) {
@@ -868,9 +868,9 @@ export const TransferContent: FunctionComponent<
   ]);
 
   const handleEvmTx = async (
-    quote: NonNullable<typeof selectedQuote>["quote"]
+    quote: NonNullable<typeof selectedQuote>['quote']
   ) => {
-    if (!ethWalletClient) throw new Error("No ETH wallet client found");
+    if (!ethWalletClient) throw new Error('No ETH wallet client found');
 
     const transactionRequest =
       quote.transactionRequest as EvmBridgeTransactionRequest;
@@ -882,7 +882,7 @@ export const TransferContent: FunctionComponent<
         setIsApprovingToken(true);
 
         await ethWalletClient.send({
-          method: "eth_sendTransaction",
+          method: 'eth_sendTransaction',
           params: [
             {
               to: transactionRequest.approvalTransactionRequest.to,
@@ -906,16 +906,16 @@ export const TransferContent: FunctionComponent<
 
           const clearEvents = () => {
             ethWalletClient.txStatusEventEmitter!.removeListener(
-              "confirmed",
+              'confirmed',
               onConfirmed
             );
             ethWalletClient.txStatusEventEmitter!.removeListener(
-              "failed",
+              'failed',
               onFailed
             );
           };
-          ethWalletClient.txStatusEventEmitter!.on("confirmed", onConfirmed);
-          ethWalletClient.txStatusEventEmitter!.on("failed", onFailed);
+          ethWalletClient.txStatusEventEmitter!.on('confirmed', onConfirmed);
+          ethWalletClient.txStatusEventEmitter!.on('failed', onFailed);
         });
 
         for (const quoteResult of quoteResults) {
@@ -926,7 +926,7 @@ export const TransferContent: FunctionComponent<
       }
 
       const txHash = await ethWalletClient.send({
-        method: "eth_sendTransaction",
+        method: 'eth_sendTransaction',
         params: [
           {
             to: transactionRequest.to,
@@ -953,9 +953,9 @@ export const TransferContent: FunctionComponent<
           setLastDepositAccountEvmAddress(ethWalletClient.accountAddress!);
 
           if (isWithdraw) {
-            withdrawAmountConfig.setAmount("");
+            withdrawAmountConfig.setAmount('');
           } else {
-            setDepositAmount("");
+            setDepositAmount('');
           }
           setTransferInitiated(true);
 
@@ -970,24 +970,24 @@ export const TransferContent: FunctionComponent<
 
         const clearEvents = () => {
           ethWalletClient.txStatusEventEmitter!.removeListener(
-            "confirmed",
+            'confirmed',
             onConfirm
           );
           ethWalletClient.txStatusEventEmitter!.removeListener(
-            "failed",
+            'failed',
             onFailed
           );
         };
 
-        ethWalletClient.txStatusEventEmitter!.on("confirmed", onConfirm);
-        ethWalletClient.txStatusEventEmitter!.on("failed", onFailed);
+        ethWalletClient.txStatusEventEmitter!.on('confirmed', onConfirm);
+        ethWalletClient.txStatusEventEmitter!.on('failed', onFailed);
       });
     } catch (e) {
       const msg = ethWalletClient.displayError?.(e);
-      if (typeof msg === "string") {
+      if (typeof msg === 'string') {
         displayToast(
           {
-            message: "transactionFailed",
+            message: 'transactionFailed',
             caption: msg,
           },
           ToastType.ERROR
@@ -1001,7 +1001,7 @@ export const TransferContent: FunctionComponent<
   };
 
   const handleCosmosTx = async (
-    quote: NonNullable<typeof selectedQuote>["quote"]
+    quote: NonNullable<typeof selectedQuote>['quote']
   ) => {
     const transactionRequest =
       quote.transactionRequest as CosmosBridgeTransactionRequest;
@@ -1014,7 +1014,7 @@ export const TransferContent: FunctionComponent<
           value: transactionRequest.msg,
         },
       ],
-      "",
+      '',
       undefined,
       undefined,
       (tx: DeliverTxResponse) => {
@@ -1062,9 +1062,9 @@ export const TransferContent: FunctionComponent<
           });
 
           if (isWithdraw) {
-            withdrawAmountConfig.setAmount("");
+            withdrawAmountConfig.setAmount('');
           } else {
-            setDepositAmount("");
+            setDepositAmount('');
           }
           setTransferInitiated(true);
         }
@@ -1092,9 +1092,9 @@ export const TransferContent: FunctionComponent<
     ]);
 
     try {
-      if (transactionRequest.type === "evm") {
+      if (transactionRequest.type === 'evm') {
         await handleEvmTx({ ...quote, transactionRequest });
-      } else if (transactionRequest.type === "cosmos") {
+      } else if (transactionRequest.type === 'cosmos') {
         await handleCosmosTx({
           ...quote,
           transactionRequest,
@@ -1130,37 +1130,37 @@ export const TransferContent: FunctionComponent<
 
   let buttonErrorMessage: string | undefined;
   if (!counterpartyAddress) {
-    buttonErrorMessage = t("assets.transfer.errors.missingAddress");
+    buttonErrorMessage = t('assets.transfer.errors.missingAddress');
   } else if (!isCounterpartyAddressValid) {
-    buttonErrorMessage = t("assets.transfer.errors.invalidAddress");
+    buttonErrorMessage = t('assets.transfer.errors.invalidAddress');
   } else if (hasNoQuotes) {
-    buttonErrorMessage = t("assets.transfer.errors.noQuotesAvailable");
+    buttonErrorMessage = t('assets.transfer.errors.noQuotesAvailable');
   } else if (userDisconnectedEthWallet) {
-    buttonErrorMessage = t("assets.transfer.errors.reconnectWallet", {
-      walletName: ethWalletClient?.displayInfo.displayName ?? "Unknown",
+    buttonErrorMessage = t('assets.transfer.errors.reconnectWallet', {
+      walletName: ethWalletClient?.displayInfo.displayName ?? 'Unknown',
     });
   } else if (isDeposit && !isCorrectChainSelected) {
-    buttonErrorMessage = t("assets.transfer.errors.wrongNetworkInWallet", {
-      walletName: ethWalletClient?.displayInfo.displayName ?? "Unknown",
+    buttonErrorMessage = t('assets.transfer.errors.wrongNetworkInWallet', {
+      walletName: ethWalletClient?.displayInfo.displayName ?? 'Unknown',
     });
   } else if (Boolean(someError)) {
-    buttonErrorMessage = t("assets.transfer.errors.unexpectedError");
+    buttonErrorMessage = t('assets.transfer.errors.unexpectedError');
   } else if (bridgeTransaction.error) {
-    buttonErrorMessage = t("assets.transfer.errors.transactionError");
+    buttonErrorMessage = t('assets.transfer.errors.transactionError');
   } else if (isInsufficientFee) {
-    buttonErrorMessage = t("assets.transfer.errors.insufficientFee");
+    buttonErrorMessage = t('assets.transfer.errors.insufficientFee');
   } else if (isInsufficientBal) {
-    buttonErrorMessage = t("assets.transfer.errors.insufficientBal");
+    buttonErrorMessage = t('assets.transfer.errors.insufficientBal');
   }
 
   /** User can interact with any of the controls on the modal. */
   const isLoadingBridgeQuote =
     (!isOneSuccessful ||
       quoteResults.every((quoteResult) => quoteResult.isLoading)) &&
-    quoteResults.some((quoteResult) => quoteResult.fetchStatus !== "idle");
+    quoteResults.some((quoteResult) => quoteResult.fetchStatus !== 'idle');
   const isLoadingBridgeTransaction =
-    bridgeTransaction.isLoading && bridgeTransaction.fetchStatus !== "idle";
-  const isWithdrawReady = isWithdraw && osmosisAccount?.txTypeInProgress === "";
+    bridgeTransaction.isLoading && bridgeTransaction.fetchStatus !== 'idle';
+  const isWithdrawReady = isWithdraw && osmosisAccount?.txTypeInProgress === '';
   const isDepositReady =
     isDeposit &&
     !userDisconnectedEthWallet &&
@@ -1173,38 +1173,38 @@ export const TransferContent: FunctionComponent<
   if (buttonErrorMessage) {
     buttonText = buttonErrorMessage;
   } else if (isLoadingBridgeQuote || isLoadingBridgeTransaction) {
-    buttonText = `${t("assets.transfer.loading")}...`;
+    buttonText = `${t('assets.transfer.loading')}...`;
   } else if (warnUserOfSlippage || warnUserOfPriceImpact) {
-    buttonText = t("assets.transfer.transferAnyway");
+    buttonText = t('assets.transfer.transferAnyway');
   } else if (isApprovingToken) {
-    buttonText = t("assets.transfer.approving");
+    buttonText = t('assets.transfer.approving');
   } else if (isSendTxPending) {
-    buttonText = t("assets.transfer.sending");
+    buttonText = t('assets.transfer.sending');
   } else if (
-    selectedQuote?.quote?.transactionRequest?.type === "evm" &&
+    selectedQuote?.quote?.transactionRequest?.type === 'evm' &&
     selectedQuote?.quote?.transactionRequest.approvalTransactionRequest &&
     !isEthTxPending
   ) {
-    buttonText = t("assets.transfer.givePermission");
+    buttonText = t('assets.transfer.givePermission');
   } else if (isWithdraw) {
-    buttonText = t("assets.transfer.titleWithdraw", {
+    buttonText = t('assets.transfer.titleWithdraw', {
       coinDenom: originCurrency.coinDenom,
     });
   } else {
-    buttonText = t("assets.transfer.titleDeposit", {
+    buttonText = t('assets.transfer.titleDeposit', {
       coinDenom: originCurrency.coinDenom,
     });
   }
 
   let warningMessage;
   if (warnOfDifferentDepositAddress) {
-    warningMessage = t("assets.transfer.warnDepositAddressDifferent", {
-      address: ethWalletClient?.displayInfo.displayName ?? "",
+    warningMessage = t('assets.transfer.warnDepositAddressDifferent', {
+      address: ethWalletClient?.displayInfo.displayName ?? '',
     });
   }
 
   if (selectedQuote && !selectedQuote.expectedOutput) {
-    throw new Error("Expected output is not defined.");
+    throw new Error('Expected output is not defined.');
   }
 
   return (
@@ -1219,14 +1219,14 @@ export const TransferContent: FunctionComponent<
           isWithdraw
             ? {
                 ...osmosisPath,
-                address: osmoIcnsName === "" ? osmosisAddress : osmoIcnsName,
+                address: osmoIcnsName === '' ? osmosisAddress : osmoIcnsName,
               }
             : counterpartyPath,
           isWithdraw
             ? counterpartyPath
             : {
                 ...osmosisPath,
-                address: osmoIcnsName === "" ? osmosisAddress : osmoIcnsName,
+                address: osmoIcnsName === '' ? osmosisAddress : osmoIcnsName,
               },
         ]}
         selectedWalletDisplay={
@@ -1263,9 +1263,9 @@ export const TransferContent: FunctionComponent<
                 setIsUsingWrapped: (isUsingWrapped) => {
                   setSelectedBridgeProvider(null);
                   if (isWithdraw) {
-                    withdrawAmountConfig.setAmount("");
+                    withdrawAmountConfig.setAmount('');
                   } else {
-                    setDepositAmount("");
+                    setDepositAmount('');
                   }
                   setUseWrappedToken(isUsingWrapped);
                 },
@@ -1275,7 +1275,7 @@ export const TransferContent: FunctionComponent<
               }
             : undefined
         }
-        transferFee={!someError ? selectedQuote?.transferFee ?? "-" : "-"}
+        transferFee={!someError ? selectedQuote?.transferFee ?? '-' : '-'}
         transferFeeFiat={
           !someError ? selectedQuote?.transferFeeFiat : undefined
         }
@@ -1284,24 +1284,24 @@ export const TransferContent: FunctionComponent<
         }
         gasCostFiat={!someError ? selectedQuote?.gasCostFiat : undefined}
         classes={{
-          expectedOutputValue: warnUserOfSlippage ? "text-rust-500" : undefined,
-          priceImpactValue: warnUserOfPriceImpact ? "text-rust-500" : undefined,
+          expectedOutputValue: warnUserOfSlippage ? 'text-rust-500' : undefined,
+          priceImpactValue: warnUserOfPriceImpact ? 'text-rust-500' : undefined,
         }}
         expectedOutput={
-          !someError ? selectedQuote?.expectedOutput ?? "-" : undefined
+          !someError ? selectedQuote?.expectedOutput ?? '-' : undefined
         }
         expectedOutputFiat={
           !someError ? selectedQuote?.expectedOutputFiat : undefined
         }
         priceImpact={
           !someError &&
-          inputAmountRaw !== "" &&
+          inputAmountRaw !== '' &&
           selectedQuote?.priceImpact.toDec().gt(new Dec(0))
             ? selectedQuote?.priceImpact
             : undefined
         }
         waitTime={
-          !someError ? selectedQuote?.estimatedTime?.humanize() ?? "-" : "-"
+          !someError ? selectedQuote?.estimatedTime?.humanize() ?? '-' : '-'
         }
         bridgeProviders={quoteResults
           .map(({ data }) => data?.provider)
@@ -1326,15 +1326,15 @@ export const TransferContent: FunctionComponent<
         {walletConnected ? (
           <Button
             className={classNames(
-              "transition-opacity duration-300 hover:opacity-75",
-              { "opacity-30": isLoadingBridgeQuote }
+              'transition-opacity duration-300 hover:opacity-75',
+              { 'opacity-30': isLoadingBridgeQuote }
             )}
             disabled={
               (!userCanInteract && !userDisconnectedEthWallet) ||
               (isDeposit &&
                 !userDisconnectedEthWallet &&
-                inputAmountRaw === "") ||
-              (isWithdraw && inputAmountRaw === "") ||
+                inputAmountRaw === '') ||
+              (isWithdraw && inputAmountRaw === '') ||
               isInsufficientFee ||
               isInsufficientBal ||
               isSendTxPending ||
@@ -1349,7 +1349,7 @@ export const TransferContent: FunctionComponent<
             }
             mode={
               warnUserOfSlippage || warnUserOfPriceImpact
-                ? "primary-warning"
+                ? 'primary-warning'
                 : undefined
             }
             onClick={() => {
@@ -1366,13 +1366,13 @@ export const TransferContent: FunctionComponent<
         <Link
           href="/disclaimer#providers-and-bridge-disclaimer"
           className={buttonCVA({
-            className: "caption font-semibold",
-            mode: "text-white",
-            size: "text",
+            className: 'caption font-semibold',
+            mode: 'text-white',
+            size: 'text',
           })}
           target="_blank"
         >
-          {t("disclaimer")}
+          {t('disclaimer')}
         </Link>
       </div>
     </ModalBase>

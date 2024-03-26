@@ -182,12 +182,12 @@ const MainLayoutWrapper: FunctionComponent<{
     }
 
     let menuItems: (MainLayoutMenu | null)[] = [
-      /* {
+      {
         label: t('menu.swap'),
         link: '/',
         icon: <Icon id="trade" className="h-5 w-5" />,
         selectionTest: /\/$/,
-      }, */
+      },
       flags.earnPage
         ? {
             label: t('earnPage.title'),
@@ -203,42 +203,42 @@ const MainLayoutWrapper: FunctionComponent<{
         icon: <Icon id="assets-pie-chart" className="h-5 w-5" />,
         selectionTest: /\/assets/,
       },
-      /* flags.staking
+      flags.staking
         ? {
-            label: t("menu.stake"),
-            link: "/stake",
+            label: t('menu.stake'),
+            link: '/stake',
             icon: <Icon id="ticket" className="h-5 w-5" />,
             selectionTest: /\/stake/,
             amplitudeEvent: [EventName.Sidebar.stakeClicked] as AmplitudeEvent,
           }
         : {
-            label: t("menu.stake"),
+            label: t('menu.stake'),
             link:
               osmosisWallet?.walletInfo?.stakeUrl ??
-              "https://wallet.keplr.app/chains/osmosis",
+              'https://wallet.keplr.app/chains/osmosis',
             icon: <Icon id="ticket" className="h-5 w-5" />,
             amplitudeEvent: [EventName.Sidebar.stakeClicked] as AmplitudeEvent,
           },
       ...conditionalMenuItems,
       {
-        label: t("menu.pools"),
-        link: "/pools",
+        label: t('menu.pools'),
+        link: '/pools',
         icon: <Icon id="pool" className="h-5 w-5" />,
         selectionTest: /\/pools/,
       },
       {
-        label: t("menu.store"),
-        link: "/apps",
+        label: t('menu.store'),
+        link: '/apps',
         icon: <Icon id="apps" className="h-5 w-5" />,
         selectionTest: /\/apps/,
         badge: <AppsBadge appsLink="/apps" />,
       },
       {
-        label: t("menu.more"),
+        label: t('menu.more'),
         icon: <Icon id="dots-three-vertical" className="h-5 w-5" />,
-        link: "/",
+        link: '/',
         showMore: true,
-      },*/
+      },
     ];
 
     return menuItems.filter(Boolean) as MainLayoutMenu[];

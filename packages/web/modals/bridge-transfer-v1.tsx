@@ -1,19 +1,19 @@
-import { observer } from "mobx-react-lite";
-import dynamic from "next/dynamic";
-import { FunctionComponent } from "react";
+import { observer } from 'mobx-react-lite';
+import dynamic from 'next/dynamic';
+import { FunctionComponent } from 'react';
 
-import { IS_TESTNET } from "~/config";
-import { useConnectWalletModalRedirect, useTranslation } from "~/hooks";
-import type { SourceChainKey } from "~/integrations/bridge-info";
-import type { EthWallet } from "~/integrations/ethereum";
-import type { ObservableWallet } from "~/integrations/wallets";
-import { ModalBase, ModalBaseProps } from "~/modals/base";
-import { IBCBalance } from "~/stores/assets";
+import { IS_TESTNET } from '~/config';
+import { useConnectWalletModalRedirect, useTranslation } from '~/hooks';
+import type { SourceChainKey } from '~/integrations/bridge-info';
+import type { EthWallet } from '~/integrations/ethereum';
+import type { ObservableWallet } from '~/integrations/wallets';
+import { ModalBase, ModalBaseProps } from '~/modals/base';
+import { IBCBalance } from '~/stores/assets';
 
-const AxelarTransfer = dynamic(() => import("~/integrations/axelar/transfer"), {
+const AxelarTransfer = dynamic(() => import('~/integrations/axelar/transfer'), {
   ssr: false,
 });
-const NomicTransfer = dynamic(() => import("~/integrations/nomic/transfer"), {
+const NomicTransfer = dynamic(() => import('~/integrations/nomic/transfer'), {
   ssr: false,
 });
 
@@ -47,14 +47,14 @@ export const BridgeTransferV1Modal: FunctionComponent<
     walletConnected,
   } = useConnectWalletModalRedirect(
     {
-      className: "md:w-full w-2/3 md:p-4 p-6 hover:opacity-75 rounded-2xl",
+      className: 'md:w-full w-2/3 md:p-4 p-6 hover:opacity-75 rounded-2xl',
       onClick: () => {},
     },
     props.onRequestClose
   );
 
   if (!balance.originBridgeInfo) {
-    console.error("BridgeTransferModal given unconfigured IBC balance/asset");
+    console.error('BridgeTransferModal given unconfigured IBC balance/asset');
     return null;
   }
   const { bridge } = balance.originBridgeInfo;
@@ -63,39 +63,43 @@ export const BridgeTransferV1Modal: FunctionComponent<
     ({ id }) => id === sourceChainKey
   );
 
-  let title = "";
+  let title = '';
 
   if (isWithdraw) {
     /** Since the modal will display a toggle, hide the coin denom from the title  */
     if (
-      bridge === "axelar" &&
+      bridge === 'axelar' &&
       Boolean(sourceChainConfig?.nativeWrapEquivalent)
     ) {
-      title = t("assets.transferAssetSelect.withdraw");
+      title = t('assets.transferAssetSelect.withdraw');
     } else {
-      title = t("assets.transfer.titleWithdraw", {
+      title = t('assets.transfer.titleWithdraw', {
         coinDenom: balance.balance.currency.coinDenom,
       });
     }
   } else {
     /** Since the modal will display a toggle, hide the coin denom from the title  */
     if (
-      bridge === "axelar" &&
+      bridge === 'axelar' &&
       Boolean(sourceChainConfig?.nativeWrapEquivalent)
     ) {
-      title = t("assets.transferAssetSelect.deposit");
+      title = t('assets.transferAssetSelect.deposit');
     } else {
-      title = t("assets.transfer.titleDeposit", {
+      title = t('assets.transfer.titleDeposit', {
         coinDenom: balance.balance.currency.coinDenom,
       });
     }
   }
 
   return (
-    <ModalBase {...props} title={title} isOpen={props.isOpen && showModalBase}>
+    <ModalBase
+      {...props}
+      title={'Baldasdf'}
+      isOpen={props.isOpen && showModalBase}
+    >
       {(() => {
         switch (bridge) {
-          case "axelar":
+          case 'axelar':
             return (
               <AxelarTransfer
                 isWithdraw={isWithdraw}
@@ -111,7 +115,7 @@ export const BridgeTransferV1Modal: FunctionComponent<
                 isTestNet={IS_TESTNET}
               />
             );
-          case "nomic":
+          case 'nomic':
             return (
               <NomicTransfer
                 balanceOnOsmosis={balance}

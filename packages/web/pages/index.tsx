@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 
 import { ProgressiveSvgImage } from '~/components/progressive-svg-image';
+import { SwapTool } from '~/components/swap-tool';
 import { EventName } from '~/config';
 import { useAmplitudeAnalytics, useFeatureFlags } from '~/hooks';
 
@@ -51,7 +52,7 @@ const Home = () => {
       </div>
       <div className="my-auto flex h-auto w-full items-center">
         <div className="ml-auto mr-[15%] flex w-[27rem] flex-col gap-4 lg:mx-auto md:mt-mobile-header">
-          {/* <SwapTool /> */}
+          {<SwapTool />}
         </div>
       </div>
     </main>
