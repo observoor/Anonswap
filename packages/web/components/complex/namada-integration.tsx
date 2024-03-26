@@ -123,7 +123,7 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
     if (data.osmosisAddress.length > 2) {
       setOsmosisAddress(data.osmosisAddress);
     }
-  }, [chainId, accountStore, accountStore.walletManager]);
+  }, [chainId, accountStore, accountStore.walletManager, wallet.current]);
 
   async function initNamadaClient() {
     console.debug('Init client', wallet.current);
