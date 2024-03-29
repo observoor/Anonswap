@@ -580,7 +580,7 @@ export const NamadaIntegration: FunctionComponent = observer(() => {
             </p>
 
             <p className="text-osmoverse-400">
-              Balace: {data.shieldedBalance}{' '}
+              Balance: {data.shieldedBalance}{' '}
             </p>
             {data.shieldedBalance === null && <Spinner />}
           </div>
